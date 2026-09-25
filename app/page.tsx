@@ -2,11 +2,13 @@
 
 import { Box, Typography } from '@mui/material';
 
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDashboard } from '@/lib/api/useDashboard';
 
 import {
   activityDetailStyle,
   activityItemStyle,
+  activityTitleStyle,
   activityListStyle,
   activitySectionStyle,
   activityTimeStyle,
@@ -18,6 +20,8 @@ import {
   descriptionStyle,
   errorStyle,
   eyebrowStyle,
+  headerStyle,
+  headerTopStyle,
   loadingStyle,
   mainStyle,
   pageStyle,
@@ -31,10 +35,13 @@ export default function Home() {
   return (
     <Box sx={pageStyle}>
       <Box component="main" sx={mainStyle}>
-        <Box component="header" sx={{ mb: 4 }}>
-          <Typography variant="body2" sx={eyebrowStyle}>
-            React · Node.js · Next.js · TypeScript
-          </Typography>
+        <Box component="header" sx={headerStyle}>
+          <Box sx={headerTopStyle}>
+            <Typography variant="body2" sx={eyebrowStyle}>
+              React · Node.js · Next.js · TypeScript
+            </Typography>
+            <ThemeToggle />
+          </Box>
           <Typography variant="h4" component="h1" sx={titleStyle}>
             {data ? data.greeting : 'Dashboard'}
           </Typography>
@@ -82,7 +89,7 @@ export default function Home() {
                 {data.activity.map((item) => (
                   <Box component="li" key={item.title} sx={activityItemStyle}>
                     <Box>
-                      <Typography sx={{ fontWeight: 500 }}>
+                      <Typography sx={activityTitleStyle}>
                         {item.title}
                       </Typography>
                       <Typography variant="body2" sx={activityDetailStyle}>

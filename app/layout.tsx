@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Providers } from '@/app/providers';
 
@@ -21,8 +22,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body>
+        <InitColorSchemeScript defaultMode="dark" />
         <Providers>{children}</Providers>
       </body>
     </html>

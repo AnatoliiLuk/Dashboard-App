@@ -11,7 +11,7 @@ import { theme } from '@/app/theme';
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme} defaultMode="dark" disableTransitionOnChange>
         <CssBaseline />
         <SWRConfig
           value={{
