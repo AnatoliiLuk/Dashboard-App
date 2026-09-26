@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+
 import {
   addDays,
   addMonths,
@@ -36,8 +38,14 @@ export function shiftCalendar(
   return addMonths(cursor, step);
 }
 
-export function calendarHeading(cursor: string, view: CalendarView) {
-  return view === 'week' ? weekTitle(cursor) : monthTitle(cursor);
+export function calendarHeading(
+  cursor: string,
+  view: CalendarView,
+  locale: string,
+) {
+  return view === 'week'
+    ? weekTitle(cursor, locale)
+    : monthTitle(cursor, locale);
 }
 
 export function isCurrentPeriod(
@@ -51,15 +59,26 @@ export function isCurrentPeriod(
   return startOfMonth(cursor) === startOfMonth(today);
 }
 
-export function currentPeriodLabel(today: string, here: boolean) {
+export function currentPeriodLabel(
+  today: string,
+  here: boolean,
+  translate: TFunction,
+) {
   const date = formatDisplay(today);
-  return here ? date : `Back to ${date}`;
+  return here ? date : translate('calendar.backTo', { date });
 }
 
 export function calendarStepLabel(
   view: CalendarView,
   direction: 'previous' | 'next',
+  translate: TFunction,
 ) {
-  const unit = view === 'week' ? 'week' : 'month';
-  return direction === 'previous' ? `Previous ${unit}` : `Next ${unit}`;
+  if (view === 'week') {
+    return direction === 'previous'
+      ? translate('calendar.previousWeek')
+      : translate('calendar.nextWeek');
+  }
+  return direction === 'previous'
+    ? translate('calendar.previousMonth')
+    : translate('calendar.nextMonth');
 }

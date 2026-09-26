@@ -5,10 +5,12 @@ import { Typography } from '@mui/material';
 import { HabitLogger } from '@/components/HabitLogger';
 import { HabitShell } from '@/components/HabitShell';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
+import { useTranslation } from '@/lib/i18n';
 
 import { loadingStyle } from '../page.style';
 
 export default function LogPage() {
+  const { t } = useTranslation();
   const {
     ready,
     habits,
@@ -20,7 +22,7 @@ export default function LogPage() {
   } = useHabitLog();
 
   return (
-    <HabitShell description="Add a habit and mark what you did today.">
+    <HabitShell description={t('log.description')}>
       {ready ? (
         <HabitLogger
           habits={habits}
@@ -31,7 +33,7 @@ export default function LogPage() {
           onDelete={deleteHabit}
         />
       ) : (
-        <Typography sx={loadingStyle}>Loading habits…</Typography>
+        <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
       )}
     </HabitShell>
   );

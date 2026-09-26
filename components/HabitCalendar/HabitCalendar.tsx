@@ -4,7 +4,8 @@ import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
-import { monthWeeks, weekDays, weekdayLabels } from '@/lib/habits/calendar';
+import { monthWeeks, WEEKDAYS, weekDays } from '@/lib/habits/calendar';
+import { useTranslation } from '@/lib/i18n';
 import type { HabitStore } from '@/lib/habits/storage';
 
 import { DayCell } from './DayCell';
@@ -36,6 +37,7 @@ type HabitCalendarProps = {
 };
 
 export function HabitCalendar({ store, today }: HabitCalendarProps) {
+  const { t, i18n } = useTranslation();
   const [cursor, setCursor] = useState(today);
   const [view, setView] = useState(loadCalendarView);
   const weeks =
@@ -46,10 +48,10 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
     <Box
       component="section"
       sx={calendarSectionStyle}
-      aria-label="Habit calendar"
+      aria-label={t('calendar.label')}
     >
       <Box sx={viewBarStyle}>
-        <Box sx={viewOptionsStyle} role="group" aria-label="Calendar view">
+        <Box sx={viewOptionsStyle} role="group" aria-label={t('calendar.view')}>
           {(['month', 'week'] as const).map((option) => (
             <Box
               key={option}
@@ -65,7 +67,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
                 setView(option);
               }}
             >
-              {option === 'month' ? 'Month' : 'Week'}
+              {option === 'month' ? t('calendar.month') : t('calendar.week')}
             </Box>
           ))}
         </Box>
@@ -76,26 +78,26 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
           disabled={here}
           onClick={() => setCursor(today)}
         >
-          {currentPeriodLabel(today, here)}
+          {currentPeriodLabel(today, here, t)}
         </Box>
       </Box>
       <Box sx={monthBarStyle}>
         <Box
           component="button"
           type="button"
-          aria-label={calendarStepLabel(view, 'previous')}
+          aria-label={calendarStepLabel(view, 'previous', t)}
           sx={[monthButtonStyle, stepButtonStyle]}
           onClick={() => setCursor(shiftCalendar(cursor, view, -1))}
         >
           <ArrowLeftIcon width={16} height={16} />
         </Box>
         <Typography variant="h6" component="h2">
-          {calendarHeading(cursor, view)}
+          {calendarHeading(cursor, view, i18n.language)}
         </Typography>
         <Box
           component="button"
           type="button"
-          aria-label={calendarStepLabel(view, 'next')}
+          aria-label={calendarStepLabel(view, 'next', t)}
           sx={[monthButtonStyle, stepButtonStyle]}
           onClick={() => setCursor(shiftCalendar(cursor, view, 1))}
         >
@@ -107,14 +109,9 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
         <Box component="table" sx={tableStyle}>
           <Box component="thead">
             <Box component="tr">
-              {weekdayLabels().map((label) => (
-                <Box
-                  component="th"
-                  key={label}
-                  scope="col"
-                  sx={headerCellStyle}
-                >
-                  {label}
+              {WEEKDAYS.map((day) => (
+                <Box component="th" key={day} scope="col" sx={headerCellStyle}>
+                  {t(`calendar.weekdays.${day}`)}
                 </Box>
               ))}
             </Box>

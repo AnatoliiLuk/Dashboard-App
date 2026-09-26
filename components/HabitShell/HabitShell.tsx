@@ -5,11 +5,14 @@ import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useTranslation } from '@/lib/i18n';
 
 import { mainStyle, pageStyle } from '@/app/page.style';
 
 import {
+  barEndStyle,
   barStartStyle,
   barStyle,
   brandStyle,
@@ -21,8 +24,8 @@ import {
 } from './HabitShell.style';
 
 const menu = [
-  { href: '/', label: 'Calendar' },
-  { href: '/log', label: 'Log habits' },
+  { href: '/', label: 'shell.calendar' },
+  { href: '/log', label: 'shell.logHabits' },
 ] as const;
 
 type HabitShellProps = {
@@ -32,6 +35,7 @@ type HabitShellProps = {
 
 export function HabitShell({ description, children }: HabitShellProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <Box sx={pageStyle}>
@@ -40,9 +44,9 @@ export function HabitShell({ description, children }: HabitShellProps) {
           <Box sx={barStyle}>
             <Box sx={barStartStyle}>
               <Typography variant="h1" component="h1" sx={brandStyle}>
-                Habits+
+                {t('shell.brand')}
               </Typography>
-              <Box component="nav" sx={menuStyle} aria-label="Menu">
+              <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
                 {menu.map(({ href, label }) => {
                   const current = pathname === href;
                   return (
@@ -54,13 +58,16 @@ export function HabitShell({ description, children }: HabitShellProps) {
                       underline="none"
                       sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
                     >
-                      {label}
+                      {t(label)}
                     </Link>
                   );
                 })}
               </Box>
             </Box>
-            <ThemeToggle />
+            <Box sx={barEndStyle}>
+              <LocaleSwitch />
+              <ThemeToggle />
+            </Box>
           </Box>
           <Typography sx={descriptionStyle}>{description}</Typography>
         </Box>

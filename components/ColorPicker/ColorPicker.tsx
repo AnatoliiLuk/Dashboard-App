@@ -1,6 +1,9 @@
+'use client';
+
 import { Box } from '@mui/material';
 
 import { HABIT_COLORS, habitColor, type HabitColor } from '@/lib/habits/colors';
+import { useTranslation } from '@/lib/i18n';
 
 import { colorPickerStyle, colorSwatchStyle } from './ColorPicker.style';
 
@@ -11,9 +14,11 @@ type ColorPickerProps = {
 };
 
 function ColorPicker({ value, onChange, label }: ColorPickerProps) {
+  const { t } = useTranslation();
+
   return (
     <Box sx={colorPickerStyle} role="radiogroup" aria-label={label}>
-      {HABIT_COLORS.map(({ id, label }) => {
+      {HABIT_COLORS.map(({ id }) => {
         const selected = value === id;
         const { background } = habitColor(id);
 
@@ -24,7 +29,7 @@ function ColorPicker({ value, onChange, label }: ColorPickerProps) {
             type="button"
             role="radio"
             aria-checked={selected}
-            aria-label={label}
+            aria-label={t(`colors.${id}`)}
             onClick={() => onChange(id)}
             sx={colorSwatchStyle(background, selected)}
           />

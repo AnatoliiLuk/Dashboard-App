@@ -6,6 +6,7 @@ import { HabitCard } from '@/components/HabitCard';
 import { HabitForm } from '@/components/HabitForm';
 import type { HabitColor } from '@/lib/habits/colors';
 import type { HabitToday } from '@/lib/habits/useHabitLog';
+import { useTranslation } from '@/lib/i18n';
 
 import { emptyStyle, listStyle } from './HabitLogger.style';
 
@@ -26,11 +27,13 @@ export function HabitLogger({
   onRename,
   onDelete,
 }: HabitLoggerProps) {
+  const { t } = useTranslation();
+
   return (
     <section>
       <HabitForm onAdd={onAdd} />
       {habits.length === 0 ? (
-        <Typography sx={emptyStyle}>Add a habit to start a streak.</Typography>
+        <Typography sx={emptyStyle}>{t('log.empty')}</Typography>
       ) : (
         <Box component="ul" sx={listStyle}>
           {habits.map((item) => (

@@ -1,23 +1,29 @@
+import type { TFunction } from 'i18next';
+
 export type HabitStatus = 'success' | 'warning' | 'info';
 
 export function streakMessage(
   currentStreak: number,
   doneToday: boolean,
+  translate: TFunction,
 ): { text: string; status: HabitStatus } {
   if (doneToday && currentStreak >= 7) {
-    return { text: 'A full week in a row.', status: 'success' };
+    return { text: translate('streak.fullWeek'), status: 'success' };
   }
   if (doneToday && currentStreak > 1) {
-    return { text: `${currentStreak} days in a row.`, status: 'success' };
+    return {
+      text: translate('streak.days', { count: currentStreak }),
+      status: 'success',
+    };
   }
   if (doneToday) {
-    return { text: 'Nice. Today is done.', status: 'success' };
+    return { text: translate('streak.done'), status: 'success' };
   }
   if (currentStreak > 0) {
     return {
-      text: `${currentStreak} days in a row. Today is still open.`,
+      text: translate('streak.open', { count: currentStreak }),
       status: 'warning',
     };
   }
-  return { text: 'Do it today to start a streak.', status: 'info' };
+  return { text: translate('streak.start'), status: 'info' };
 }

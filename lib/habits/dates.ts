@@ -1,3 +1,5 @@
+import { intlLocale } from '@/lib/i18n/locale';
+
 export function isDate(value: string): boolean {
   return (
     /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(parse(value).getTime())
@@ -42,34 +44,35 @@ export function startOfWeek(iso: string): string {
   return addDays(iso, -weekdayIndex(iso));
 }
 
-export function monthTitle(iso: string): string {
-  return new Intl.DateTimeFormat('en-GB', {
+export function monthTitle(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
   }).format(parse(startOfMonth(iso)));
 }
 
-export function weekTitle(iso: string): string {
+export function weekTitle(iso: string, locale: string): string {
   const start = startOfWeek(iso);
   const end = addDays(start, 6);
   if (start.slice(0, 7) === end.slice(0, 7)) {
-    return `${Number(start.slice(8, 10))}–${Number(end.slice(8, 10))} ${monthTitle(start)}`;
+    return `${Number(start.slice(8, 10))}–${Number(end.slice(8, 10))} ${monthTitle(start, locale)}`;
   }
 
   const sameYear = start.slice(0, 4) === end.slice(0, 4);
-  const startText = new Intl.DateTimeFormat('en-GB', {
+  const format = new Intl.DateTimeFormat(intlLocale(locale), {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  const startText = new Intl.DateTimeFormat(intlLocale(locale), {
     day: 'numeric',
     month: 'long',
     year: sameYear ? undefined : 'numeric',
     timeZone: 'UTC',
   }).format(parse(start));
-  const endText = new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(parse(end));
+  const endText = format.format(parse(end));
   return `${startText} – ${endText}`;
 }
 

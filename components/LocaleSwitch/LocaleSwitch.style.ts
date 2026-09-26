@@ -1,39 +1,7 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-export const headerStyle = ({ spacingPx }: Theme) => ({
-  mb: spacingPx[32],
-});
-
-export const barStyle = ({ vars, spacingPx, border }: Theme) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  flexWrap: 'wrap',
-  gap: spacingPx[16],
-  pb: spacingPx[16],
-  borderBottom: border[1],
-  borderBottomColor: vars.palette.divider,
-});
-
-export const barStartStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  gap: spacingPx[16],
-});
-
-export const barEndStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: spacingPx[12],
-});
-
-export const brandStyle = ({ spacingPx }: Theme) => ({
-  m: spacingPx[0],
-});
-
-export const menuStyle = ({
+export const localeGroupStyle = ({
   vars,
   spacingPx,
   border,
@@ -48,7 +16,7 @@ export const menuStyle = ({
   backgroundColor: vars.palette.background.paper,
 });
 
-export const menuItemStyle = ({
+export const localeButtonStyle = ({
   vars,
   spacingPx,
   border,
@@ -57,13 +25,15 @@ export const menuItemStyle = ({
 }: Theme) => ({
   px: spacingPx[12],
   py: spacingPx[6],
+  border: 'none',
+  backgroundColor: 'transparent',
   borderRadius: borderRadius.pill,
   color: vars.palette.text.secondary,
-  textDecoration: 'none',
   fontFamily: typography.button.fontFamily,
   fontSize: typography.button.fontSize,
   fontWeight: typography.button.fontWeight,
   lineHeight: typography.button.lineHeight,
+  cursor: 'pointer',
   '&:hover': {
     color: vars.palette.text.primary,
   },
@@ -73,16 +43,10 @@ export const menuItemStyle = ({
   },
 });
 
-export const menuItemActiveStyle = ({ vars }: Theme) => ({
+export const localeButtonActiveStyle = ({ vars }: Theme) => ({
   backgroundColor: vars.palette.text.primary,
   color: vars.palette.background.paper,
   '&:hover': {
     color: vars.palette.background.paper,
   },
-});
-
-export const descriptionStyle = ({ vars, spacingPx }: Theme) => ({
-  mt: spacingPx[16],
-  maxWidth: spacingPx[576],
-  color: vars.palette.text.secondary,
 });

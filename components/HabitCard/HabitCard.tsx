@@ -12,6 +12,7 @@ import {
 } from '@/components/icons';
 import type { HabitColor } from '@/lib/habits/colors';
 import { formatDisplay } from '@/lib/habits/dates';
+import { useTranslation } from '@/lib/i18n';
 import type { HabitToday } from '@/lib/habits/useHabitLog';
 
 import { streakMessage, type HabitStatus } from './HabitCard.helpers';
@@ -51,6 +52,7 @@ function HabitCard({
   onRename,
   onDelete,
 }: HabitCardProps) {
+  const { t } = useTranslation();
   const { habit, currentStreak, doneToday, days } = item;
   const { id, name: savedName, color } = habit;
   const [editing, setEditing] = useState(false);
@@ -71,7 +73,7 @@ function HabitCard({
     setEditing(false);
   }
 
-  const { text, status } = streakMessage(currentStreak, doneToday);
+  const { text, status } = streakMessage(currentStreak, doneToday, t);
   const StatusIcon = statusIcon[status];
 
   return (
@@ -87,7 +89,7 @@ function HabitCard({
             }}
           >
             <TextField
-              label="Habit"
+              label={t('common.habit')}
               name="habit"
               value={name}
               onChange={(event) => setName(event.target.value)}
@@ -110,7 +112,7 @@ function HabitCard({
                 sx={toggleStyle}
                 onClick={save}
               >
-                Save
+                {t('common.save')}
               </Box>
               <Box
                 component="button"
@@ -118,7 +120,7 @@ function HabitCard({
                 sx={toggleStyle}
                 onClick={cancelEdit}
               >
-                Cancel
+                {t('common.cancel')}
               </Box>
             </>
           ) : confirmDelete ? (
@@ -129,7 +131,7 @@ function HabitCard({
                 sx={[toggleStyle, deleteStyle]}
                 onClick={() => onDelete(id)}
               >
-                Delete
+                {t('common.delete')}
               </Box>
               <Box
                 component="button"
@@ -137,7 +139,7 @@ function HabitCard({
                 sx={toggleStyle}
                 onClick={() => setConfirmDelete(false)}
               >
-                Cancel
+                {t('common.cancel')}
               </Box>
             </>
           ) : (
@@ -152,7 +154,7 @@ function HabitCard({
                   setEditing(true);
                 }}
               >
-                Edit
+                {t('common.edit')}
               </Box>
               <Box
                 component="button"
@@ -160,7 +162,7 @@ function HabitCard({
                 sx={toggleStyle}
                 onClick={() => setConfirmDelete(true)}
               >
-                Delete
+                {t('common.delete')}
               </Box>
               <Box
                 component="button"
@@ -169,7 +171,7 @@ function HabitCard({
                 aria-pressed={doneToday}
                 onClick={() => onToggle(id)}
               >
-                {doneToday ? 'Undo' : 'Done today'}
+                {doneToday ? t('log.undo') : t('log.doneToday')}
               </Box>
             </>
           )}
@@ -180,7 +182,7 @@ function HabitCard({
           <ColorPicker
             value={color}
             onChange={(next) => onColor(id, next)}
-            label={`Color for ${savedName}`}
+            label={t('log.habitColor', { name: savedName })}
           />
         </Box>
       ) : null}

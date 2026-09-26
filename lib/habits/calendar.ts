@@ -20,19 +20,15 @@ export type CalendarDay = {
   habits: CalendarHabit[];
 };
 
-const WEEKDAY_LABELS = [
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-  'Sun',
+export const WEEKDAYS = [
+  'mon',
+  'tue',
+  'wed',
+  'thu',
+  'fri',
+  'sat',
+  'sun',
 ] as const;
-
-export function weekdayLabels(): readonly string[] {
-  return WEEKDAY_LABELS;
-}
 
 function habitsOnDate({
   habits,

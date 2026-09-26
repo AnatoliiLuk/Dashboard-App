@@ -3,26 +3,47 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { SWRConfig } from 'swr';
 
 import { theme } from '@/app/theme';
+import { createI18n } from '@/lib/i18n/createI18n';
+import type { Locale } from '@/lib/i18n/locale';
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  locale,
+  children,
+}: {
+  locale: Locale;
+  children: ReactNode;
+}) {
+  const [i18n] = useState(() =>
+    createI18n(locale, (instance) => {
+      instance.use(initReactI18next);
+    }),
+  );
+
   return (
-    <AppRouterCacheProvider>
-      <ThemeProvider theme={theme} defaultMode="system" disableTransitionOnChange>
-        <CssBaseline />
-        <SWRConfig
-          value={{
-            revalidateIfStale: false,
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-          }}
+    <I18nextProvider i18n={i18n}>
+      <AppRouterCacheProvider>
+        <ThemeProvider
+          theme={theme}
+          defaultMode="system"
+          disableTransitionOnChange
         >
-          {children}
-        </SWRConfig>
-      </ThemeProvider>
-    </AppRouterCacheProvider>
+          <CssBaseline />
+          <SWRConfig
+            value={{
+              revalidateIfStale: false,
+              revalidateOnFocus: false,
+              revalidateOnReconnect: false,
+            }}
+          >
+            {children}
+          </SWRConfig>
+        </ThemeProvider>
+      </AppRouterCacheProvider>
+    </I18nextProvider>
   );
 }

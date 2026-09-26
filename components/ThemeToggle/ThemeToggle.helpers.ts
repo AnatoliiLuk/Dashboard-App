@@ -1,8 +1,11 @@
+import type { TFunction } from 'i18next';
+
 type ColorSchemeMode = 'light' | 'dark' | 'system' | undefined;
 
 export function getThemeToggleState(
   mode: ColorSchemeMode,
   systemMode: 'light' | 'dark' | undefined,
+  translate: TFunction,
 ) {
   const resolvedMode = mode === 'system' ? systemMode : mode;
   const isDark =
@@ -14,10 +17,10 @@ export function getThemeToggleState(
     isDark,
     label:
       isDark === undefined
-        ? 'Toggle color theme'
+        ? translate('theme.toggle')
         : isDark
-          ? 'Switch to light theme'
-          : 'Switch to dark theme',
+          ? translate('theme.toLight')
+          : translate('theme.toDark'),
     nextMode: isDark ? ('light' as const) : ('dark' as const),
   } as const;
 }

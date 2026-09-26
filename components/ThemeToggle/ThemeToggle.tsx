@@ -4,13 +4,15 @@ import { Box } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';
 
 import { MoonIcon, SunIcon } from '@/components/icons';
+import { useTranslation } from '@/lib/i18n';
 
 import { getThemeToggleState } from './ThemeToggle.helpers';
 import { iconStyle, themeToggleStyle, thumbStyle } from './ThemeToggle.style';
 
 function ThemeToggle() {
+  const { t } = useTranslation();
   const { mode, setMode, systemMode } = useColorScheme();
-  const { isDark, label, nextMode } = getThemeToggleState(mode, systemMode);
+  const { isDark, label, nextMode } = getThemeToggleState(mode, systemMode, t);
 
   return (
     <Box
