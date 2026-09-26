@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <body>
-        <InitColorSchemeScript defaultMode="dark" />
+        <InitColorSchemeScript defaultMode="system" />
         <Providers>{children}</Providers>
       </body>
     </html>
