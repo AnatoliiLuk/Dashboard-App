@@ -5,10 +5,19 @@ export function getThemeToggleState(
   systemMode: 'light' | 'dark' | undefined,
 ) {
   const resolvedMode = mode === 'system' ? systemMode : mode;
-  const isDark = (resolvedMode ?? 'dark') === 'dark';
+  const isDark =
+    resolvedMode === 'light' || resolvedMode === 'dark'
+      ? resolvedMode === 'dark'
+      : undefined;
 
   return {
-    label: isDark ? 'Light' : 'Dark',
-    nextMode: isDark ? 'light' : 'dark',
+    isDark,
+    label:
+      isDark === undefined
+        ? 'Toggle color theme'
+        : isDark
+          ? 'Switch to light theme'
+          : 'Switch to dark theme',
+    nextMode: isDark ? ('light' as const) : ('dark' as const),
   } as const;
 }
