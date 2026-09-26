@@ -3,10 +3,17 @@
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import { monthWeeks, weekdayLabels } from '@/lib/habits/calendar';
-import { addMonths, monthTitle } from '@/lib/habits/dates';
+import { monthWeeks, weekDays, weekdayLabels } from '@/lib/habits/calendar';
+import type { CalendarDay } from '@/lib/habits/calendar';
 import type { HabitStore } from '@/lib/habits/storage';
 
+import {
+  calendarHeading,
+  calendarStepLabel,
+  loadCalendarView,
+  saveCalendarView,
+  shiftCalendar,
+} from './HabitCalendar.helpers';
 import {
   calendarSectionStyle,
   cellStyle,
@@ -20,6 +27,8 @@ import {
   tableStyle,
   tableWrapStyle,
   todayStyle,
+  viewBarStyle,
+  viewButtonActiveStyle,
 } from './HabitCalendar.style';
 
 type HabitCalendarProps = {
@@ -27,9 +36,37 @@ type HabitCalendarProps = {
   today: string;
 };
 
+function DayCell({ day, today }: { day: CalendarDay; today: string }) {
+  return (
+    <Box
+      component="td"
+      sx={[
+        cellStyle,
+        !day.inMonth ? outsideStyle : null,
+        day.date === today ? todayStyle : null,
+      ]}
+    >
+      <Typography variant="body2" sx={dayNumberStyle}>
+        {Number(day.date.slice(8, 10))}
+      </Typography>
+      {day.habits.length > 0 ? (
+        <Box component="ul" sx={habitListStyle}>
+          {day.habits.map((habit) => (
+            <Box component="li" key={habit.id} sx={habitItemStyle}>
+              {habit.name}
+            </Box>
+          ))}
+        </Box>
+      ) : null}
+    </Box>
+  );
+}
+
 export function HabitCalendar({ store, today }: HabitCalendarProps) {
-  const [month, setMonth] = useState(today);
-  const weeks = monthWeeks(store, month);
+  const [cursor, setCursor] = useState(today);
+  const [view, setView] = useState(loadCalendarView);
+  const weeks =
+    view === 'week' ? [weekDays(store, cursor)] : monthWeeks(store, cursor);
 
   return (
     <Box
@@ -37,25 +74,45 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
       sx={calendarSectionStyle}
       aria-label="Habit calendar"
     >
+      <Box sx={viewBarStyle} role="group" aria-label="Calendar view">
+        {(['month', 'week'] as const).map((option) => (
+          <Box
+            key={option}
+            component="button"
+            type="button"
+            aria-pressed={view === option}
+            sx={[
+              monthButtonStyle,
+              view === option ? viewButtonActiveStyle : null,
+            ]}
+            onClick={() => {
+              saveCalendarView(option);
+              setView(option);
+            }}
+          >
+            {option === 'month' ? 'Month' : 'Week'}
+          </Box>
+        ))}
+      </Box>
       <Box sx={monthBarStyle}>
         <Box
           component="button"
           type="button"
           sx={monthButtonStyle}
-          onClick={() => setMonth(addMonths(month, -1))}
+          onClick={() => setCursor(shiftCalendar(cursor, view, -1))}
         >
-          Previous month
+          {calendarStepLabel(view, 'previous')}
         </Box>
         <Typography variant="h6" component="h2">
-          {monthTitle(month)}
+          {calendarHeading(cursor, view)}
         </Typography>
         <Box
           component="button"
           type="button"
           sx={monthButtonStyle}
-          onClick={() => setMonth(addMonths(month, 1))}
+          onClick={() => setCursor(shiftCalendar(cursor, view, 1))}
         >
-          Next month
+          {calendarStepLabel(view, 'next')}
         </Box>
       </Box>
 
@@ -79,32 +136,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
             {weeks.map((week) => (
               <Box component="tr" key={week[0].date}>
                 {week.map((day) => (
-                  <Box
-                    component="td"
-                    key={day.date}
-                    sx={[
-                      cellStyle,
-                      !day.inMonth ? outsideStyle : null,
-                      day.date === today ? todayStyle : null,
-                    ]}
-                  >
-                    <Typography variant="body2" sx={dayNumberStyle}>
-                      {Number(day.date.slice(8, 10))}
-                    </Typography>
-                    {day.habits.length > 0 ? (
-                      <Box component="ul" sx={habitListStyle}>
-                        {day.habits.map((habit) => (
-                          <Box
-                            component="li"
-                            key={habit.id}
-                            sx={habitItemStyle}
-                          >
-                            {habit.name}
-                          </Box>
-                        ))}
-                      </Box>
-                    ) : null}
-                  </Box>
+                  <DayCell key={day.date} day={day} today={today} />
                 ))}
               </Box>
             ))}

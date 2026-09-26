@@ -50,6 +50,29 @@ export function monthTitle(iso: string): string {
   }).format(parse(startOfMonth(iso)));
 }
 
+export function weekTitle(iso: string): string {
+  const start = startOfWeek(iso);
+  const end = addDays(start, 6);
+  if (start.slice(0, 7) === end.slice(0, 7)) {
+    return `${Number(start.slice(8, 10))}–${Number(end.slice(8, 10))} ${monthTitle(start)}`;
+  }
+
+  const sameYear = start.slice(0, 4) === end.slice(0, 4);
+  const startText = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: sameYear ? undefined : 'numeric',
+    timeZone: 'UTC',
+  }).format(parse(start));
+  const endText = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(parse(end));
+  return `${startText} – ${endText}`;
+}
+
 export function compareDates(left: string, right: string): number {
   if (left === right) {
     return 0;

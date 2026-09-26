@@ -5,6 +5,18 @@ export const calendarSectionStyle = ({ spacingPx }: Theme) => ({
   mb: spacingPx[32],
 });
 
+export const viewBarStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  gap: spacingPx[8],
+  mb: spacingPx[16],
+});
+
+export const viewButtonActiveStyle = ({ vars }: Theme) => ({
+  backgroundColor: vars.palette.text.primary,
+  borderColor: vars.palette.text.primary,
+  color: vars.palette.background.paper,
+});
+
 export const monthBarStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',

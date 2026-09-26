@@ -32,7 +32,7 @@ export function weekdayLabels(): readonly string[] {
   return WEEKDAY_LABELS;
 }
 
-export function monthWeeks(store: HabitStore, month: string): CalendarDay[][] {
+function habitsOnDate(store: HabitStore): Map<string, CalendarHabit[]> {
   const habitsByDate = new Map<string, CalendarHabit[]>();
   for (const completion of store.completions) {
     const habit = store.habits.find((item) => item.id === completion.habitId);
@@ -43,6 +43,25 @@ export function monthWeeks(store: HabitStore, month: string): CalendarDay[][] {
     habits.push({ id: habit.id, name: habit.name });
     habitsByDate.set(completion.date, habits);
   }
+  return habitsByDate;
+}
+
+export function weekDays(store: HabitStore, date: string): CalendarDay[] {
+  const habitsByDate = habitsOnDate(store);
+  const weekStart = startOfWeek(date);
+
+  return Array.from({ length: 7 }, (_, offset) => {
+    const day = addDays(weekStart, offset);
+    return {
+      date: day,
+      inMonth: true,
+      habits: habitsByDate.get(day) ?? [],
+    };
+  });
+}
+
+export function monthWeeks(store: HabitStore, month: string): CalendarDay[][] {
+  const habitsByDate = habitsOnDate(store);
 
   const monthStart = startOfMonth(month);
   const monthEnd = addDays(addMonths(monthStart, 1), -1);
