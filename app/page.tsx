@@ -1,111 +1,27 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useDashboard } from '@/lib/api/useDashboard';
+import { HabitCalendar } from '@/components/HabitCalendar';
+import { HabitShell } from '@/components/HabitShell';
+import { useHabitLog } from '@/lib/habits/useHabitLog';
 
-import {
-  activityDetailStyle,
-  activityItemStyle,
-  activityTitleStyle,
-  activityListStyle,
-  activitySectionStyle,
-  activityTimeStyle,
-  cardLabelStyle,
-  cardNoteStyle,
-  cardStyle,
-  cardValueStyle,
-  codeStyle,
-  descriptionStyle,
-  errorStyle,
-  eyebrowStyle,
-  headerStyle,
-  headerTopStyle,
-  loadingStyle,
-  mainStyle,
-  pageStyle,
-  statsStyle,
-  titleStyle,
-} from './page.style';
+import { loadingStyle } from './page.style';
 
 export default function Home() {
-  const { data, error, isLoading } = useDashboard();
+  const log = useHabitLog();
 
   return (
-    <Box sx={pageStyle}>
-      <Box component="main" sx={mainStyle}>
-        <Box component="header" sx={headerStyle}>
-          <Box sx={headerTopStyle}>
-            <Typography variant="body2" sx={eyebrowStyle}>
-              React · Node.js · Next.js · TypeScript
-            </Typography>
-            <ThemeToggle />
-          </Box>
-          <Typography variant="h4" component="h1" sx={titleStyle}>
-            {data ? data.greeting : 'Dashboard'}
-          </Typography>
-          <Typography sx={descriptionStyle}>
-            A small page. React draws this screen, and Next.js runs a Node.js
-            route at{' '}
-            <Box component="code" sx={codeStyle}>
-              /api/stats
-            </Box>{' '}
-            for the numbers below.
-          </Typography>
-        </Box>
-
-        {error ? (
-          <Typography sx={errorStyle}>Could not load the dashboard.</Typography>
-        ) : null}
-
-        {isLoading ? (
-          <Typography sx={loadingStyle}>Loading stats…</Typography>
-        ) : null}
-
-        {data ? (
-          <>
-            <Box component="section" sx={statsStyle}>
-              {data.stats.map((stat) => (
-                <Box component="article" key={stat.label} sx={cardStyle}>
-                  <Typography variant="body2" sx={cardLabelStyle}>
-                    {stat.label}
-                  </Typography>
-                  <Typography variant="h4" sx={cardValueStyle}>
-                    {stat.value}
-                  </Typography>
-                  <Typography variant="body2" sx={cardNoteStyle}>
-                    {stat.note}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-
-            <Box component="section" sx={activitySectionStyle}>
-              <Typography variant="h6" component="h2">
-                Recent activity
-              </Typography>
-              <Box component="ul" sx={activityListStyle}>
-                {data.activity.map((item) => (
-                  <Box component="li" key={item.title} sx={activityItemStyle}>
-                    <Box>
-                      <Typography sx={activityTitleStyle}>
-                        {item.title}
-                      </Typography>
-                      <Typography variant="body2" sx={activityDetailStyle}>
-                        {item.detail}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" sx={activityTimeStyle}>
-                      {item.time}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          </>
-        ) : null}
-      </Box>
-    </Box>
+    <HabitShell
+      title="Habits"
+      description="Each day lists the habits you marked done."
+      today={log.today}
+    >
+      {log.ready && log.store && log.today ? (
+        <HabitCalendar store={log.store} today={log.today} />
+      ) : (
+        <Typography sx={loadingStyle}>Loading habits…</Typography>
+      )}
+    </HabitShell>
   );
 }
