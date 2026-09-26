@@ -9,15 +9,18 @@ export const colorPickerStyle = ({ spacingPx }: Theme) => ({
 
 export const colorSwatchStyle =
   (background: string, selected: boolean) =>
-  ({ vars, spacingPx, border, borderRadius }: Theme) => ({
+  ({ vars, spacingPx, border, borderRadius, pxToRem }: Theme) => ({
     width: spacingPx[24],
     height: spacingPx[24],
     minWidth: spacingPx[24],
     m: spacingPx[0],
     p: spacingPx[0],
     border: border[2],
-    borderColor: selected ? vars.palette.text.primary : 'transparent',
+    borderColor: 'transparent',
     borderRadius: borderRadius.pill,
     backgroundColor: background,
     cursor: 'pointer',
+    boxShadow: selected
+      ? `0 0 0 ${pxToRem(2)} ${vars.palette.background.paper}, 0 0 0 ${pxToRem(4)} ${vars.palette.text.primary}`
+      : 'none',
   });

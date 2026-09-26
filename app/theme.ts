@@ -2,6 +2,8 @@
 
 import { createTheme } from '@mui/material/styles';
 
+import { colors, type Colors } from '@/lib/colors';
+
 const fontFamily = 'var(--font-geist-sans), Arial, Helvetica, sans-serif';
 
 const pxToRem = (value: number) =>
@@ -43,6 +45,7 @@ type Border = typeof border;
 
 declare module '@mui/material/styles' {
   interface Theme {
+    colors: Colors;
     spacingPx: SpacingPx;
     borderRadius: BorderRadius;
     border: Border;
@@ -50,6 +53,7 @@ declare module '@mui/material/styles' {
   }
 
   interface ThemeOptions {
+    colors?: Colors;
     spacingPx?: SpacingPx;
     borderRadius?: BorderRadius;
     border?: Border;
@@ -57,11 +61,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-const type = (
-  size: number,
-  fontWeight: number,
-  lineHeight: number,
-) => ({
+const type = (size: number, fontWeight: number, lineHeight: number) => ({
   fontFamily,
   fontWeight,
   fontSize: pxToRem(size),
@@ -75,21 +75,22 @@ export const theme = createTheme({
   colorSchemes: {
     light: {
       palette: {
-        background: { default: '#f4f4f5', paper: '#ffffff' },
-        text: { primary: '#18181b', secondary: '#71717a' },
-        divider: '#e4e4e7',
-        error: { main: '#b91c1c', light: '#fef2f2' },
+        background: { default: colors.zinc100, paper: colors.white },
+        text: { primary: colors.zinc900, secondary: colors.zinc500 },
+        divider: colors.zinc200,
+        error: { main: colors.red700, light: colors.red50 },
       },
     },
     dark: {
       palette: {
-        background: { default: '#09090b', paper: '#18181b' },
-        text: { primary: '#fafafa', secondary: '#a1a1aa' },
-        divider: '#27272a',
-        error: { main: '#fca5a5', light: '#450a0a' },
+        background: { default: colors.zinc950, paper: colors.zinc900 },
+        text: { primary: colors.zinc50, secondary: colors.zinc400 },
+        divider: colors.zinc800,
+        error: { main: colors.red300, light: colors.red950 },
       },
     },
   },
+  colors,
   spacingPx,
   borderRadius,
   border,
