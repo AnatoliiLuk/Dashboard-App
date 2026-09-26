@@ -14,6 +14,8 @@ type HabitLoggerProps = {
   onAdd: (name: string, color: HabitColor) => void;
   onToggle: (habitId: string) => void;
   onColor: (habitId: string, color: HabitColor) => void;
+  onRename: (habitId: string, name: string) => void;
+  onDelete: (habitId: string) => void;
 };
 
 export function HabitLogger({
@@ -21,6 +23,8 @@ export function HabitLogger({
   onAdd,
   onToggle,
   onColor,
+  onRename,
+  onDelete,
 }: HabitLoggerProps) {
   return (
     <section>
@@ -35,6 +39,8 @@ export function HabitLogger({
               item={item}
               onToggle={onToggle}
               onColor={onColor}
+              onRename={onRename}
+              onDelete={onDelete}
             />
           ))}
         </Box>

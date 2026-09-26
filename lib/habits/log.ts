@@ -1,10 +1,8 @@
 import { HABIT_COLORS, isHabitColor, type HabitColor } from './colors';
-import { addDays } from './dates';
+import { addDays, startOfWeek } from './dates';
 import type { HabitStore } from './storage';
 import { streakFor } from './streaks';
 import type { Completion, DayMark, Habit } from './types';
-
-const RECENT_DAYS = 7;
 
 export type HabitToday = {
   habit: Habit;
@@ -13,18 +11,20 @@ export type HabitToday = {
   days: DayMark[];
 };
 
-export function habitTodayList(store: HabitStore, today: string): HabitToday[] {
-  return store.habits.map((habit) => {
-    const mine = store.completions.filter(
-      (completion) => completion.habitId === habit.id,
-    );
-    const streak = streakFor(habit, mine, today);
+export function habitTodayList(
+  { habits, completions }: HabitStore,
+  today: string,
+): HabitToday[] {
+  return habits.map((habit) => {
+    const { id } = habit;
+    const mine = completions.filter(({ habitId }) => habitId === id);
+    const { current } = streakFor(habit, mine, today);
 
     return {
       habit,
-      doneToday: mine.some((completion) => completion.date === today),
-      currentStreak: streak.current,
-      days: recentDays(habit, mine, today),
+      doneToday: mine.some(({ date }) => date === today),
+      currentStreak: current,
+      days: weekMarks(habit, mine, today),
     };
   });
 }
@@ -40,15 +40,46 @@ export function addHabit(
     return store;
   }
 
+  const { ownerId, habits } = store;
   const habit: Habit = {
     id: crypto.randomUUID(),
-    ownerId: store.ownerId,
+    ownerId,
     name: trimmed,
     createdOn: today,
     color: isHabitColor(color) ? color : HABIT_COLORS[0].id,
   };
 
-  return { ...store, habits: [...store.habits, habit] };
+  return { ...store, habits: [...habits, habit] };
+}
+
+export function renameHabit(
+  store: HabitStore,
+  habitId: string,
+  name: string,
+): HabitStore {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    return store;
+  }
+
+  const { habits } = store;
+
+  return {
+    ...store,
+    habits: habits.map((habit) =>
+      habit.id === habitId ? { ...habit, name: trimmed } : habit,
+    ),
+  };
+}
+
+export function deleteHabit(store: HabitStore, habitId: string): HabitStore {
+  const { habits, completions } = store;
+
+  return {
+    ...store,
+    habits: habits.filter(({ id }) => id !== habitId),
+    completions: completions.filter(({ habitId: id }) => id !== habitId),
+  };
 }
 
 export function setHabitColor(
@@ -60,9 +91,11 @@ export function setHabitColor(
     return store;
   }
 
+  const { habits } = store;
+
   return {
     ...store,
-    habits: store.habits.map((habit) =>
+    habits: habits.map((habit) =>
       habit.id === habitId ? { ...habit, color } : habit,
     ),
   };
@@ -73,44 +106,42 @@ export function toggleToday(
   habitId: string,
   today: string,
 ): HabitStore {
-  const existing = store.completions.find(
-    (completion) => completion.habitId === habitId && completion.date === today,
+  const { completions, ownerId } = store;
+  const existing = completions.find(
+    ({ habitId: id, date }) => id === habitId && date === today,
   );
 
   if (existing) {
     return {
       ...store,
-      completions: store.completions.filter(
-        (completion) => completion.id !== existing.id,
-      ),
+      completions: completions.filter(({ id }) => id !== existing.id),
     };
   }
 
   const completion: Completion = {
     id: crypto.randomUUID(),
     habitId,
-    ownerId: store.ownerId,
+    ownerId,
     date: today,
   };
 
-  return { ...store, completions: [...store.completions, completion] };
+  return { ...store, completions: [...completions, completion] };
 }
 
-function recentDays(
+function weekMarks(
   habit: Habit,
   completions: Completion[],
   today: string,
 ): DayMark[] {
-  const done = new Set(completions.map((completion) => completion.date));
-  const days: DayMark[] = [];
+  const { createdOn } = habit;
+  const done = new Set(completions.map(({ date }) => date));
+  const weekStart = startOfWeek(today);
 
-  for (let offset = RECENT_DAYS - 1; offset >= 0; offset -= 1) {
-    const date = addDays(today, -offset);
-    days.push({
+  return Array.from({ length: 7 }, (_, offset) => {
+    const date = addDays(weekStart, offset);
+    return {
       date,
-      done: date >= habit.createdOn && done.has(date),
-    });
-  }
-
-  return days;
+      done: date <= today && date >= createdOn && done.has(date),
+    };
+  });
 }

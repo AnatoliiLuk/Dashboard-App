@@ -2,21 +2,19 @@ import { addDays, compareDates } from './dates';
 import type { Completion, Habit, Streak } from './types';
 
 export function streakFor(
-  habit: Habit,
+  { id, createdOn }: Habit,
   completions: Completion[],
   today: string,
 ): Streak {
   const dates = new Set(
-    completions
-      .filter((completion) => completion.habitId === habit.id)
-      .map((completion) => completion.date),
+    completions.filter(({ habitId }) => habitId === id).map(({ date }) => date),
   );
 
   let best = 0;
   let run = 0;
 
   for (
-    let day = habit.createdOn;
+    let day = createdOn;
     compareDates(day, today) <= 0;
     day = addDays(day, 1)
   ) {

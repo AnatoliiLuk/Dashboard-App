@@ -9,12 +9,12 @@ import { useHabitLog } from '@/lib/habits/useHabitLog';
 import { loadingStyle } from './page.style';
 
 export default function Home() {
-  const log = useHabitLog();
+  const { ready, store, today } = useHabitLog();
 
   return (
     <HabitShell description="Each day lists the habits you marked done.">
-      {log.ready && log.store && log.today ? (
-        <HabitCalendar store={log.store} today={log.today} />
+      {ready && store && today ? (
+        <HabitCalendar store={store} today={today} />
       ) : (
         <Typography sx={loadingStyle}>Loading habits…</Typography>
       )}

@@ -29,23 +29,23 @@ export function loadHabitStore(): HabitStore {
   }
 
   try {
-    const parsed = JSON.parse(raw) as HabitStore;
-    if (!parsed.ownerId || !Array.isArray(parsed.habits)) {
+    const { ownerId, habits, completions } = JSON.parse(raw) as HabitStore;
+    if (!ownerId || !Array.isArray(habits)) {
       return emptyHabitStore();
     }
     return {
-      ownerId: parsed.ownerId,
-      habits: parsed.habits.map((habit, index) => ({
+      ownerId,
+      habits: habits.map(({ createdOn, color, ...habit }, index) => ({
         ...habit,
-        createdOn: toIsoDate(habit.createdOn),
-        color: isHabitColor(habit.color)
-          ? habit.color
+        createdOn: toIsoDate(createdOn),
+        color: isHabitColor(color)
+          ? color
           : HABIT_COLORS[index % HABIT_COLORS.length].id,
       })),
-      completions: Array.isArray(parsed.completions)
-        ? parsed.completions.map((completion) => ({
+      completions: Array.isArray(completions)
+        ? completions.map(({ date, ...completion }) => ({
             ...completion,
-            date: toIsoDate(completion.date),
+            date: toIsoDate(date),
           }))
         : [],
     };

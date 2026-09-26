@@ -3,6 +3,7 @@
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
+import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
 import { monthWeeks, weekDays, weekdayLabels } from '@/lib/habits/calendar';
 import type { HabitStore } from '@/lib/habits/storage';
 
@@ -21,6 +22,7 @@ import {
   headerCellStyle,
   monthBarStyle,
   monthButtonStyle,
+  stepButtonStyle,
   tableStyle,
   tableWrapStyle,
   viewBarStyle,
@@ -81,10 +83,11 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
         <Box
           component="button"
           type="button"
-          sx={monthButtonStyle}
+          aria-label={calendarStepLabel(view, 'previous')}
+          sx={[monthButtonStyle, stepButtonStyle]}
           onClick={() => setCursor(shiftCalendar(cursor, view, -1))}
         >
-          {calendarStepLabel(view, 'previous')}
+          <ArrowLeftIcon width={16} height={16} />
         </Box>
         <Typography variant="h6" component="h2">
           {calendarHeading(cursor, view)}
@@ -92,10 +95,11 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
         <Box
           component="button"
           type="button"
-          sx={monthButtonStyle}
+          aria-label={calendarStepLabel(view, 'next')}
+          sx={[monthButtonStyle, stepButtonStyle]}
           onClick={() => setCursor(shiftCalendar(cursor, view, 1))}
         >
-          {calendarStepLabel(view, 'next')}
+          <ArrowRightIcon width={16} height={16} />
         </Box>
       </Box>
 

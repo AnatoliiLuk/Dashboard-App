@@ -43,6 +43,9 @@ export const monthButtonStyle = ({
   borderColor: vars.palette.divider,
   backgroundColor: vars.palette.background.paper,
   color: vars.palette.text.primary,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: spacingPx[8],
   borderRadius: borderRadius.pill,
   px: spacingPx[12],
   py: spacingPx[6],
@@ -51,10 +54,19 @@ export const monthButtonStyle = ({
   fontWeight: typography.button.fontWeight,
   lineHeight: typography.button.lineHeight,
   cursor: 'pointer',
+  '& svg': {
+    display: 'block',
+    flexShrink: 0,
+  },
   '&:disabled': {
     cursor: 'default',
     color: vars.palette.text.secondary,
   },
+});
+
+export const stepButtonStyle = ({ spacingPx }: Theme) => ({
+  px: spacingPx[8],
+  py: spacingPx[8],
 });
 
 export const tableWrapStyle = {

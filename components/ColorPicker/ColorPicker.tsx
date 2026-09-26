@@ -13,21 +13,23 @@ type ColorPickerProps = {
 function ColorPicker({ value, onChange, label }: ColorPickerProps) {
   return (
     <Box sx={colorPickerStyle} role="radiogroup" aria-label={label}>
-      {HABIT_COLORS.map((color) => (
-        <Box
-          key={color.id}
-          component="button"
-          type="button"
-          role="radio"
-          aria-checked={value === color.id}
-          aria-label={color.label}
-          onClick={() => onChange(color.id)}
-          sx={colorSwatchStyle(
-            habitColor(color.id).background,
-            value === color.id,
-          )}
-        />
-      ))}
+      {HABIT_COLORS.map(({ id, label }) => {
+        const selected = value === id;
+        const { background } = habitColor(id);
+
+        return (
+          <Box
+            key={id}
+            component="button"
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            aria-label={label}
+            onClick={() => onChange(id)}
+            sx={colorSwatchStyle(background, selected)}
+          />
+        );
+      })}
     </Box>
   );
 }

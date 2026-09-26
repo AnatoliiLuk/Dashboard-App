@@ -6,7 +6,9 @@ import type { HabitColor } from './colors';
 import { today } from './dates';
 import {
   addHabit,
+  deleteHabit,
   habitTodayList,
+  renameHabit,
   setHabitColor,
   toggleToday,
   type HabitToday,
@@ -39,6 +41,18 @@ export function useHabitLog() {
         return;
       }
       update(addHabit(store, name, date, color));
+    },
+    renameHabit(habitId: string, name: string) {
+      if (!store) {
+        return;
+      }
+      update(renameHabit(store, habitId, name));
+    },
+    deleteHabit(habitId: string) {
+      if (!store) {
+        return;
+      }
+      update(deleteHabit(store, habitId));
     },
     setHabitColor(habitId: string, color: HabitColor) {
       if (!store) {

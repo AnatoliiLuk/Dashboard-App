@@ -1,6 +1,8 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
+import type { HabitStatus } from './HabitCard.helpers';
+
 export const habitStyle = ({
   vars,
   spacingPx,
@@ -18,21 +20,48 @@ export const habitTopStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  flexWrap: 'wrap',
   gap: spacingPx[16],
 });
 
 export const habitNameStyle = {
   minWidth: 0,
+  flex: 1,
 };
+
+export const actionsStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  gap: spacingPx[8],
+});
+
+export const editFieldStyle = {
+  flex: 1,
+  minWidth: 0,
+};
+
+export const deleteStyle = ({ vars }: Theme) => ({
+  color: vars.palette.error.main,
+  borderColor: vars.palette.error.main,
+});
 
 export const habitColorStyle = ({ spacingPx }: Theme) => ({
   mt: spacingPx[12],
 });
 
-export const messageStyle = ({ vars, spacingPx }: Theme) => ({
-  mt: spacingPx[8],
-  color: vars.palette.text.secondary,
-});
+export const messageStyle =
+  (status: HabitStatus) =>
+  ({ vars, spacingPx }: Theme) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacingPx[8],
+    mt: spacingPx[8],
+    color: vars.palette[status].main,
+    '& svg': {
+      flexShrink: 0,
+    },
+  });
 
 export const daysStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',

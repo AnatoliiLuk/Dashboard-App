@@ -34,16 +34,20 @@ export function weekdayLabels(): readonly string[] {
   return WEEKDAY_LABELS;
 }
 
-function habitsOnDate(store: HabitStore): Map<string, CalendarHabit[]> {
+function habitsOnDate({
+  habits,
+  completions,
+}: HabitStore): Map<string, CalendarHabit[]> {
   const habitsByDate = new Map<string, CalendarHabit[]>();
-  for (const completion of store.completions) {
-    const habit = store.habits.find((item) => item.id === completion.habitId);
+  for (const { habitId, date } of completions) {
+    const habit = habits.find(({ id }) => id === habitId);
     if (!habit) {
       continue;
     }
-    const habits = habitsByDate.get(completion.date) ?? [];
-    habits.push({ id: habit.id, name: habit.name, color: habit.color });
-    habitsByDate.set(completion.date, habits);
+    const { id, name, color } = habit;
+    const listed = habitsByDate.get(date) ?? [];
+    listed.push({ id, name, color });
+    habitsByDate.set(date, listed);
   }
   return habitsByDate;
 }

@@ -17,23 +17,25 @@ type DayCellProps = {
 };
 
 function DayCell({ day, today }: DayCellProps) {
+  const { date, inMonth, habits } = day;
+
   return (
     <Box
       component="td"
       sx={[
         cellStyle,
-        !day.inMonth ? outsideStyle : null,
-        day.date === today ? todayStyle : null,
+        !inMonth ? outsideStyle : null,
+        date === today ? todayStyle : null,
       ]}
     >
       <Typography variant="body2" sx={dayNumberStyle}>
-        {Number(day.date.slice(8, 10))}
+        {Number(date.slice(8, 10))}
       </Typography>
-      {day.habits.length > 0 ? (
+      {habits.length > 0 ? (
         <Box component="ul" sx={habitListStyle}>
-          {day.habits.map((habit) => (
-            <Box component="li" key={habit.id}>
-              <HabitTag name={habit.name} color={habit.color} />
+          {habits.map(({ id, name, color }) => (
+            <Box component="li" key={id}>
+              <HabitTag name={name} color={color} />
             </Box>
           ))}
         </Box>

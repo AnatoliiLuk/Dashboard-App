@@ -43,18 +43,18 @@ export function HabitShell({ description, children }: HabitShellProps) {
                 Habits+
               </Typography>
               <Box component="nav" sx={menuStyle} aria-label="Menu">
-                {menu.map((item) => {
-                  const current = pathname === item.href;
+                {menu.map(({ href, label }) => {
+                  const current = pathname === href;
                   return (
                     <Link
-                      key={item.href}
+                      key={href}
                       component={NextLink}
-                      href={item.href}
+                      href={href}
                       aria-current={current ? 'page' : undefined}
                       underline="none"
                       sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
                     >
-                      {item.label}
+                      {label}
                     </Link>
                   );
                 })}
