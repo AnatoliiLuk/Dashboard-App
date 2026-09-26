@@ -2,47 +2,67 @@
 
 import { Box, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
+import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { ThemeToggle } from '@/components/ThemeToggle';
 
+import { mainStyle, pageStyle } from '@/app/page.style';
+
 import {
+  barStartStyle,
+  barStyle,
+  brandStyle,
   descriptionStyle,
   headerStyle,
-  headerTopStyle,
-  mainStyle,
-  navLinkStyle,
-  navStyle,
-  pageStyle,
-  titleStyle,
-} from '@/app/page.style';
+  menuItemActiveStyle,
+  menuItemStyle,
+  menuStyle,
+} from './HabitShell.style';
+
+const menu = [
+  { href: '/', label: 'Calendar' },
+  { href: '/log', label: 'Log habits' },
+] as const;
 
 type HabitShellProps = {
-  title: string;
   description: string;
   children: ReactNode;
 };
 
-export function HabitShell({ title, description, children }: HabitShellProps) {
+export function HabitShell({ description, children }: HabitShellProps) {
+  const pathname = usePathname();
+
   return (
     <Box sx={pageStyle}>
       <Box component="main" sx={mainStyle}>
         <Box component="header" sx={headerStyle}>
-          <Box sx={headerTopStyle}>
+          <Box sx={barStyle}>
+            <Box sx={barStartStyle}>
+              <Typography variant="h1" component="h1" sx={brandStyle}>
+                Habits+
+              </Typography>
+              <Box component="nav" sx={menuStyle} aria-label="Menu">
+                {menu.map((item) => {
+                  const current = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      component={NextLink}
+                      href={item.href}
+                      aria-current={current ? 'page' : undefined}
+                      underline="none"
+                      sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </Box>
+            </Box>
             <ThemeToggle />
           </Box>
-          <Typography variant="h4" component="h1" sx={titleStyle}>
-            {title}
-          </Typography>
           <Typography sx={descriptionStyle}>{description}</Typography>
-          <Box component="nav" sx={navStyle} aria-label="Sections">
-            <Link component={NextLink} href="/" sx={navLinkStyle}>
-              Calendar
-            </Link>
-            <Link component={NextLink} href="/log" sx={navLinkStyle}>
-              Log habits
-            </Link>
-          </Box>
         </Box>
         {children}
       </Box>

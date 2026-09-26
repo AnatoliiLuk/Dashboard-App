@@ -38,6 +38,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
   const [view, setView] = useState(loadCalendarView);
   const weeks =
     view === 'week' ? [weekDays(store, cursor)] : monthWeeks(store, cursor);
+  const here = isCurrentPeriod(cursor, today, view);
 
   return (
     <Box
@@ -70,10 +71,10 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
           component="button"
           type="button"
           sx={monthButtonStyle}
-          disabled={isCurrentPeriod(cursor, today, view)}
+          disabled={here}
           onClick={() => setCursor(today)}
         >
-          {currentPeriodLabel(today)}
+          {currentPeriodLabel(today, here)}
         </Box>
       </Box>
       <Box sx={monthBarStyle}>

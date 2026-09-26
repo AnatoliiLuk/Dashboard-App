@@ -12,10 +12,7 @@ export default function Home() {
   const log = useHabitLog();
 
   return (
-    <HabitShell
-      title="Habits"
-      description="Each day lists the habits you marked done."
-    >
+    <HabitShell description="Each day lists the habits you marked done.">
       {log.ready && log.store && log.today ? (
         <HabitCalendar store={log.store} today={log.today} />
       ) : (

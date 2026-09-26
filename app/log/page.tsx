@@ -12,10 +12,7 @@ export default function LogPage() {
   const log = useHabitLog();
 
   return (
-    <HabitShell
-      title="Log habits"
-      description="Add a habit and mark what you did today."
-    >
+    <HabitShell description="Add a habit and mark what you did today.">
       {log.ready ? (
         <HabitLogger
           habits={log.habits}

@@ -51,8 +51,9 @@ export function isCurrentPeriod(
   return startOfMonth(cursor) === startOfMonth(today);
 }
 
-export function currentPeriodLabel(today: string) {
-  return formatDisplay(today);
+export function currentPeriodLabel(today: string, here: boolean) {
+  const date = formatDisplay(today);
+  return here ? date : `Back to ${date}`;
 }
 
 export function calendarStepLabel(
