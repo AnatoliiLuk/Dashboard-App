@@ -1,8 +1,11 @@
+import type { HabitColor } from './colors';
+
 export type Habit = {
   id: string;
   ownerId: string;
   name: string;
   createdOn: string;
+  color: HabitColor;
 };
 
 export type Completion = {

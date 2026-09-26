@@ -21,6 +21,7 @@ export default function LogPage() {
           habits={log.habits}
           onAdd={log.addHabit}
           onToggle={log.toggleToday}
+          onColor={log.setHabitColor}
         />
       ) : (
         <Typography sx={loadingStyle}>Loading habits…</Typography>

@@ -85,7 +85,8 @@ export const headerCellStyle = ({ vars, spacingPx, border }: Theme) => ({
 
 export const cellStyle = ({ vars, spacingPx, border }: Theme) => ({
   verticalAlign: 'top',
-  height: 96,
+  height: 'auto',
+  minHeight: 96,
   padding: spacingPx[8],
   borderTop: border[1],
   borderTopColor: vars.palette.divider,
@@ -110,14 +111,12 @@ export const dayNumberStyle = ({ typography }: Theme) => ({
 });
 
 export const habitListStyle = ({ spacingPx }: Theme) => ({
-  m: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: spacingPx[4],
+  m: spacingPx[0],
   mt: spacingPx[8],
-  p: 0,
+  p: spacingPx[0],
   listStyle: 'none',
-});
-
-export const habitItemStyle = ({ vars, typography }: Theme) => ({
-  color: vars.palette.text.secondary,
-  fontSize: typography.body2.fontSize,
-  lineHeight: typography.body2.lineHeight,
 });

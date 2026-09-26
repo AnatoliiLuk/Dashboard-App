@@ -1,3 +1,4 @@
+import type { HabitColor } from './colors';
 import {
   addDays,
   addMonths,
@@ -10,6 +11,7 @@ import type { HabitStore } from './storage';
 export type CalendarHabit = {
   id: string;
   name: string;
+  color: HabitColor;
 };
 
 export type CalendarDay = {
@@ -40,7 +42,7 @@ function habitsOnDate(store: HabitStore): Map<string, CalendarHabit[]> {
       continue;
     }
     const habits = habitsByDate.get(completion.date) ?? [];
-    habits.push({ id: habit.id, name: habit.name });
+    habits.push({ id: habit.id, name: habit.name, color: habit.color });
     habitsByDate.set(completion.date, habits);
   }
   return habitsByDate;

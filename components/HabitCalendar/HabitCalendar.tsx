@@ -4,9 +4,9 @@ import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import { monthWeeks, weekDays, weekdayLabels } from '@/lib/habits/calendar';
-import type { CalendarDay } from '@/lib/habits/calendar';
 import type { HabitStore } from '@/lib/habits/storage';
 
+import { DayCell } from './DayCell';
 import {
   calendarHeading,
   calendarStepLabel,
@@ -18,17 +18,11 @@ import {
 } from './HabitCalendar.helpers';
 import {
   calendarSectionStyle,
-  cellStyle,
-  dayNumberStyle,
-  habitItemStyle,
-  habitListStyle,
   headerCellStyle,
   monthBarStyle,
   monthButtonStyle,
-  outsideStyle,
   tableStyle,
   tableWrapStyle,
-  todayStyle,
   viewBarStyle,
   viewButtonActiveStyle,
   viewOptionsStyle,
@@ -38,32 +32,6 @@ type HabitCalendarProps = {
   store: HabitStore;
   today: string;
 };
-
-function DayCell({ day, today }: { day: CalendarDay; today: string }) {
-  return (
-    <Box
-      component="td"
-      sx={[
-        cellStyle,
-        !day.inMonth ? outsideStyle : null,
-        day.date === today ? todayStyle : null,
-      ]}
-    >
-      <Typography variant="body2" sx={dayNumberStyle}>
-        {Number(day.date.slice(8, 10))}
-      </Typography>
-      {day.habits.length > 0 ? (
-        <Box component="ul" sx={habitListStyle}>
-          {day.habits.map((habit) => (
-            <Box component="li" key={habit.id} sx={habitItemStyle}>
-              {habit.name}
-            </Box>
-          ))}
-        </Box>
-      ) : null}
-    </Box>
-  );
-}
 
 export function HabitCalendar({ store, today }: HabitCalendarProps) {
   const [cursor, setCursor] = useState(today);

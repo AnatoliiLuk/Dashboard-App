@@ -1,3 +1,4 @@
+import { HABIT_COLORS, isHabitColor, type HabitColor } from './colors';
 import { addDays } from './dates';
 import type { HabitStore } from './storage';
 import { streakFor } from './streaks';
@@ -32,6 +33,7 @@ export function addHabit(
   store: HabitStore,
   name: string,
   today: string,
+  color: HabitColor,
 ): HabitStore {
   const trimmed = name.trim();
   if (!trimmed) {
@@ -43,9 +45,27 @@ export function addHabit(
     ownerId: store.ownerId,
     name: trimmed,
     createdOn: today,
+    color: isHabitColor(color) ? color : HABIT_COLORS[0].id,
   };
 
   return { ...store, habits: [...store.habits, habit] };
+}
+
+export function setHabitColor(
+  store: HabitStore,
+  habitId: string,
+  color: HabitColor,
+): HabitStore {
+  if (!isHabitColor(color)) {
+    return store;
+  }
+
+  return {
+    ...store,
+    habits: store.habits.map((habit) =>
+      habit.id === habitId ? { ...habit, color } : habit,
+    ),
+  };
 }
 
 export function toggleToday(

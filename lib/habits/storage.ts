@@ -1,3 +1,4 @@
+import { HABIT_COLORS, isHabitColor } from './colors';
 import { toIsoDate } from './dates';
 import type { Habit, Completion } from './types';
 
@@ -34,9 +35,12 @@ export function loadHabitStore(): HabitStore {
     }
     return {
       ownerId: parsed.ownerId,
-      habits: parsed.habits.map((habit) => ({
+      habits: parsed.habits.map((habit, index) => ({
         ...habit,
         createdOn: toIsoDate(habit.createdOn),
+        color: isHabitColor(habit.color)
+          ? habit.color
+          : HABIT_COLORS[index % HABIT_COLORS.length].id,
       })),
       completions: Array.isArray(parsed.completions)
         ? parsed.completions.map((completion) => ({
