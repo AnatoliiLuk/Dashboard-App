@@ -1,4 +1,12 @@
-import { addDays, addMonths, monthTitle, weekTitle } from '@/lib/habits/dates';
+import {
+  addDays,
+  addMonths,
+  formatDisplay,
+  monthTitle,
+  startOfMonth,
+  startOfWeek,
+  weekTitle,
+} from '@/lib/habits/dates';
 
 export type CalendarView = 'month' | 'week';
 
@@ -30,6 +38,21 @@ export function shiftCalendar(
 
 export function calendarHeading(cursor: string, view: CalendarView) {
   return view === 'week' ? weekTitle(cursor) : monthTitle(cursor);
+}
+
+export function isCurrentPeriod(
+  cursor: string,
+  today: string,
+  view: CalendarView,
+) {
+  if (view === 'week') {
+    return startOfWeek(cursor) === startOfWeek(today);
+  }
+  return startOfMonth(cursor) === startOfMonth(today);
+}
+
+export function currentPeriodLabel(today: string) {
+  return formatDisplay(today);
 }
 
 export function calendarStepLabel(

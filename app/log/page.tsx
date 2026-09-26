@@ -15,7 +15,6 @@ export default function LogPage() {
     <HabitShell
       title="Log habits"
       description="Add a habit and mark what you did today."
-      today={log.today}
     >
       {log.ready ? (
         <HabitLogger

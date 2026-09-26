@@ -7,8 +7,15 @@ export const calendarSectionStyle = ({ spacingPx }: Theme) => ({
 
 export const viewBarStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
-  gap: spacingPx[8],
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: spacingPx[12],
   mb: spacingPx[16],
+});
+
+export const viewOptionsStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  gap: spacingPx[8],
 });
 
 export const viewButtonActiveStyle = ({ vars }: Theme) => ({
@@ -44,6 +51,10 @@ export const monthButtonStyle = ({
   fontWeight: typography.button.fontWeight,
   lineHeight: typography.button.lineHeight,
   cursor: 'pointer',
+  '&:disabled': {
+    cursor: 'default',
+    color: vars.palette.text.secondary,
+  },
 });
 
 export const tableWrapStyle = {

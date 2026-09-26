@@ -5,11 +5,9 @@ import NextLink from 'next/link';
 import type { ReactNode } from 'react';
 
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { formatDisplay } from '@/lib/habits/dates';
 
 import {
   descriptionStyle,
-  eyebrowStyle,
   headerStyle,
   headerTopStyle,
   mainStyle,
@@ -22,24 +20,15 @@ import {
 type HabitShellProps = {
   title: string;
   description: string;
-  today: string | null;
   children: ReactNode;
 };
 
-export function HabitShell({
-  title,
-  description,
-  today,
-  children,
-}: HabitShellProps) {
+export function HabitShell({ title, description, children }: HabitShellProps) {
   return (
     <Box sx={pageStyle}>
       <Box component="main" sx={mainStyle}>
         <Box component="header" sx={headerStyle}>
           <Box sx={headerTopStyle}>
-            <Typography variant="body2" sx={eyebrowStyle}>
-              {today ? formatDisplay(today) : 'Today'}
-            </Typography>
             <ThemeToggle />
           </Box>
           <Typography variant="h4" component="h1" sx={titleStyle}>

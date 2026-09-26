@@ -15,7 +15,6 @@ export default function Home() {
     <HabitShell
       title="Habits"
       description="Each day lists the habits you marked done."
-      today={log.today}
     >
       {log.ready && log.store && log.today ? (
         <HabitCalendar store={log.store} today={log.today} />

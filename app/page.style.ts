@@ -21,15 +21,9 @@ export const headerStyle = ({ spacingPx }: Theme) => ({
   mb: spacingPx[32],
 });
 
-export const headerTopStyle = ({ spacingPx }: Theme) => ({
+export const headerTopStyle = () => ({
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: spacingPx[16],
-});
-
-export const eyebrowStyle = ({ vars }: Theme) => ({
-  color: vars.palette.text.secondary,
+  justifyContent: 'flex-end',
 });
 
 export const titleStyle = ({ spacingPx }: Theme) => ({

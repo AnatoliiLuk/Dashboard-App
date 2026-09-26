@@ -10,6 +10,8 @@ import type { HabitStore } from '@/lib/habits/storage';
 import {
   calendarHeading,
   calendarStepLabel,
+  currentPeriodLabel,
+  isCurrentPeriod,
   loadCalendarView,
   saveCalendarView,
   shiftCalendar,
@@ -29,6 +31,7 @@ import {
   todayStyle,
   viewBarStyle,
   viewButtonActiveStyle,
+  viewOptionsStyle,
 } from './HabitCalendar.style';
 
 type HabitCalendarProps = {
@@ -74,25 +77,36 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
       sx={calendarSectionStyle}
       aria-label="Habit calendar"
     >
-      <Box sx={viewBarStyle} role="group" aria-label="Calendar view">
-        {(['month', 'week'] as const).map((option) => (
-          <Box
-            key={option}
-            component="button"
-            type="button"
-            aria-pressed={view === option}
-            sx={[
-              monthButtonStyle,
-              view === option ? viewButtonActiveStyle : null,
-            ]}
-            onClick={() => {
-              saveCalendarView(option);
-              setView(option);
-            }}
-          >
-            {option === 'month' ? 'Month' : 'Week'}
-          </Box>
-        ))}
+      <Box sx={viewBarStyle}>
+        <Box sx={viewOptionsStyle} role="group" aria-label="Calendar view">
+          {(['month', 'week'] as const).map((option) => (
+            <Box
+              key={option}
+              component="button"
+              type="button"
+              aria-pressed={view === option}
+              sx={[
+                monthButtonStyle,
+                view === option ? viewButtonActiveStyle : null,
+              ]}
+              onClick={() => {
+                saveCalendarView(option);
+                setView(option);
+              }}
+            >
+              {option === 'month' ? 'Month' : 'Week'}
+            </Box>
+          ))}
+        </Box>
+        <Box
+          component="button"
+          type="button"
+          sx={monthButtonStyle}
+          disabled={isCurrentPeriod(cursor, today, view)}
+          onClick={() => setCursor(today)}
+        >
+          {currentPeriodLabel(today)}
+        </Box>
       </Box>
       <Box sx={monthBarStyle}>
         <Box
