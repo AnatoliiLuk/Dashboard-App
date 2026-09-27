@@ -5,17 +5,12 @@ import { useState } from 'react';
 
 import { ColorPicker } from '@/components/ColorPicker';
 import { HabitTag } from '@/components/HabitTag';
-import {
-  CircleCheckIcon,
-  CircleExclamationIcon,
-  CircleInfoIcon,
-} from '@/components/icons';
-import type { HabitColor } from '@/lib/habits/colors';
 import { formatDisplay } from '@/lib/habits/dates';
 import { useTranslation } from '@/lib/i18n';
-import type { HabitToday } from '@/lib/habits/useHabitLog';
 
-import { streakMessage, type HabitStatus } from './HabitCard.helpers';
+import { statusIcon } from './HabitCard.constants';
+import { streakMessage } from './HabitCard.helpers';
+import type { HabitCardProps } from './HabitCard.interface';
 import {
   actionsStyle,
   dayDoneStyle,
@@ -30,20 +25,6 @@ import {
   messageStyle,
   toggleStyle,
 } from './HabitCard.style';
-
-const statusIcon = {
-  success: CircleCheckIcon,
-  warning: CircleExclamationIcon,
-  info: CircleInfoIcon,
-} satisfies Record<HabitStatus, typeof CircleCheckIcon>;
-
-type HabitCardProps = {
-  item: HabitToday;
-  onToggle: (habitId: string) => void;
-  onColor: (habitId: string, color: HabitColor) => void;
-  onRename: (habitId: string, name: string) => void;
-  onDelete: (habitId: string) => void;
-};
 
 function HabitCard({
   item,

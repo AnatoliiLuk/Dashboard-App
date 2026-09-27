@@ -1,7 +1,7 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-import type { HabitStatus } from './HabitCard.helpers';
+import type { HabitStatus } from './HabitCard.interface';
 
 export const habitStyle = ({
   vars,

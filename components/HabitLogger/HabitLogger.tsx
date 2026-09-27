@@ -4,20 +4,10 @@ import { Box, Typography } from '@mui/material';
 
 import { HabitCard } from '@/components/HabitCard';
 import { HabitForm } from '@/components/HabitForm';
-import type { HabitColor } from '@/lib/habits/colors';
-import type { HabitToday } from '@/lib/habits/useHabitLog';
 import { useTranslation } from '@/lib/i18n';
 
+import type { HabitLoggerProps } from './HabitLogger.interface';
 import { emptyStyle, listStyle } from './HabitLogger.style';
-
-type HabitLoggerProps = {
-  habits: HabitToday[];
-  onAdd: (name: string, color: HabitColor) => void;
-  onToggle: (habitId: string) => void;
-  onColor: (habitId: string, color: HabitColor) => void;
-  onRename: (habitId: string, name: string) => void;
-  onDelete: (habitId: string) => void;
-};
 
 export function HabitLogger({
   habits,

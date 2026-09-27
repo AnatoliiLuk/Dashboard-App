@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 
-export type HabitStatus = 'success' | 'warning' | 'info';
+import type { HabitStatus } from './HabitCard.interface';
 
 export function streakMessage(
   currentStreak: number,

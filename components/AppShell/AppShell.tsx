@@ -11,6 +11,7 @@ import { useTranslation } from '@/lib/i18n';
 
 import { mainStyle, pageStyle } from '@/app/page.style';
 
+import { menu } from './AppShell.constants';
 import {
   barEndStyle,
   barStartStyle,
@@ -22,11 +23,6 @@ import {
   menuItemStyle,
   menuStyle,
 } from './AppShell.style';
-
-const menu = [
-  { href: '/', label: 'shell.calendar' },
-  { href: '/log', label: 'shell.logHabits' },
-] as const;
 
 type AppShellProps = {
   description: string;

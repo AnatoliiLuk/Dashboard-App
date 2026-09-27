@@ -3,6 +3,7 @@ export {
   DEFAULT_LOCALE,
   intlLocale,
   LOCALE_COOKIE,
+  LOCALE_COOKIE_MAX_AGE,
   LOCALES,
   parseLocale,
   type Locale,

@@ -10,9 +10,10 @@ import {
   weekTitle,
 } from '@/lib/habits/dates';
 
-export type CalendarView = 'month' | 'week';
-
-const CALENDAR_VIEW_KEY = 'habit-calendar-view';
+import {
+  CALENDAR_VIEW_KEY,
+  type CalendarView,
+} from './HabitCalendar.constants';
 
 export function loadCalendarView(): CalendarView {
   if (typeof window === 'undefined') {

@@ -9,6 +9,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { HabitStore } from '@/lib/habits/storage';
 
 import { DayCell } from './DayCell';
+import { CALENDAR_VIEWS, calendarViewLabel } from './HabitCalendar.constants';
 import {
   calendarHeading,
   calendarStepLabel,
@@ -52,7 +53,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
     >
       <Box sx={viewBarStyle}>
         <Box sx={viewOptionsStyle} role="group" aria-label={t('calendar.view')}>
-          {(['month', 'week'] as const).map((option) => (
+          {CALENDAR_VIEWS.map((option) => (
             <Box
               key={option}
               component="button"
@@ -67,7 +68,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
                 setView(option);
               }}
             >
-              {option === 'month' ? t('calendar.month') : t('calendar.week')}
+              {t(calendarViewLabel[option])}
             </Box>
           ))}
         </Box>

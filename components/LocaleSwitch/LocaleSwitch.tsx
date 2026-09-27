@@ -4,28 +4,25 @@ import { Box } from '@mui/material';
 
 import {
   LOCALE_COOKIE,
+  LOCALE_COOKIE_MAX_AGE,
   LOCALES,
   type Locale,
   useTranslation,
 } from '@/lib/i18n';
 
+import { localeLabel } from './LocaleSwitch.constants';
 import {
   localeButtonActiveStyle,
   localeButtonStyle,
   localeGroupStyle,
 } from './LocaleSwitch.style';
 
-const localeLabel = {
-  en: 'locale.en',
-  uk: 'locale.uk',
-} as const;
-
 function LocaleSwitch() {
   const { t, i18n } = useTranslation();
   const active = i18n.resolvedLanguage === 'uk' ? 'uk' : 'en';
 
   function choose(locale: Locale) {
-    document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`;
+    document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE}; samesite=lax`;
     document.documentElement.lang = locale;
     void i18n.changeLanguage(locale);
   }
