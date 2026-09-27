@@ -21,19 +21,19 @@ import {
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
-} from './HabitShell.style';
+} from './AppShell.style';
 
 const menu = [
   { href: '/', label: 'shell.calendar' },
   { href: '/log', label: 'shell.logHabits' },
 ] as const;
 
-type HabitShellProps = {
+type AppShellProps = {
   description: string;
   children: ReactNode;
 };
 
-export function HabitShell({ description, children }: HabitShellProps) {
+export function AppShell({ description, children }: AppShellProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 

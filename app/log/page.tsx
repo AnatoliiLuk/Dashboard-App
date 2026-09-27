@@ -3,7 +3,7 @@
 import { Typography } from '@mui/material';
 
 import { HabitLogger } from '@/components/HabitLogger';
-import { HabitShell } from '@/components/HabitShell';
+import { AppShell } from '@/components/AppShell';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
 import { useTranslation } from '@/lib/i18n';
 
@@ -22,7 +22,7 @@ export default function LogPage() {
   } = useHabitLog();
 
   return (
-    <HabitShell description={t('log.description')}>
+    <AppShell description={t('log.description')}>
       {ready ? (
         <HabitLogger
           habits={habits}
@@ -35,6 +35,6 @@ export default function LogPage() {
       ) : (
         <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
       )}
-    </HabitShell>
+    </AppShell>
   );
 }
