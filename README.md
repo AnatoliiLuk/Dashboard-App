@@ -1,4 +1,4 @@
-# Dashboard
+# Habits+
 
 A daily habit log built with React, Next.js, and TypeScript. Mark what you did today and keep a streak.
 

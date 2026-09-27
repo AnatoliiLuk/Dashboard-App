@@ -42,3 +42,7 @@ next-env.d.ts
 
 # local docs
 /docs/
+
+# .cursor
+.cursor/
+.cursorrules

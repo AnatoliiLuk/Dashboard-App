@@ -6,8 +6,9 @@ type Copy<T> = {
 
 export const uk: Copy<typeof en> = {
   meta: {
-    title: 'Панель',
-    description: 'Проста панель на React, Node.js, Next.js і TypeScript',
+    title: 'Habits+',
+    description:
+      'Щоденний журнал звичок. Позначте, що зробили сьогодні, і тримайте серію.',
   },
   common: {
     loading: 'Завантаження звичок…',

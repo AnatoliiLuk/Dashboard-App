@@ -1,8 +1,8 @@
 export const en = {
   meta: {
-    title: 'Dashboard',
+    title: 'Habits+',
     description:
-      'A simple dashboard built with React, Node.js, Next.js, and TypeScript',
+      'A daily habit log. Mark what you did today and keep a streak.',
   },
   common: {
     loading: 'Loading habits…',
