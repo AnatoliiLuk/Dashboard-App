@@ -63,10 +63,18 @@ export const messageStyle =
     },
   });
 
+export const footerStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  gap: spacingPx[16],
+  mt: spacingPx[16],
+});
+
 export const daysStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   gap: spacingPx[8],
-  mt: spacingPx[16],
 });
 
 export const dayStyle = ({ vars, borderRadius }: Theme) => ({

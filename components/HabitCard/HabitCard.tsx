@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import { ColorPicker } from '@/components/ColorPicker';
@@ -18,6 +18,7 @@ import {
   daysStyle,
   deleteStyle,
   editFieldStyle,
+  footerStyle,
   habitColorStyle,
   habitNameStyle,
   habitStyle,
@@ -104,57 +105,15 @@ function HabitCard({
                 {t('common.cancel')}
               </Box>
             </>
-          ) : confirmDelete ? (
-            <>
-              <Box
-                component="button"
-                type="button"
-                sx={[toggleStyle, deleteStyle]}
-                onClick={() => onDelete(id)}
-              >
-                {t('common.delete')}
-              </Box>
-              <Box
-                component="button"
-                type="button"
-                sx={toggleStyle}
-                onClick={() => setConfirmDelete(false)}
-              >
-                {t('common.cancel')}
-              </Box>
-            </>
           ) : (
-            <>
-              <Box
-                component="button"
-                type="button"
-                sx={toggleStyle}
-                onClick={() => {
-                  setName(savedName);
-                  setConfirmDelete(false);
-                  setEditing(true);
-                }}
-              >
-                {t('common.edit')}
-              </Box>
-              <Box
-                component="button"
-                type="button"
-                sx={toggleStyle}
-                onClick={() => setConfirmDelete(true)}
-              >
-                {t('common.delete')}
-              </Box>
-              <Box
-                component="button"
-                type="button"
-                sx={toggleStyle}
-                aria-pressed={doneToday}
-                onClick={() => onToggle(id)}
-              >
-                {doneToday ? t('log.undo') : t('log.doneToday')}
-              </Box>
-            </>
+            <Button
+              type="button"
+              variant={doneToday ? 'outlined' : 'contained'}
+              aria-pressed={doneToday}
+              onClick={() => onToggle(id)}
+            >
+              {doneToday ? t('log.undo') : t('log.doneToday')}
+            </Button>
           )}
         </Box>
       </Box>
@@ -171,14 +130,62 @@ function HabitCard({
         <StatusIcon />
         {text}
       </Typography>
-      <Box sx={daysStyle} aria-hidden="true">
-        {days.map(({ date, done }) => (
-          <Box
-            key={date}
-            sx={done ? dayDoneStyle : dayStyle}
-            title={formatDisplay(date)}
-          />
-        ))}
+      <Box sx={footerStyle}>
+        <Box sx={daysStyle} aria-hidden="true">
+          {days.map(({ date, done }) => (
+            <Box
+              key={date}
+              sx={done ? dayDoneStyle : dayStyle}
+              title={formatDisplay(date)}
+            />
+          ))}
+        </Box>
+        {editing ? null : (
+          <Box sx={actionsStyle}>
+            {confirmDelete ? (
+              <>
+                <Box
+                  component="button"
+                  type="button"
+                  sx={[toggleStyle, deleteStyle]}
+                  onClick={() => onDelete(id)}
+                >
+                  {t('common.delete')}
+                </Box>
+                <Box
+                  component="button"
+                  type="button"
+                  sx={toggleStyle}
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  {t('common.cancel')}
+                </Box>
+              </>
+            ) : (
+              <>
+                <Box
+                  component="button"
+                  type="button"
+                  sx={toggleStyle}
+                  onClick={() => {
+                    setName(savedName);
+                    setEditing(true);
+                  }}
+                >
+                  {t('common.edit')}
+                </Box>
+                <Box
+                  component="button"
+                  type="button"
+                  sx={toggleStyle}
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  {t('common.delete')}
+                </Box>
+              </>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );
