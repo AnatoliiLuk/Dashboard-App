@@ -1,0 +1,22 @@
+---
+description: Short Conventional Commits for generated git messages
+alwaysApply: true
+---
+
+# Commit messages
+
+Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
+
+- One subject line, 72 characters or fewer.
+- Format: `type(scope): description`
+- Type is `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, or `chore`.
+- Scope is optional. Description is imperative and lowercase.
+- No body, footer, or file list. Use `type!:` only for a breaking change.
+
+# Good
+
+feat: show Habits+ in the browser tab
+
+# Bad
+
+Update the metadata title and description in the English and Ukrainian locale files, and also change the README heading so the app is called Habits+.

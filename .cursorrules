@@ -1,0 +1,15 @@
+When generating a Git commit message for this repository, follow Conventional Commits 1.0.0 (https://www.conventionalcommits.org/en/v1.0.0/).
+
+Output one subject line only. No body, no footer, no file list.
+
+Format: type(scope): description
+- type is required: feat, fix, docs, style, refactor, perf, test, build, ci, or chore
+- scope is optional
+- description is imperative, lowercase, and states why
+- the whole line is 72 characters or fewer
+- add ! before the colon only for a breaking change
+
+Examples:
+feat: show Habits+ in the browser tab
+chore: stop tracking local docs
+fix(calendar): keep the streak on the current day
