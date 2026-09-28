@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en,en-GB",
+  "import": ["@cspell/dict-uk-ua/cspell-ext.json"],
+  "ignorePaths": [
+    ".next",
+    ".husky/_",
+    "node_modules",
+    "package-lock.json",
+    "public",
+    "next-env.d.ts",
+    "*.tsbuildinfo"
+  ],
+  "overrides": [
+    {
+      "filename": "lib/i18n/locales/uk.ts",
+      "language": "en,uk"
+    }
+  ],
+  "words": ["Lngs"]
+}
