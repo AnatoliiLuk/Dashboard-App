@@ -12,6 +12,8 @@ export const en = {
     delete: 'Delete',
     edit: 'Edit',
     habit: 'Habit',
+    error: 'Something went wrong.',
+    tryAgain: 'Try again',
   },
   shell: {
     brand: 'Habits+',

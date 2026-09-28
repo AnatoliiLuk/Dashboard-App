@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { useState, type ReactNode } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { SWRConfig } from 'swr';
 
 import { theme } from '@/app/theme';
 import { createI18n } from '@/lib/i18n/createI18n';
@@ -33,15 +32,7 @@ export function Providers({
           disableTransitionOnChange
         >
           <CssBaseline />
-          <SWRConfig
-            value={{
-              revalidateIfStale: false,
-              revalidateOnFocus: false,
-              revalidateOnReconnect: false,
-            }}
-          >
-            {children}
-          </SWRConfig>
+          {children}
         </ThemeProvider>
       </AppRouterCacheProvider>
     </I18nextProvider>

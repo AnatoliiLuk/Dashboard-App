@@ -1,25 +1,14 @@
-'use client';
+import type { Metadata } from 'next';
 
-import { Typography } from '@mui/material';
+import { HomeView } from '@/components/HomeView';
+import { requestI18n } from '@/lib/i18n/requestLocale';
 
-import { HabitCalendar } from '@/components/HabitCalendar';
-import { AppShell } from '@/components/AppShell';
-import { useHabitLog } from '@/lib/habits/useHabitLog';
-import { useTranslation } from '@/lib/i18n';
+export async function generateMetadata(): Promise<Metadata> {
+  const i18n = await requestI18n();
 
-import { loadingStyle } from './page.style';
+  return { title: i18n.t('shell.calendar') };
+}
 
 export default function Home() {
-  const { t } = useTranslation();
-  const { ready, store, today } = useHabitLog();
-
-  return (
-    <AppShell description={t('calendar.description')}>
-      {ready && store && today ? (
-        <HabitCalendar store={store} today={today} />
-      ) : (
-        <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
-      )}
-    </AppShell>
-  );
+  return <HomeView />;
 }

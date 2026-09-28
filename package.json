@@ -20,8 +20,7 @@
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-i18next": "^17.0.15",
-    "swr": "^2.4.2"
+    "react-i18next": "^17.0.15"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",

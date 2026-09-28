@@ -2,11 +2,9 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { cookies } from 'next/headers';
 
 import { Providers } from '@/app/providers';
-import { createI18n } from '@/lib/i18n/createI18n';
-import { LOCALE_COOKIE, parseLocale } from '@/lib/i18n/locale';
+import { requestI18n, requestLocale } from '@/lib/i18n/requestLocale';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,17 +16,14 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-async function requestLocale() {
-  const cookieStore = await cookies();
-  return parseLocale(cookieStore.get(LOCALE_COOKIE)?.value);
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await requestLocale();
-  const i18n = createI18n(locale);
+  const i18n = await requestI18n();
 
   return {
-    title: i18n.t('meta.title'),
+    title: {
+      default: i18n.t('meta.title'),
+      template: `%s · ${i18n.t('shell.brand')}`,
+    },
     description: i18n.t('meta.description'),
   };
 }

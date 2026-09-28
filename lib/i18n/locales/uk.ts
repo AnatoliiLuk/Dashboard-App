@@ -18,6 +18,8 @@ export const uk: Copy<typeof en> = {
     delete: 'Видалити',
     edit: 'Редагувати',
     habit: 'Звичка',
+    error: 'Щось пішло не так.',
+    tryAgain: 'Спробувати ще раз',
   },
   shell: {
     brand: 'Habits+',
