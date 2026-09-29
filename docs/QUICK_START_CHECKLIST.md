@@ -65,12 +65,12 @@ mkdir -p src/{entities,dto,enums}
 
 **Files created:**
 
-- [ ] `packages/types/src/entities/habit.ts`
-- [ ] `packages/types/src/entities/completion.ts`
-- [ ] `packages/types/src/dto/habit.dto.ts`
-- [ ] `packages/types/src/index.ts`
-- [ ] `packages/types/package.json`
-- [ ] `packages/types/tsconfig.json`
+- [x] `packages/types/src/entities/habit.ts`
+- [x] `packages/types/src/entities/completion.ts`
+- [x] `packages/types/src/dto/habit.dto.ts`
+- [x] `packages/types/src/index.ts`
+- [x] `packages/types/package.json`
+- [x] `packages/types/tsconfig.json`
 
 ---
 
@@ -88,10 +88,10 @@ npm init -y
 
 **Files created:**
 
-- [ ] `packages/core/src/utils/date.ts`
-- [ ] `packages/core/src/utils/streak.ts`
-- [ ] `packages/core/src/constants/colors.ts`
-- [ ] `packages/core/src/index.ts`
+- [x] `packages/core/src/utils/date.ts`
+- [x] `packages/core/src/utils/streak.ts`
+- [x] `packages/core/src/constants/colors.ts`
+- [x] `packages/core/src/index.ts`
 
 ---
 

@@ -1,4 +1,4 @@
-import { HABIT_COLORS, isHabitColor } from './colors';
+import { HABIT_COLORS, isHabitColor, HABIT_STORAGE_KEY } from '@repo/core';
 import { toIsoDate } from './dates';
 import type { Habit, Completion } from './types';
 
@@ -8,7 +8,7 @@ export type HabitStore = {
   completions: Completion[];
 };
 
-const STORAGE_KEY = 'habit-log';
+const STORAGE_KEY = HABIT_STORAGE_KEY;
 
 export function emptyHabitStore(): HabitStore {
   return {

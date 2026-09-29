@@ -23,8 +23,9 @@ One person, no login. Habits and completions stay in the browser for one local u
 ### Fit with the repo today
 
 - The web app lives in `apps/web` (Next.js, React, TypeScript, MUI).
-- Habit rules and local storage live under `apps/web/lib/habits`.
-- The repo root is a Turborepo monorepo. Shared packages, the Express API, Prisma, and mobile folders exist for later work; they are not required for Version 1.
+- Shared domain types live in `packages/types` (`@repo/types`). Shared date, streak, and habit-color helpers live in `packages/core` (`@repo/core`). The web app re-exports them from `apps/web/lib/habits`.
+- Habit log UI state and local storage still live under `apps/web/lib/habits`.
+- The repo root is a Turborepo monorepo. The Express API, Prisma, API client, and mobile folders are ready for later phases.
 
 ## Later (architecture target)
 

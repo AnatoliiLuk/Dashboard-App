@@ -191,9 +191,9 @@ habit-tracker/
 │   │   ├── app/                      │   Browser       │
 │   │   │   ├── page.tsx      ───────▶│   localhost:3000│
 │   │   │   └── api/          (uses)  └─────────────────┘
-│   │   ├── components/              
-│   │   └── lib/                     
-│   │       └── hooks/               
+│   │   ├── components/
+│   │   └── lib/
+│   │       └── hooks/
 │   │           └── useHabits.ts ────┐
 │   │                                 │
 │   ├── mobile/                       │
@@ -207,12 +207,12 @@ habit-tracker/
 │       └── src/                      │
 │           ├── routes/               │
 │           ├── controllers/  ◀───────┘
-│           ├── services/             
-│           └── repositories/         
-│                   │                 
-│                   │ Prisma         
-│                   ▼                 
-│              PostgreSQL             
+│           ├── services/
+│           └── repositories/
+│                   │
+│                   │ Prisma
+│                   ▼
+│              PostgreSQL
 │
 ├── packages/
 │   │
@@ -239,33 +239,37 @@ habit-tracker/
 ## Layer Responsibilities
 
 ### 1. Routes Layer
+
 ```typescript
 // RESPONSIBILITY: HTTP endpoint definition, request routing
 
-router.post('/habits', 
-  authMiddleware,              // ← Authentication
-  validateRequest(schema),     // ← Validation
-  controller.create            // ← Delegate to controller
+router.post(
+  '/habits',
+  authMiddleware, // ← Authentication
+  validateRequest(schema), // ← Validation
+  controller.create, // ← Delegate to controller
 );
 ```
 
 ### 2. Controllers Layer
+
 ```typescript
 // RESPONSIBILITY: HTTP request/response handling, data extraction
 
 export class HabitsController {
   async create(req: Request, res: Response) {
-    const { name, color } = req.body;      // ← Extract from HTTP
-    const userId = req.user.id;            // ← From auth middleware
-    
+    const { name, color } = req.body; // ← Extract from HTTP
+    const userId = req.user.id; // ← From auth middleware
+
     const habit = await service.create(name, color, userId);
-    
-    res.status(201).json(habit);           // ← Format HTTP response
+
+    res.status(201).json(habit); // ← Format HTTP response
   }
 }
 ```
 
 ### 3. Services Layer
+
 ```typescript
 // RESPONSIBILITY: Business logic, orchestration, validation
 
@@ -275,7 +279,7 @@ export class HabitsService {
     if (await this.hasReachedLimit(userId)) {
       throw new Error('Habit limit reached');
     }
-    
+
     // Delegate to repository
     return this.repository.create({ name, color, userId });
   }
@@ -283,6 +287,7 @@ export class HabitsService {
 ```
 
 ### 4. Repositories Layer
+
 ```typescript
 // RESPONSIBILITY: Data access, database queries
 
@@ -366,58 +371,6 @@ Any Layer
 
 ---
 
-## Shared Code Example
-
-### Type Definition (packages/types)
-```typescript
-export interface Habit {
-  id: string;
-  name: string;
-  color: HabitColor;
-  userId: string;
-}
-```
-
-### Used in Backend (apps/api)
-```typescript
-import { Habit } from '@repo/types';
-
-export class HabitsService {
-  async getAll(userId: string): Promise<Habit[]> {
-    return this.repository.findAll(userId);
-  }
-}
-```
-
-### Used in Web (apps/web)
-```typescript
-import { Habit } from '@repo/types';
-
-export function useHabits() {
-  return useQuery<Habit[]>({
-    queryKey: ['habits'],
-    queryFn: () => apiClient.habits.getAll(),
-  });
-}
-```
-
-### Used in Mobile (apps/mobile)
-```typescript
-import { Habit } from '@repo/types';
-
-export function HabitList() {
-  const { data: habits } = useHabits();
-  
-  return habits?.map((habit: Habit) => (
-    <HabitCard key={habit.id} habit={habit} />
-  ));
-}
-```
-
-**Same types everywhere = Type safety across entire stack!** ✨
-
----
-
 ## Security Layers
 
 ```
@@ -445,6 +398,7 @@ export function HabitList() {
 ## Development vs Production
 
 ### Development
+
 ```
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
 │   Web App    │      │     API      │      │   Database   │
@@ -459,6 +413,7 @@ export function HabitList() {
 ```
 
 ### Production
+
 ```
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
 │   Web App    │      │     API      │      │   Database   │
@@ -478,13 +433,11 @@ export function HabitList() {
 
 This architecture provides:
 
-✅ **Separation of Concerns**: Each layer has clear responsibility
-✅ **Code Reuse**: Shared packages used by all apps
-✅ **Type Safety**: TypeScript types shared across stack
-✅ **Scalability**: Each service can scale independently
-✅ **Maintainability**: Easy to find and fix issues
-✅ **Testability**: Each layer can be tested in isolation
-✅ **Security**: Multiple layers of protection
+✅ **Separation of Concerns**: Each layer has clear responsibility  
+✅ **Code Reuse**: Shared packages used by all apps  
+✅ **Type Safety**: TypeScript types shared across stack  
+✅ **Scalability**: Each service can scale independently  
+✅ **Maintainability**: Easy to find and fix issues  
+✅ **Testability**: Each layer can be tested in isolation  
+✅ **Security**: Multiple layers of protection  
 ✅ **Flexibility**: Easy to add new features or platforms
-
-Start with the basics and expand as needed!
