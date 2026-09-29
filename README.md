@@ -33,3 +33,11 @@ Then:
 npm run db:migrate
 npm run db:seed
 ```
+
+## API
+
+```bash
+npm run dev:api
+```
+
+Health check: [http://localhost:4000/health](http://localhost:4000/health). Auth and habit routes come in the next checklist tasks.

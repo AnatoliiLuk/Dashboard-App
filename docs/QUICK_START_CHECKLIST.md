@@ -172,17 +172,17 @@ mkdir -p tests/{unit,integration}
 
 **Core files to create:**
 
-- [ ] `src/config/env.ts`
-- [ ] `src/config/database.ts`
-- [ ] `src/middleware/auth.middleware.ts`
-- [ ] `src/middleware/error.middleware.ts`
-- [ ] `src/middleware/validation.middleware.ts`
-- [ ] `src/utils/jwt.util.ts`
-- [ ] `src/utils/password.util.ts`
-- [ ] `src/app.ts`
-- [ ] `src/server.ts`
-- [ ] `.env.example`
-- [ ] `tsconfig.json`
+- [x] `src/config/env.ts`
+- [x] `src/config/database.ts`
+- [x] `src/middleware/auth.middleware.ts`
+- [x] `src/middleware/error.middleware.ts`
+- [x] `src/middleware/validation.middleware.ts`
+- [x] `src/utils/jwt.util.ts`
+- [x] `src/utils/password.util.ts`
+- [x] `src/app.ts`
+- [x] `src/server.ts`
+- [x] `.env.example`
+- [x] `tsconfig.json`
 
 ---
 
