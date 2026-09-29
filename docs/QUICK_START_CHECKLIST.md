@@ -158,7 +158,7 @@ npm install @prisma/client
 npm install -D typescript @types/express tsx
 ```
 
-**Status:** [ ]
+**Status:** [x]
 
 ---
 
