@@ -15,14 +15,28 @@
     "format": "prettier --write .",
     "spellcheck": "cspell --no-progress --no-must-find-files --relative '*.*' '**/*.{ts,tsx,js,mjs,md,json,yml}'",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.3"
   },
   "devDependencies": {
-    "cspell": "^10.3.5",
     "@cspell/dict-uk-ua": "^4.0.6",
+    "cspell": "^10.3.5",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.9",
+    "prisma": "^6.16.3",
+    "tsx": "^4.20.5",
     "turbo": "^2.5.0",
     "typescript": "^6.0.3"
   },

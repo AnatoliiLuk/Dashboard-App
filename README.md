@@ -14,3 +14,22 @@ npm run dev:web
 Open [http://localhost:3001](http://localhost:3001).
 
 From the repo root, `npm run dev` starts every app that has a `dev` script (today that is only the web app).
+
+## Database
+
+Postgres is required for the API phases. Copy `.env.example` to `.env`, then either:
+
+```bash
+# Docker (if installed)
+docker compose up -d
+
+# or Homebrew Postgres (what this machine used for Phase 3)
+brew services start postgresql@15
+```
+
+Then:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```

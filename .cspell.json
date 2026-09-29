@@ -19,5 +19,16 @@
       "language": "en,uk"
     }
   ],
-  "words": ["Lngs", "Turborepo", "Notifs", "yourapp", "Supabase", "createdb"]
+  "words": [
+    "Lngs",
+    "Turborepo",
+    "Notifs",
+    "yourapp",
+    "Supabase",
+    "createdb",
+    "postgresql",
+    "cuid",
+    "healthcheck",
+    "isready"
+  ]
 }

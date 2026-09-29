@@ -109,7 +109,7 @@ npx prisma init
 # Copy schema from ARCHITECTURE.md to prisma/schema.prisma
 ```
 
-**Status:** [ ]
+**Status:** [x]
 
 ---
 
@@ -129,7 +129,7 @@ docker run --name postgres \
 # Update .env with DATABASE_URL
 ```
 
-**Status:** [ ]
+**Status:** [x]
 
 ---
 
@@ -140,7 +140,7 @@ npx prisma migrate dev --name initial
 npx prisma generate
 ```
 
-**Status:** [ ]
+**Status:** [x]
 
 ---
 

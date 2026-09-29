@@ -42,8 +42,8 @@ These match the monorepo plan in `ARCHITECTURE.md` and the phased checklist in `
 ### Platform
 
 - Express API in `apps/api` with controllers, services, and repositories
-- PostgreSQL with Prisma at the repo root
-- Shared packages: `packages/types`, `packages/core`, `packages/api-client`
+- PostgreSQL with Prisma at the repo root (`prisma/schema.prisma`, migrations applied locally)
+- Shared packages: `packages/types`, `packages/core` (done); `packages/api-client` next
 - Web and mobile both talk to the API through the shared client
 - Auth with JWT (register, login, protected habit and completion routes)
 
