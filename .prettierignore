@@ -1,3 +1,7 @@
 .next
 node_modules
 package-lock.json
+.turbo
+dist
+coverage
+apps/*/next-env.d.ts

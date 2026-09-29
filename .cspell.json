@@ -5,6 +5,7 @@
   "import": ["@cspell/dict-uk-ua/cspell-ext.json"],
   "ignorePaths": [
     ".next",
+    ".turbo",
     ".husky/_",
     "node_modules",
     "package-lock.json",
@@ -14,9 +15,9 @@
   ],
   "overrides": [
     {
-      "filename": "lib/i18n/locales/uk.ts",
+      "filename": "apps/web/lib/i18n/locales/uk.ts",
       "language": "en,uk"
     }
   ],
-  "words": ["Lngs"]
+  "words": ["Lngs", "Turborepo", "Notifs", "yourapp", "Supabase", "createdb"]
 }

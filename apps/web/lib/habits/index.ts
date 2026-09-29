@@ -1,4 +1,11 @@
-export { addDays, compareDates, formatDisplay, isDate, today, toIsoDate } from './dates';
+export {
+  addDays,
+  compareDates,
+  formatDisplay,
+  isDate,
+  today,
+  toIsoDate,
+} from './dates';
 export { addHabit, habitTodayList, toggleToday } from './log';
 export type { HabitToday } from './log';
 export { streakFor } from './streaks';

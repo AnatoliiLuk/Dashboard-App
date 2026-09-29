@@ -1,42 +1,29 @@
 {
-  "name": "dashboard-app",
-  "version": "0.1.0",
+  "name": "habit-tracker",
   "private": true,
+  "packageManager": "npm@11.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start --port 3001",
-    "lint": "eslint",
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@habit-tracker/web",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
     "spellcheck": "cspell --no-progress --no-must-find-files --relative '*.*' '**/*.{ts,tsx,js,mjs,md,json,yml}'",
     "lint-staged": "lint-staged",
     "prepare": "husky"
   },
-  "dependencies": {
-    "@emotion/cache": "^11.14.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.3.9",
-    "@mui/material-nextjs": "^9.4.0",
-    "i18next": "^26.4.2",
-    "next": "16.3.6",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-i18next": "^17.0.15"
-  },
   "devDependencies": {
-    "@cspell/dict-uk-ua": "^4.0.6",
-    "@types/node": "^26.6.2",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
     "cspell": "^10.3.5",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.6",
-    "eslint-config-prettier": "^10.1.8",
+    "@cspell/dict-uk-ua": "^4.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.9",
+    "turbo": "^2.5.0",
     "typescript": "^6.0.3"
   },
   "lint-staged": {
@@ -45,5 +32,8 @@
       "prettier --write"
     ],
     "*.css": "prettier --write"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
