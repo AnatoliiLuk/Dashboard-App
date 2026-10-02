@@ -190,12 +190,14 @@ mkdir -p tests/{unit,integration}
 
 **Files to create:**
 
-- [ ] `src/validators/auth.validator.ts`
-- [ ] `src/services/auth.service.ts`
-- [ ] `src/controllers/auth.controller.ts`
-- [ ] `src/routes/auth.routes.ts`
+- [x] `src/validators/auth.validator.ts`
+- [x] `src/services/auth.service.ts`
+- [x] `src/controllers/auth.controller.ts`
+- [x] `src/routes/auth.routes.ts`
 
 **Test:** `POST /api/auth/register` and `/api/auth/login`
+
+**Status:** [x]
 
 ---
 
