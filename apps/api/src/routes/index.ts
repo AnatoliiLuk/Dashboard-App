@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import authRoutes from './auth.routes';
+import completionsRoutes from './completions.routes';
 import habitsRoutes from './habits.routes';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.get('/', (_req, res) => {
 
 router.use('/auth', authRoutes);
 router.use('/habits', habitsRoutes);
+router.use('/completions', completionsRoutes);
 
 export default router;

@@ -221,11 +221,13 @@ mkdir -p tests/{unit,integration}
 
 **Files to create:**
 
-- [ ] `src/validators/completions.validator.ts`
-- [ ] `src/repositories/completions.repository.ts`
-- [ ] `src/services/completions.service.ts`
-- [ ] `src/controllers/completions.controller.ts`
-- [ ] `src/routes/completions.routes.ts`
+- [x] `src/validators/completions.validator.ts`
+- [x] `src/repositories/completions.repository.ts`
+- [x] `src/services/completions.service.ts`
+- [x] `src/controllers/completions.controller.ts`
+- [x] `src/routes/completions.routes.ts`
+
+**Status:** [x]
 
 ---
 
