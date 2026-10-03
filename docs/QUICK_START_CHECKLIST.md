@@ -234,15 +234,24 @@ mkdir -p tests/{unit,integration}
 ### 14. Start Backend Server
 
 ```bash
-cd apps/api
+# From repo root
+npm run dev:api
+
+# Or everything (web + api)
 npm run dev
 
 # Should see:
-# ✅ Database connected
-# 🚀 Server running on http://localhost:4000
+# Database connected
+# Server running on http://localhost:4000
 ```
 
-**Status:** [ ]
+**Verified:**
+
+- [x] `GET /health` → ok
+- [x] `GET /api` → Habits+ API info
+- [x] Auth / habits / completions mounted (401 without token)
+
+**Status:** [x]
 
 ---
 

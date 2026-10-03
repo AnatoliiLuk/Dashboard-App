@@ -13,7 +13,7 @@ npm run dev:web
 
 Open [http://localhost:3001](http://localhost:3001).
 
-From the repo root, `npm run dev` starts every app that has a `dev` script (today that is only the web app).
+From the repo root, `npm run dev` starts web + API. Use `npm run dev:web` or `npm run dev:api` for one app only.
 
 ## Database
 
@@ -40,4 +40,10 @@ npm run db:seed
 npm run dev:api
 ```
 
-Health check: [http://localhost:4000/health](http://localhost:4000/health). Auth and habit routes come in the next checklist tasks.
+- Health: [http://localhost:4000/health](http://localhost:4000/health)
+- Info: [http://localhost:4000/api](http://localhost:4000/api)
+- Auth: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- Habits: `GET|POST /api/habits`, `GET|PATCH|DELETE /api/habits/:id`
+- Completions: `GET|POST /api/completions`, `POST /api/completions/toggle`, `DELETE /api/completions/:id`
+
+Protected routes need `Authorization: Bearer <token>` from login/register.
