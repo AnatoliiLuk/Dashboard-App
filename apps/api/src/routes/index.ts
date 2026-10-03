@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import authRoutes from './auth.routes';
+import habitsRoutes from './habits.routes';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.get('/', (_req, res) => {
 });
 
 router.use('/auth', authRoutes);
+router.use('/habits', habitsRoutes);
 
 export default router;

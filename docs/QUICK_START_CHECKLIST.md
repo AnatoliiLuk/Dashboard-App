@@ -205,13 +205,15 @@ mkdir -p tests/{unit,integration}
 
 **Files to create:**
 
-- [ ] `src/validators/habits.validator.ts`
-- [ ] `src/repositories/habits.repository.ts`
-- [ ] `src/services/habits.service.ts`
-- [ ] `src/controllers/habits.controller.ts`
-- [ ] `src/routes/habits.routes.ts`
+- [x] `src/validators/habits.validator.ts`
+- [x] `src/repositories/habits.repository.ts`
+- [x] `src/services/habits.service.ts`
+- [x] `src/controllers/habits.controller.ts`
+- [x] `src/routes/habits.routes.ts`
 
 **Test:** CRUD operations for habits
+
+**Status:** [x]
 
 ---
 
