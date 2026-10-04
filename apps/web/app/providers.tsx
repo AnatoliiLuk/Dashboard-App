@@ -3,6 +3,7 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
@@ -22,19 +23,32 @@ export function Providers({
       instance.use(initReactI18next);
     }),
   );
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            retry: 1,
+          },
+        },
+      }),
+  );
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AppRouterCacheProvider>
-        <ThemeProvider
-          theme={theme}
-          defaultMode="system"
-          disableTransitionOnChange
-        >
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </AppRouterCacheProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppRouterCacheProvider>
+          <ThemeProvider
+            theme={theme}
+            defaultMode="system"
+            disableTransitionOnChange
+          >
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </QueryClientProvider>
     </I18nextProvider>
   );
 }

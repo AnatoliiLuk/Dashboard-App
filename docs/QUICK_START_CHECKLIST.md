@@ -291,7 +291,14 @@ cd apps/web
 npm install @tanstack/react-query @repo/api-client @repo/types
 ```
 
-**Status:** [ ]
+**Done:**
+
+- [x] Installed `@tanstack/react-query`, `@repo/api-client`, `@repo/types`
+- [x] Transpile `@repo/api-client` in `next.config.ts`
+- [x] Wrap app with `QueryClientProvider` in `app/providers.tsx`
+- [x] `apps/web/.env.example` + `.env.local` with `NEXT_PUBLIC_API_URL`
+
+**Status:** [x]
 
 ---
 
