@@ -47,3 +47,5 @@ npm run dev:api
 - Completions: `GET|POST /api/completions`, `POST /api/completions/toggle`, `DELETE /api/completions/:id`
 
 Protected routes need `Authorization: Bearer <token>` from login/register.
+
+Shared typed client for web/mobile: `@repo/api-client` (`packages/api-client`).

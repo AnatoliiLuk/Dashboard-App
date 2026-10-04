@@ -269,12 +269,14 @@ mkdir -p src/{endpoints,utils}
 
 **Files to create:**
 
-- [ ] `src/client.ts`
-- [ ] `src/utils/request.ts`
-- [ ] `src/endpoints/auth.ts`
-- [ ] `src/endpoints/habits.ts`
-- [ ] `src/endpoints/completions.ts`
-- [ ] `src/index.ts`
+- [x] `src/client.ts`
+- [x] `src/utils/request.ts`
+- [x] `src/endpoints/auth.ts`
+- [x] `src/endpoints/habits.ts`
+- [x] `src/endpoints/completions.ts`
+- [x] `src/index.ts`
+
+**Status:** [x]
 
 ---
 
