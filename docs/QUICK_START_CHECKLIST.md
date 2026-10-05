@@ -306,10 +306,14 @@ npm install @tanstack/react-query @repo/api-client @repo/types
 
 **Files to create in apps/web:**
 
-- [ ] `lib/api/client.ts` (initialize ApiClient)
-- [ ] `lib/hooks/useAuth.ts`
-- [ ] `lib/hooks/useHabits.ts`
-- [ ] `lib/hooks/useCompletions.ts`
+- [x] `lib/api/client.ts` (initialize ApiClient)
+- [x] `lib/hooks/useAuth.ts`
+- [x] `lib/hooks/useHabits.ts`
+- [x] `lib/hooks/useCompletions.ts`
+
+Also: `lib/api/token.ts`, `lib/api/mappers.ts`, `lib/api/query-keys.ts`, `lib/hooks/index.ts`
+
+**Status:** [x]
 
 ---
 
