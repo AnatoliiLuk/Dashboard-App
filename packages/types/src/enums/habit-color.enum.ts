@@ -1,4 +1,4 @@
-export const HABIT_COLOR_IDS = [
+const HABIT_COLOR_IDS = [
   'sky',
   'green',
   'amber',

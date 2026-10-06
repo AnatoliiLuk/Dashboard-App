@@ -8,10 +8,6 @@ export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export const DEFAULT_LOCALE: Locale = 'en';
 
-export function parseLocale(value: string | undefined): Locale {
-  return value === 'uk' ? 'uk' : DEFAULT_LOCALE;
-}
-
 export function isLocale(value: string | undefined): value is Locale {
   return LOCALES.some((locale) => locale === value);
 }
@@ -64,8 +60,4 @@ export function localeFromAcceptLanguage(
   }
 
   return DEFAULT_LOCALE;
-}
-
-export function intlLocale(locale: string): string {
-  return locale === 'uk' ? 'uk-UA' : 'en-GB';
 }

@@ -15,14 +15,6 @@ export class HabitsApi {
     });
   }
 
-  getOne(id: string): Promise<ApiHabit> {
-    return request<ApiHabit>({
-      ...this.config,
-      method: 'GET',
-      url: `/habits/${id}`,
-    });
-  }
-
   create(dto: CreateHabitDto): Promise<ApiHabit> {
     return request<ApiHabit>({
       ...this.config,

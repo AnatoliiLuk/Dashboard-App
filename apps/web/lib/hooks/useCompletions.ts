@@ -27,18 +27,8 @@ export function useCompletions() {
     void queryClient.invalidateQueries({ queryKey: habitKeys.all });
   };
 
-  const createMutation = useMutation({
-    mutationFn: (dto: CreateCompletionDto) => api.completions.create(dto),
-    onSuccess: invalidateRelated,
-  });
-
   const toggleMutation = useMutation({
     mutationFn: (dto: CreateCompletionDto) => api.completions.toggle(dto),
-    onSuccess: invalidateRelated,
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.completions.delete(id),
     onSuccess: invalidateRelated,
   });
 
@@ -48,11 +38,6 @@ export function useCompletions() {
     isError: completionsQuery.isError,
     error: completionsQuery.error,
     refetch: completionsQuery.refetch,
-    createCompletion: createMutation.mutateAsync,
     toggleCompletion: toggleMutation.mutateAsync,
-    deleteCompletion: deleteMutation.mutateAsync,
-    createMutation,
-    toggleMutation,
-    deleteMutation,
   };
 }

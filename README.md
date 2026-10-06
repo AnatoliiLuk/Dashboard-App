@@ -2,7 +2,7 @@
 
 A daily habit log built with React, Next.js, and TypeScript. Mark what you did today and keep a streak.
 
-This repository is a monorepo. The working web app lives in `apps/web`. Shared packages, an Express API, Postgres, and a mobile app are planned next; see `docs/REQUIREMENTS.md` and `docs/QUICK_START_CHECKLIST.md`.
+This repository is a monorepo. The web app lives in `apps/web`, the API in `apps/api`, and shared code in `packages/`.
 
 ## Run
 

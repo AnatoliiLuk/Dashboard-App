@@ -1,6 +1,6 @@
 import type { HabitColor } from '@repo/types';
 
-/** Shapes returned by the Express API (Prisma JSON), not the web localStorage entities. */
+/** Shapes returned by the Express API. */
 
 export type ApiUser = {
   id: string;

@@ -32,7 +32,6 @@ export function useHabitLog() {
   } = useCompletions();
 
   const date = today();
-  const needsAuth = !isAuthenticated;
   const isLoading = isAuthenticated && (habitsLoading || completionsLoading);
   const isError = habitsError || completionsError;
   const error = habitsErr ?? completionsErr ?? null;
@@ -57,7 +56,6 @@ export function useHabitLog() {
 
   return {
     ready,
-    needsAuth,
     isLoading,
     isError,
     error,

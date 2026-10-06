@@ -15,29 +15,12 @@ export class CompletionsApi {
     });
   }
 
-  create(dto: CreateCompletionDto): Promise<ApiCompletion> {
-    return request<ApiCompletion>({
-      ...this.config,
-      method: 'POST',
-      url: '/completions',
-      data: dto,
-    });
-  }
-
   toggle(dto: CreateCompletionDto): Promise<ToggleCompletionResponse> {
     return request<ToggleCompletionResponse>({
       ...this.config,
       method: 'POST',
       url: '/completions/toggle',
       data: dto,
-    });
-  }
-
-  delete(id: string): Promise<void> {
-    return request<void>({
-      ...this.config,
-      method: 'DELETE',
-      url: `/completions/${id}`,
     });
   }
 }

@@ -1,5 +1,4 @@
 import type { HabitColor } from '@repo/types';
-import { HABIT_COLOR_IDS } from '@repo/types';
 
 export const HABIT_COLORS = [
   { id: 'sky', background: '#dbeafe', text: '#1e3a8a' },
@@ -13,10 +12,6 @@ export const HABIT_COLORS = [
   background: string;
   text: string;
 }>;
-
-export function isHabitColor(value: unknown): value is HabitColor {
-  return HABIT_COLOR_IDS.some((color) => color === value);
-}
 
 export function habitColor(id: HabitColor) {
   const match = HABIT_COLORS.find((color) => color.id === id);

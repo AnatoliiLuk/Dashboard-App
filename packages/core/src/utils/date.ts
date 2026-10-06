@@ -1,9 +1,3 @@
-export function isDate(value: string): boolean {
-  return (
-    /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(parse(value).getTime())
-  );
-}
-
 export function today(): string {
   const date = new Date();
   const year = date.getFullYear();
@@ -33,7 +27,7 @@ export function addMonths(iso: string, months: number): string {
   return format(date);
 }
 
-export function weekdayIndex(iso: string): number {
+function weekdayIndex(iso: string): number {
   const jsDay = parse(iso).getUTCDay();
   return (jsDay + 6) % 7;
 }
@@ -79,14 +73,6 @@ export function compareDates(left: string, right: string): number {
     return 0;
   }
   return left < right ? -1 : 1;
-}
-
-export function toIsoDate(value: string): string {
-  const display = /^(\d{2})-(\d{2})-(\d{4})$/.exec(value);
-  if (display) {
-    return `${display[3]}-${display[2]}-${display[1]}`;
-  }
-  return value;
 }
 
 function intlLocale(locale: string): string {

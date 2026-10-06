@@ -19,7 +19,7 @@ export function useAuthToken() {
 }
 
 /** False on the server / first hydrate; true once the client store is active. */
-export function useAuthReady() {
+function useAuthReady() {
   return useSyncExternalStore(
     () => () => {},
     () => true,
@@ -84,12 +84,9 @@ export function useAuth() {
   }
 
   return {
-    token,
     isAuthReady,
     isAuthenticated,
     user: meQuery.data ?? null,
-    isLoadingUser: meQuery.isLoading,
-    userError: meQuery.error,
     login: loginMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     loginMutation,

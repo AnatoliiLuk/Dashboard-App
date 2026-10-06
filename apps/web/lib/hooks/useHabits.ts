@@ -31,17 +31,15 @@ export function useHabits() {
   const updateMutation = useMutation({
     mutationFn: ({ id, dto }: { id: string; dto: UpdateHabitDto }) =>
       api.habits.update(id, dto),
-    onSuccess: (_data, { id }) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: habitKeys.all });
-      void queryClient.invalidateQueries({ queryKey: habitKeys.detail(id) });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.habits.delete(id),
-    onSuccess: (_data, id) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: habitKeys.all });
-      void queryClient.removeQueries({ queryKey: habitKeys.detail(id) });
     },
   });
 
@@ -55,18 +53,5 @@ export function useHabits() {
     updateHabit: (id: string, dto: UpdateHabitDto) =>
       updateMutation.mutateAsync({ id, dto }),
     deleteHabit: deleteMutation.mutateAsync,
-    createMutation,
-    updateMutation,
-    deleteMutation,
   };
-}
-
-export function useHabit(id: string) {
-  const token = useAuthToken();
-
-  return useQuery({
-    queryKey: habitKeys.detail(id),
-    queryFn: async () => toHabit(await api.habits.getOne(id)),
-    enabled: Boolean(token) && Boolean(id),
-  });
 }
