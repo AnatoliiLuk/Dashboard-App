@@ -34,7 +34,42 @@ export function AppShell({ description, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthReady, isAuthenticated, logout } = useAuth();
+
+  let authAction: ReactNode;
+  if (!isAuthReady) {
+    authAction = (
+      <Button
+        size="small"
+        variant="text"
+        disabled
+        tabIndex={-1}
+        aria-hidden
+        sx={{ visibility: 'hidden' }}
+      >
+        {t('shell.signOut')}
+      </Button>
+    );
+  } else if (isAuthenticated) {
+    authAction = (
+      <Button
+        size="small"
+        variant="text"
+        onClick={() => {
+          logout();
+          router.replace('/login');
+        }}
+      >
+        {t('shell.signOut')}
+      </Button>
+    );
+  } else {
+    authAction = (
+      <Button variant="outlined" component={NextLink} href="/login">
+        {t('shell.signIn')}
+      </Button>
+    );
+  }
 
   return (
     <Box sx={pageStyle}>
@@ -66,27 +101,7 @@ export function AppShell({ description, children }: AppShellProps) {
             <Box sx={barEndStyle}>
               <LocaleSwitch />
               <ThemeToggle />
-              {isAuthenticated ? (
-                <Button
-                  size="small"
-                  variant="text"
-                  onClick={() => {
-                    logout();
-                    router.replace('/login');
-                  }}
-                >
-                  {t('shell.signOut')}
-                </Button>
-              ) : (
-                <Button
-                  size="small"
-                  variant="text"
-                  component={NextLink}
-                  href="/login"
-                >
-                  {t('shell.signIn')}
-                </Button>
-              )}
+              {authAction}
             </Box>
           </Box>
           <Typography sx={descriptionStyle}>{description}</Typography>

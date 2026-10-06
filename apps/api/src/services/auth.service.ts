@@ -80,7 +80,8 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new AppError(404, 'User not found');
+      // Deleted user / stale JWT — treat as unauthenticated so clients clear the token.
+      throw new AppError(401, 'User not found');
     }
 
     return user;

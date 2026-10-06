@@ -16,17 +16,19 @@ type GuestGuardProps = {
 
 export function GuestGuard({ children }: GuestGuardProps) {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthReady, isAuthenticated } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace(safeNextPath(searchParams.get('next')));
+    if (!isAuthReady || !isAuthenticated) {
+      return;
     }
-  }, [isAuthenticated, router, searchParams]);
 
-  if (isAuthenticated) {
+    router.replace(safeNextPath(searchParams.get('next')));
+  }, [isAuthReady, isAuthenticated, router, searchParams]);
+
+  if (!isAuthReady || isAuthenticated) {
     return <Typography sx={loadingStyle}>{t('common.loading')}</Typography>;
   }
 

@@ -15,18 +15,20 @@ type AuthGuardProps = {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthReady, isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      const next = encodeURIComponent(pathname || '/');
-      router.replace(`/login?next=${next}`);
+    if (!isAuthReady || isAuthenticated) {
+      return;
     }
-  }, [isAuthenticated, pathname, router]);
 
-  if (!isAuthenticated) {
+    const next = encodeURIComponent(pathname || '/');
+    router.replace(`/login?next=${next}`);
+  }, [isAuthReady, isAuthenticated, pathname, router]);
+
+  if (!isAuthReady || !isAuthenticated) {
     return <Typography sx={loadingStyle}>{t('common.loading')}</Typography>;
   }
 

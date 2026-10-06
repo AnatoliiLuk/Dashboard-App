@@ -5,13 +5,7 @@ import NextLink from 'next/link';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 
-import { GuestGuard } from '@/components/GuestGuard';
-import { LocaleSwitch } from '@/components/LocaleSwitch';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useTranslation } from '@/lib/i18n';
-
-import { loadingStyle } from '@/app/page.style';
-
+import { barEndStyle, barStyle } from '@/components/AppShell/AppShell.style';
 import {
   authBrandStyle,
   authHeaderStyle,
@@ -19,7 +13,13 @@ import {
   authMainStyle,
   authPageStyle,
 } from '@/components/AuthForm/AuthForm.style';
-import { barEndStyle, barStyle } from '@/components/AppShell/AppShell.style';
+import { GuestGuard } from '@/components/GuestGuard';
+import { LocaleSwitch } from '@/components/LocaleSwitch';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useTranslation } from '@/lib/i18n';
+
+import { loadingStyle } from '@/app/page.style';
 
 type AuthLayoutProps = {
   title: string;
@@ -29,6 +29,16 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ title, lead, children }: AuthLayoutProps) {
   const { t } = useTranslation();
+  const { isAuthReady, isAuthenticated } = useAuth();
+
+  // Avoid flashing the sign-in chrome while reading the token or redirecting away.
+  if (!isAuthReady || isAuthenticated) {
+    return (
+      <Box sx={authPageStyle}>
+        <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={authPageStyle}>
