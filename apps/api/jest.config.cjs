@@ -7,4 +7,10 @@ module.exports = {
     '^@repo/core$': '<rootDir>/../../packages/core/src/index.ts',
     '^@repo/types$': '<rootDir>/../../packages/types/src/index.ts',
   },
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/.next/',
+    '\\.integration\\.test\\.ts$',
+  ],
 };
