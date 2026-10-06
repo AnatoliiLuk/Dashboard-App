@@ -40,8 +40,7 @@ export function AppShell({ description, children }: AppShellProps) {
   if (!isAuthReady) {
     authAction = (
       <Button
-        size="small"
-        variant="text"
+        variant="outlined"
         disabled
         tabIndex={-1}
         aria-hidden
@@ -53,8 +52,7 @@ export function AppShell({ description, children }: AppShellProps) {
   } else if (isAuthenticated) {
     authAction = (
       <Button
-        size="small"
-        variant="text"
+        variant="outlined"
         onClick={() => {
           logout();
           router.replace('/login');

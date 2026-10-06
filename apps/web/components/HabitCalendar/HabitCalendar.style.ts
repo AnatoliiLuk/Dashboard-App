@@ -39,34 +39,35 @@ export const monthButtonStyle = ({
   borderRadius,
   typography,
 }: Theme) => ({
+  boxSizing: 'border-box' as const,
   border: border[1],
   borderColor: vars.palette.divider,
   backgroundColor: vars.palette.background.paper,
   color: vars.palette.text.primary,
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: 'inline-flex' as const,
+  alignItems: 'center' as const,
   gap: spacingPx[8],
+  height: spacingPx[40],
   borderRadius: borderRadius.pill,
   px: spacingPx[12],
-  py: spacingPx[6],
+  py: spacingPx[0],
   fontFamily: typography.button.fontFamily,
   fontSize: typography.button.fontSize,
   fontWeight: typography.button.fontWeight,
   lineHeight: typography.button.lineHeight,
-  cursor: 'pointer',
+  cursor: 'pointer' as const,
   '& svg': {
-    display: 'block',
+    display: 'block' as const,
     flexShrink: 0,
   },
   '&:disabled': {
-    cursor: 'default',
+    cursor: 'default' as const,
     color: vars.palette.text.secondary,
   },
 });
 
 export const stepButtonStyle = ({ spacingPx }: Theme) => ({
   px: spacingPx[8],
-  py: spacingPx[8],
 });
 
 export const tableWrapStyle = {

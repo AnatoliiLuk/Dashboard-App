@@ -1,43 +1,48 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-const endSlot = ({ spacingPx }: Theme) =>
-  `calc(${spacingPx[4]} + ${spacingPx[24]} + ${spacingPx[4]})`;
+/** Thumb size inside a 40px control (minus 1px borders and 4px inset). */
+const thumbSize = ({ spacingPx }: Theme) =>
+  `calc(${spacingPx[40]} - 2px - ${spacingPx[4]} * 2)`;
 
-export const themeToggleStyle = ({
-  vars,
-  spacingPx,
-  border,
-  borderRadius,
-}: Theme) => ({
-  position: 'relative',
-  display: 'block',
-  flexShrink: 0,
-  boxSizing: 'content-box',
-  width: `calc(${spacingPx[24]} * 2 + ${spacingPx[4]} * 3)`,
-  height: `calc(${spacingPx[24]} + ${spacingPx[4]} * 2)`,
-  m: spacingPx[0],
-  p: spacingPx[0],
-  border: border[1],
-  borderColor: vars.palette.divider,
-  backgroundColor: vars.palette.background.paper,
-  borderRadius: borderRadius.pill,
-  cursor: 'pointer',
-  '&:focus-visible': {
-    outline: `${border[2]} ${vars.palette.text.primary}`,
-    outlineOffset: spacingPx[4],
-  },
-});
+const endSlot = (theme: Theme) =>
+  `calc(${theme.spacingPx[4]} + ${thumbSize(theme)} + ${theme.spacingPx[4]})`;
+
+export const themeToggleStyle = (theme: Theme) => {
+  const { vars, spacingPx, border, borderRadius } = theme;
+  const size = thumbSize(theme);
+
+  return {
+    position: 'relative' as const,
+    display: 'block' as const,
+    flexShrink: 0,
+    boxSizing: 'border-box' as const,
+    width: `calc(${size} * 2 + ${spacingPx[4]} * 3)`,
+    height: spacingPx[40],
+    m: spacingPx[0],
+    p: spacingPx[0],
+    border: border[1],
+    borderColor: vars.palette.divider,
+    backgroundColor: vars.palette.background.paper,
+    borderRadius: borderRadius.pill,
+    cursor: 'pointer' as const,
+    '&:focus-visible': {
+      outline: `${border[2]} ${vars.palette.text.primary}`,
+      outlineOffset: spacingPx[4],
+    },
+  };
+};
 
 export const thumbStyle = (theme: Theme) => {
   const { vars, spacingPx, borderRadius, getColorSchemeSelector } = theme;
+  const size = thumbSize(theme);
 
   return {
     position: 'absolute',
     top: spacingPx[4],
     left: spacingPx[4],
-    width: spacingPx[24],
-    height: spacingPx[24],
+    width: size,
+    height: size,
     borderRadius: borderRadius.pill,
     backgroundColor: vars.palette.text.primary,
     transition: 'left 160ms ease',
@@ -49,6 +54,7 @@ export const thumbStyle = (theme: Theme) => {
 
 export const iconStyle = (atEnd: boolean) => (theme: Theme) => {
   const { vars, spacingPx, getColorSchemeSelector } = theme;
+  const size = thumbSize(theme);
 
   return {
     position: 'absolute',
@@ -58,8 +64,8 @@ export const iconStyle = (atEnd: boolean) => (theme: Theme) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: spacingPx[24],
-    height: spacingPx[24],
+    width: size,
+    height: size,
     fontSize: spacingPx[16],
     color: atEnd ? vars.palette.text.secondary : vars.palette.background.paper,
     '& svg': {

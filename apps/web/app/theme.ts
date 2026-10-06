@@ -19,6 +19,7 @@ const spacingPx = {
   20: pxToRem(20),
   24: pxToRem(24),
   32: pxToRem(32),
+  40: pxToRem(40),
   48: pxToRem(48),
   576: pxToRem(576),
   768: pxToRem(768),
@@ -119,5 +120,17 @@ export const theme = createTheme({
   },
   shape: {
     borderRadius: 16,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          boxSizing: 'border-box',
+          minHeight: theme.spacingPx[40],
+          height: theme.spacingPx[40],
+          py: 0,
+        }),
+      },
+    },
   },
 });
