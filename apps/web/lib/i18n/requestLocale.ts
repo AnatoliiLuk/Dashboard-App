@@ -1,11 +1,15 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 import { createI18n } from './createI18n';
-import { LOCALE_COOKIE, parseLocale } from './locale';
+import { isLocale, LOCALE_COOKIE, localeFromAcceptLanguage } from './locale';
 
 export async function requestLocale() {
   const cookieStore = await cookies();
-  return parseLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const stored = cookieStore.get(LOCALE_COOKIE)?.value;
+  if (isLocale(stored)) return stored;
+
+  const headerStore = await headers();
+  return localeFromAcceptLanguage(headerStore.get('accept-language'));
 }
 
 export async function requestI18n() {

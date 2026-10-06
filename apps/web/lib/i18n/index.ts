@@ -2,6 +2,8 @@ export { createI18n } from './createI18n';
 export {
   DEFAULT_LOCALE,
   intlLocale,
+  isLocale,
+  localeFromAcceptLanguage,
   LOCALE_COOKIE,
   LOCALE_COOKIE_MAX_AGE,
   LOCALES,
