@@ -37,7 +37,7 @@ export default defineConfig({
       command: 'npx tsx e2e/global-setup.ts && npx tsx apps/api/src/server.ts',
       cwd: repoRoot,
       url: `${apiOrigin}/health`,
-      timeout: 120_000,
+      timeout: 180_000,
       reuseExistingServer: false,
       env: {
         ...process.env,
@@ -51,7 +51,7 @@ export default defineConfig({
       command: `npx next dev --port ${webPort}`,
       cwd: path.join(repoRoot, 'apps/web'),
       url: webOrigin,
-      timeout: 120_000,
+      timeout: 180_000,
       reuseExistingServer: false,
       env: {
         ...process.env,
