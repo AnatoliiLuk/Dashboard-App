@@ -13,6 +13,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
     "spellcheck": "cspell --no-progress --no-must-find-files --relative '*.*' '**/*.{ts,tsx,js,mjs,md,json,yml}'",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@cspell/dict-uk-ua": "^4.0.6",
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/jest": "^30.0.0",
     "cspell": "^10.3.5",

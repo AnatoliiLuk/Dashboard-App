@@ -17,6 +17,10 @@
     {
       "filename": "apps/web/lib/i18n/locales/uk.ts",
       "language": "en,uk"
+    },
+    {
+      "filename": "e2e/locale.spec.ts",
+      "language": "en,uk"
     }
   ],
   "words": [
