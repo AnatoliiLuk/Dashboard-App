@@ -11,10 +11,12 @@ export default {
   'apps/web/**/*.{ts,tsx,js,jsx,mjs}': (filenames) => {
     const files = filenames
       .map((filename) => path.relative(webRoot, filename))
-      .map((filename) => `"${filename}"`)
+      .map((filename) => JSON.stringify(filename))
       .join(' ');
 
-    return `npm run lint -w @habit-tracker/web -- --fix --max-warnings=0 ${files}`;
+    // Run eslint inside the web workspace so it finds eslint.config.mjs.
+    // JSON.stringify keeps route groups like app/(auth)/... safe for the shell.
+    return `npm run lint -w @habit-tracker/web -- --fix --max-warnings=0 -- ${files}`;
   },
   '*.css': 'prettier --write',
 };

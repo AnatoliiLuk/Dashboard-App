@@ -1,12 +1,13 @@
 'use client';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 
 import { mainStyle, pageStyle } from '@/app/page.style';
@@ -31,7 +32,9 @@ type AppShellProps = {
 
 export function AppShell({ description, children }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useTranslation();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <Box sx={pageStyle}>
@@ -63,6 +66,27 @@ export function AppShell({ description, children }: AppShellProps) {
             <Box sx={barEndStyle}>
               <LocaleSwitch />
               <ThemeToggle />
+              {isAuthenticated ? (
+                <Button
+                  size="small"
+                  variant="text"
+                  onClick={() => {
+                    logout();
+                    router.replace('/login');
+                  }}
+                >
+                  {t('shell.signOut')}
+                </Button>
+              ) : (
+                <Button
+                  size="small"
+                  variant="text"
+                  component={NextLink}
+                  href="/login"
+                >
+                  {t('shell.signIn')}
+                </Button>
+              )}
             </Box>
           </Box>
           <Typography sx={descriptionStyle}>{description}</Typography>

@@ -336,9 +336,11 @@ Replace localStorage usage with API calls:
 
 **Pages to create:**
 
-- [ ] `app/(auth)/login/page.tsx`
-- [ ] `app/(auth)/register/page.tsx`
-- [ ] Protect dashboard routes
+- [x] `app/(auth)/login/page.tsx`
+- [x] `app/(auth)/register/page.tsx`
+- [x] Protect dashboard routes
+
+**Status:** [x]
 
 ---
 
@@ -356,7 +358,7 @@ npm run dev
 # 5. View calendar
 ```
 
-**Status:** [ ]
+**Status:** [x]
 
 ---
 
@@ -538,33 +540,7 @@ eas submit --platform android
 - [ ] AI suggestions
 - [ ] Team/family habits
 - [ ] Gamification (badges, streaks)
-- [ ] Dark mode
-- [ ] Internationalization
+- [x] Dark mode
+- [x] Internationalization
 
 ---
-
-## Estimated Timeline
-
-| Phase             | Duration       | Tasks                        |
-| ----------------- | -------------- | ---------------------------- |
-| **Setup**         | 1-2 days       | Monorepo, packages, database |
-| **Backend**       | 2-3 days       | Express API, auth, CRUD      |
-| **Web Migration** | 2-3 days       | Connect to API, update UI    |
-| **Mobile App**    | 4-5 days       | Build React Native app       |
-| **Testing**       | 2-3 days       | Write tests, fix bugs        |
-| **Deployment**    | 2-3 days       | Deploy all services          |
-| **Total**         | **14-20 days** | Full stack implementation    |
-
----
-
-## Need Help?
-
-Refer to these documents:
-
-- `ARCHITECTURE.md` - Complete structure overview
-- `EXPRESS_BACKEND_SETUP.md` - Backend implementation guide
-- `README.md` - Project overview
-
-Start with Phase 1 and work through sequentially. Each phase builds on the previous one.
-
-Good luck! 🚀

@@ -3,6 +3,7 @@
 import { Button, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
+import { AuthGuard } from '@/components/AuthGuard';
 import { AppShell } from '@/components/AppShell';
 import { HabitLogger } from '@/components/HabitLogger';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
@@ -12,9 +13,20 @@ import { loadingStyle } from '@/app/page.style';
 
 export function LogView() {
   const { t } = useTranslation();
+
+  return (
+    <AppShell description={t('log.description')}>
+      <AuthGuard>
+        <LogContent />
+      </AuthGuard>
+    </AppShell>
+  );
+}
+
+function LogContent() {
+  const { t } = useTranslation();
   const {
     ready,
-    needsAuth,
     isError,
     refetch,
     habits,
@@ -26,11 +38,7 @@ export function LogView() {
   } = useHabitLog();
 
   let content: ReactNode;
-  if (needsAuth) {
-    content = (
-      <Typography sx={loadingStyle}>{t('common.signInRequired')}</Typography>
-    );
-  } else if (isError) {
+  if (isError) {
     content = (
       <Stack spacing={2} alignItems="flex-start">
         <Typography sx={loadingStyle}>{t('common.error')}</Typography>
@@ -54,5 +62,5 @@ export function LogView() {
     content = <Typography sx={loadingStyle}>{t('common.loading')}</Typography>;
   }
 
-  return <AppShell description={t('log.description')}>{content}</AppShell>;
+  return content;
 }
