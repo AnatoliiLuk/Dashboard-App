@@ -1,22 +1,23 @@
-import path from 'node:path';
-
-const webRoot = path.join(process.cwd(), 'apps/web');
-
 /** @type {import('lint-staged').Configuration} */
 export default {
-  '*.{ts,tsx,js,jsx,mjs,json,md,yml,yaml}': [
+  // Match lxp-frontend-monorepo: eslint + cspell + prettier on staged JS/TS.
+  // Scope eslint to apps/web (only package with an ESLint config today).
+  'apps/web/**/*.{ts,tsx,js,jsx,mjs}': [
+    'eslint --fix --max-warnings=0 --config apps/web/eslint.config.mjs',
     'cspell lint --no-must-find-files --show-suggestions --relative',
     'prettier --write',
   ],
-  'apps/web/**/*.{ts,tsx,js,jsx,mjs}': (filenames) => {
-    const files = filenames
-      .map((filename) => path.relative(webRoot, filename))
-      .map((filename) => JSON.stringify(filename))
-      .join(' ');
-
-    // Run eslint inside the web workspace so it finds eslint.config.mjs.
-    // JSON.stringify keeps route groups like app/(auth)/... safe for the shell.
-    return `npm run lint -w @habit-tracker/web -- --fix --max-warnings=0 -- ${files}`;
-  },
-  '*.css': 'prettier --write',
+  '*.{json,md,yml,yaml,css}': [
+    'cspell lint --no-must-find-files --show-suggestions --relative',
+    'prettier --write',
+  ],
+  // API / packages: format + spellcheck only until they get their own ESLint config.
+  'apps/api/**/*.{ts,tsx,js,jsx,mjs}': [
+    'cspell lint --no-must-find-files --show-suggestions --relative',
+    'prettier --write',
+  ],
+  'packages/**/*.{ts,tsx,js,jsx,mjs}': [
+    'cspell lint --no-must-find-files --show-suggestions --relative',
+    'prettier --write',
+  ],
 };

@@ -6,12 +6,24 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   prettier,
   {
+    settings: {
+      next: {
+        rootDir: 'apps/web',
+      },
+    },
     rules: {
       'no-nested-ternary': 'error',
     },
   },
   // Override default ignores of eslint-config-next.
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores([
+    '**/node_modules/**',
+    '**/.next/**',
+    '**/out/**',
+    '**/build/**',
+    '**/dist/**',
+    '**/next-env.d.ts',
+  ]),
 ]);
 
 export default eslintConfig;
