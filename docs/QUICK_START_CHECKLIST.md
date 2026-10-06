@@ -321,10 +321,14 @@ Also: `lib/api/token.ts`, `lib/api/mappers.ts`, `lib/api/query-keys.ts`, `lib/ho
 
 Replace localStorage usage with API calls:
 
-- [ ] Update `lib/habits/useHabitLog.ts` to use API
-- [ ] Update components to use new hooks
-- [ ] Add loading states
-- [ ] Add error handling
+- [x] Update `lib/habits/useHabitLog.ts` to use API
+- [x] Update components to use new hooks
+- [x] Add loading states
+- [x] Add error handling
+
+**Note:** Without a JWT (task 19 login UI), Home/Log show a sign-in required message.
+
+**Status:** [x]
 
 ---
 

@@ -20,6 +20,8 @@ export const uk: Copy<typeof en> = {
     habit: 'Звичка',
     error: 'Щось пішло не так.',
     tryAgain: 'Спробувати ще раз',
+    signInRequired:
+      'Увійдіть, щоб синхронізувати звички з сервером. Екран входу буде в наступному кроці.',
   },
   shell: {
     brand: 'Habits+',

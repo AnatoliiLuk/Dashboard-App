@@ -1,5 +1,5 @@
 export { HABIT_COLORS, habitColor, isHabitColor } from './constants/colors';
-export { DEFAULT_WEEK_STARTS_ON, HABIT_STORAGE_KEY } from './constants/config';
+export { DEFAULT_WEEK_STARTS_ON } from './constants/config';
 
 export {
   addDays,

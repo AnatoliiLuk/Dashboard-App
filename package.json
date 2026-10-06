@@ -41,13 +41,6 @@
     "turbo": "^2.5.0",
     "typescript": "^6.0.3"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,mjs,json,md,yml,yaml}": [
-      "cspell lint --no-must-find-files --show-suggestions --relative",
-      "prettier --write"
-    ],
-    "*.css": "prettier --write"
-  },
   "engines": {
     "node": ">=20"
   }

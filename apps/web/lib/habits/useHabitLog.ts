@@ -1,70 +1,92 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { HabitColor } from './colors';
 import { today } from './dates';
-import {
-  addHabit,
-  deleteHabit,
-  habitTodayList,
-  renameHabit,
-  setHabitColor,
-  toggleToday,
-  type HabitToday,
-} from './log';
-import { loadHabitStore, saveHabitStore, type HabitStore } from './storage';
+import { habitTodayList, type HabitToday } from './log';
+import type { HabitStore } from './types';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useCompletions } from '@/lib/hooks/useCompletions';
+import { useHabits } from '@/lib/hooks/useHabits';
 
 export function useHabitLog() {
-  const [store, setStore] = useState<HabitStore | null>(null);
-  const [date, setDate] = useState<string | null>(null);
+  const { isAuthenticated, user } = useAuth();
+  const {
+    habits,
+    isLoading: habitsLoading,
+    isError: habitsError,
+    error: habitsErr,
+    refetch: refetchHabits,
+    createHabit,
+    updateHabit,
+    deleteHabit: removeHabit,
+  } = useHabits();
+  const {
+    completions,
+    isLoading: completionsLoading,
+    isError: completionsError,
+    error: completionsErr,
+    refetch: refetchCompletions,
+    toggleCompletion,
+  } = useCompletions();
 
-  useEffect(() => {
-    const loaded = loadHabitStore();
-    saveHabitStore(loaded);
-    setDate(today());
-    setStore(loaded);
-  }, []);
+  const date = today();
+  const needsAuth = !isAuthenticated;
+  const isLoading = isAuthenticated && (habitsLoading || completionsLoading);
+  const isError = habitsError || completionsError;
+  const error = habitsErr ?? completionsErr ?? null;
 
-  function update(next: HabitStore) {
-    saveHabitStore(next);
-    setStore(next);
+  const store: HabitStore | null = useMemo(() => {
+    if (!isAuthenticated) {
+      return null;
+    }
+
+    return {
+      ownerId: user?.id ?? 'api',
+      habits,
+      completions,
+    };
+  }, [isAuthenticated, user?.id, habits, completions]);
+
+  const ready = isAuthenticated && !isLoading && store !== null;
+
+  async function refetch() {
+    await Promise.all([refetchHabits(), refetchCompletions()]);
   }
 
   return {
-    ready: store !== null && date !== null,
+    ready,
+    needsAuth,
+    isLoading,
+    isError,
+    error,
+    refetch,
     today: date,
     store,
-    habits: store && date ? habitTodayList(store, date) : [],
-    addHabit(name: string, color: HabitColor) {
-      if (!store || !date) {
+    habits: store ? habitTodayList(store, date) : [],
+    async addHabit(name: string, color: HabitColor) {
+      const trimmed = name.trim();
+      if (!trimmed) {
         return;
       }
-      update(addHabit(store, name, date, color));
+      await createHabit({ name: trimmed, color });
     },
-    renameHabit(habitId: string, name: string) {
-      if (!store) {
+    async renameHabit(habitId: string, name: string) {
+      const trimmed = name.trim();
+      if (!trimmed) {
         return;
       }
-      update(renameHabit(store, habitId, name));
+      await updateHabit(habitId, { name: trimmed });
     },
-    deleteHabit(habitId: string) {
-      if (!store) {
-        return;
-      }
-      update(deleteHabit(store, habitId));
+    async deleteHabit(habitId: string) {
+      await removeHabit(habitId);
     },
-    setHabitColor(habitId: string, color: HabitColor) {
-      if (!store) {
-        return;
-      }
-      update(setHabitColor(store, habitId, color));
+    async setHabitColor(habitId: string, color: HabitColor) {
+      await updateHabit(habitId, { color });
     },
-    toggleToday(habitId: string) {
-      if (!store || !date) {
-        return;
-      }
-      update(toggleToday(store, habitId, date));
+    async toggleToday(habitId: string) {
+      await toggleCompletion({ habitId, date });
     },
   };
 }

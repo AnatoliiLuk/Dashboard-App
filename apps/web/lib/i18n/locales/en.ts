@@ -14,6 +14,8 @@ export const en = {
     habit: 'Habit',
     error: 'Something went wrong.',
     tryAgain: 'Try again',
+    signInRequired:
+      'Sign in to sync habits with the server. Login UI comes in the next step.',
   },
   shell: {
     brand: 'Habits+',

@@ -5,8 +5,8 @@ export type HabitStatus = 'success' | 'warning' | 'info';
 
 export type HabitCardProps = {
   item: HabitToday;
-  onToggle: (habitId: string) => void;
-  onColor: (habitId: string, color: HabitColor) => void;
-  onRename: (habitId: string, name: string) => void;
-  onDelete: (habitId: string) => void;
+  onToggle: (habitId: string) => void | Promise<void>;
+  onColor: (habitId: string, color: HabitColor) => void | Promise<void>;
+  onRename: (habitId: string, name: string) => void | Promise<void>;
+  onDelete: (habitId: string) => void | Promise<void>;
 };

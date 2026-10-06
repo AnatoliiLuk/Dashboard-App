@@ -5,6 +5,11 @@ import prettier from 'eslint-config-prettier/flat';
 const eslintConfig = defineConfig([
   ...nextVitals,
   prettier,
+  {
+    rules: {
+      'no-nested-ternary': 'error',
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
 ]);

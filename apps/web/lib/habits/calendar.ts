@@ -6,7 +6,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from './dates';
-import type { HabitStore } from './storage';
+import type { HabitStore } from './types';
 
 export type CalendarHabit = {
   id: string;

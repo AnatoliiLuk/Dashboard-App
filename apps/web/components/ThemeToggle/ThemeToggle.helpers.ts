@@ -13,14 +13,18 @@ export function getThemeToggleState(
       ? resolvedMode === 'dark'
       : undefined;
 
+  let label: string;
+  if (isDark === undefined) {
+    label = translate('theme.toggle');
+  } else if (isDark) {
+    label = translate('theme.toLight');
+  } else {
+    label = translate('theme.toDark');
+  }
+
   return {
     isDark,
-    label:
-      isDark === undefined
-        ? translate('theme.toggle')
-        : isDark
-          ? translate('theme.toLight')
-          : translate('theme.toDark'),
+    label,
     nextMode: isDark ? ('light' as const) : ('dark' as const),
   } as const;
 }

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
 import { monthWeeks, WEEKDAYS, weekDays } from '@/lib/habits/calendar';
 import { useTranslation } from '@/lib/i18n';
-import type { HabitStore } from '@/lib/habits/storage';
+import type { HabitStore } from '@/lib/habits/types';
 
 import { DayCell } from './DayCell';
 import { CALENDAR_VIEWS, calendarViewLabel } from './HabitCalendar.constants';

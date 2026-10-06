@@ -1,6 +1,7 @@
 'use client';
 
-import { Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
+import type { ReactNode } from 'react';
 
 import { AppShell } from '@/components/AppShell';
 import { HabitLogger } from '@/components/HabitLogger';
@@ -13,6 +14,9 @@ export function LogView() {
   const { t } = useTranslation();
   const {
     ready,
+    needsAuth,
+    isError,
+    refetch,
     habits,
     addHabit,
     toggleToday,
@@ -21,20 +25,34 @@ export function LogView() {
     deleteHabit,
   } = useHabitLog();
 
-  return (
-    <AppShell description={t('log.description')}>
-      {ready ? (
-        <HabitLogger
-          habits={habits}
-          onAdd={addHabit}
-          onToggle={toggleToday}
-          onColor={setHabitColor}
-          onRename={renameHabit}
-          onDelete={deleteHabit}
-        />
-      ) : (
-        <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
-      )}
-    </AppShell>
-  );
+  let content: ReactNode;
+  if (needsAuth) {
+    content = (
+      <Typography sx={loadingStyle}>{t('common.signInRequired')}</Typography>
+    );
+  } else if (isError) {
+    content = (
+      <Stack spacing={2} alignItems="flex-start">
+        <Typography sx={loadingStyle}>{t('common.error')}</Typography>
+        <Button variant="outlined" onClick={() => void refetch()}>
+          {t('common.tryAgain')}
+        </Button>
+      </Stack>
+    );
+  } else if (ready) {
+    content = (
+      <HabitLogger
+        habits={habits}
+        onAdd={addHabit}
+        onToggle={toggleToday}
+        onColor={setHabitColor}
+        onRename={renameHabit}
+        onDelete={deleteHabit}
+      />
+    );
+  } else {
+    content = <Typography sx={loadingStyle}>{t('common.loading')}</Typography>;
+  }
+
+  return <AppShell description={t('log.description')}>{content}</AppShell>;
 }
