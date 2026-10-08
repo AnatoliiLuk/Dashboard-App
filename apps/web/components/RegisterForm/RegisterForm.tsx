@@ -1,10 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
 import { ApiError } from '@repo/api-client';
 import NextLink from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import {
   authErrorStyle,
@@ -12,82 +13,81 @@ import {
   authFormStyle,
 } from '@/components/AuthForm/AuthForm.style';
 import { safeNextPath } from '@/lib/auth/safeNextPath';
+import { registerField } from '@/lib/forms/registerField';
+import {
+  registerFormSchema,
+  type RegisterFormValues,
+} from '@/lib/forms/schemas';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 
 export function RegisterForm() {
   const { t } = useTranslation();
-  const { register, registerMutation } = useAuth();
+  const { register: registerAccount, registerMutation } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerFormSchema(t)),
+    defaultValues: { name: '', email: '', password: '' },
+  });
 
-  async function submit() {
-    setError(null);
+  async function submit(values: RegisterFormValues) {
+    clearErrors('root');
     try {
-      await register({
-        name: name.trim(),
-        email: email.trim(),
-        password,
-      });
+      await registerAccount(values);
       router.replace(safeNextPath(searchParams.get('next')));
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-        return;
-      }
-      setError(t('common.error'));
+      setError('root', {
+        message: err instanceof ApiError ? err.message : t('common.error'),
+      });
     }
   }
 
   return (
     <Box
       component="form"
+      noValidate
       sx={authFormStyle}
-      onSubmit={(event) => {
-        event.preventDefault();
-        void submit();
-      }}
+      onSubmit={handleSubmit(submit)}
     >
       <TextField
         label={t('auth.name')}
-        name="name"
         autoComplete="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        required
+        error={Boolean(errors.name)}
+        helperText={errors.name?.message}
         fullWidth
         size="small"
+        {...registerField(register('name'))}
       />
       <TextField
         label={t('auth.email')}
-        name="email"
         type="email"
         autoComplete="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        required
+        error={Boolean(errors.email)}
+        helperText={errors.email?.message}
         fullWidth
         size="small"
+        {...registerField(register('email'))}
       />
       <TextField
         label={t('auth.password')}
-        name="password"
         type="password"
         autoComplete="new-password"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        required
+        error={Boolean(errors.password)}
+        helperText={errors.password?.message ?? t('auth.passwordHint')}
         fullWidth
         size="small"
-        helperText={t('auth.passwordHint')}
+        {...registerField(register('password'))}
       />
-      {error ? (
+      {errors.root ? (
         <Alert severity="error" sx={authErrorStyle}>
-          {error}
+          {errors.root.message}
         </Alert>
       ) : null}
       <Button

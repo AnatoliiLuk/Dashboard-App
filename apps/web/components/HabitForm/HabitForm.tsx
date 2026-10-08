@@ -1,53 +1,64 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, TextField } from '@mui/material';
-import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 import { ColorPicker } from '@/components/ColorPicker';
-import { HABIT_COLORS, type HabitColor } from '@/lib/habits/colors';
+import { registerField } from '@/lib/forms/registerField';
+import { habitFormSchema, type HabitFormValues } from '@/lib/forms/schemas';
+import { HABIT_COLORS } from '@/lib/habits/colors';
 import { useTranslation } from '@/lib/i18n';
 
 import { formStyle, nameFieldStyle } from './HabitForm.style';
 
 type HabitFormProps = {
-  onAdd: (name: string, color: HabitColor) => void;
+  onAdd: (name: string, color: HabitFormValues['color']) => void;
 };
 
 function HabitForm({ onAdd }: HabitFormProps) {
   const { t } = useTranslation();
-  const [name, setName] = useState('');
-  const [color, setColor] = useState<HabitColor>(HABIT_COLORS[0].id);
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<HabitFormValues>({
+    resolver: zodResolver(habitFormSchema(t)),
+    defaultValues: { name: '', color: HABIT_COLORS[0].id },
+  });
 
-  function submit() {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      return;
-    }
-    onAdd(trimmed, color);
-    setName('');
+  function submit(values: HabitFormValues) {
+    onAdd(values.name, values.color);
+    reset({ name: '', color: values.color });
   }
 
   return (
     <Box
       component="form"
+      noValidate
       sx={formStyle}
-      onSubmit={(event) => {
-        event.preventDefault();
-        submit();
-      }}
+      onSubmit={handleSubmit(submit)}
     >
       <TextField
         label={t('common.habit')}
-        name="habit"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
+        error={Boolean(errors.name)}
+        helperText={errors.name?.message}
         sx={nameFieldStyle}
         size="small"
+        {...registerField(register('name'))}
       />
-      <ColorPicker
-        value={color}
-        onChange={setColor}
-        label={t('log.newHabitColor')}
+      <Controller
+        name="color"
+        control={control}
+        render={({ field }) => (
+          <ColorPicker
+            value={field.value}
+            onChange={field.onChange}
+            label={t('log.newHabitColor')}
+          />
+        )}
       />
       <Button type="submit" variant="contained">
         {t('common.add')}

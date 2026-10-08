@@ -39,6 +39,14 @@ export const en = {
     noAccount: 'No account yet?',
     hasAccount: 'Already have an account?',
   },
+  validation: {
+    email: 'Enter a valid email.',
+    password: 'Password is required.',
+    passwordLength: 'At least 8 characters.',
+    name: 'Name is required.',
+    habit: 'Enter a habit name.',
+    habitLength: 'Use 100 characters or fewer.',
+  },
   calendar: {
     label: 'Habit calendar',
     view: 'Calendar view',

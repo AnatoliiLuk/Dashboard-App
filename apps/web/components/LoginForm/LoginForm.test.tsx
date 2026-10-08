@@ -124,6 +124,21 @@ describe('LoginForm', () => {
     );
   });
 
+  it('shows a field error and does not submit an invalid email', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<LoginForm />);
+
+    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'ada');
+    await user.type(
+      screen.getByLabelText('Password', { exact: false }),
+      'long-enough',
+    );
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+
+    expect(await screen.findByText('Enter a valid email.')).toBeVisible();
+    expect(mockLogin).not.toHaveBeenCalled();
+  });
+
   it('disables the submit button while the request is pending', () => {
     mockPending = true;
     renderWithProviders(<LoginForm />);

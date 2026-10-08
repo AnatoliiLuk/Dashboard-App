@@ -45,6 +45,14 @@ export const uk: Copy<typeof en> = {
     noAccount: 'Ще немає облікового запису?',
     hasAccount: 'Уже маєте обліковий запис?',
   },
+  validation: {
+    email: 'Вкажіть дійсну електронну пошту.',
+    password: 'Вкажіть пароль.',
+    passwordLength: 'Щонайменше 8 символів.',
+    name: "Вкажіть ім'я.",
+    habit: 'Вкажіть назву звички.',
+    habitLength: 'Не більше 100 символів.',
+  },
   calendar: {
     label: 'Календар звичок',
     view: 'Вигляд календаря',
