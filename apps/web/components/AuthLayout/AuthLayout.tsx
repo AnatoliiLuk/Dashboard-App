@@ -22,12 +22,12 @@ import { useTranslation } from '@/lib/i18n';
 import { loadingStyle } from '@/app/page.style';
 
 type AuthLayoutProps = {
-  title: string;
-  lead: string;
+  titleKey: 'auth.signIn' | 'auth.createAccount';
+  leadKey: 'auth.loginLead' | 'auth.registerLead';
   children: ReactNode;
 };
 
-export function AuthLayout({ title, lead, children }: AuthLayoutProps) {
+export function AuthLayout({ titleKey, leadKey, children }: AuthLayoutProps) {
   const { t } = useTranslation();
   const { isAuthReady, isAuthenticated } = useAuth();
 
@@ -61,9 +61,9 @@ export function AuthLayout({ title, lead, children }: AuthLayoutProps) {
             </Box>
           </Box>
           <Typography variant="h2" component="h1" sx={{ mt: 3 }}>
-            {title}
+            {t(titleKey)}
           </Typography>
-          <Typography sx={authLeadStyle}>{lead}</Typography>
+          <Typography sx={authLeadStyle}>{t(leadKey)}</Typography>
         </Box>
         <Suspense
           fallback={

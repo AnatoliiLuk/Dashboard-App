@@ -9,14 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: i18n.t('auth.register') };
 }
 
-export default async function RegisterPage() {
-  const i18n = await requestI18n();
-
+export default function RegisterPage() {
   return (
-    <AuthLayout
-      title={i18n.t('auth.createAccount')}
-      lead={i18n.t('auth.registerLead')}
-    >
+    <AuthLayout titleKey="auth.createAccount" leadKey="auth.registerLead">
       <RegisterForm />
     </AuthLayout>
   );

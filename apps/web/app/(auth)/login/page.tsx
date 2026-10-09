@@ -9,11 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: i18n.t('auth.signIn') };
 }
 
-export default async function LoginPage() {
-  const i18n = await requestI18n();
-
+export default function LoginPage() {
   return (
-    <AuthLayout title={i18n.t('auth.signIn')} lead={i18n.t('auth.loginLead')}>
+    <AuthLayout titleKey="auth.signIn" leadKey="auth.loginLead">
       <LoginForm />
     </AuthLayout>
   );
