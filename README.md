@@ -48,4 +48,26 @@ npm run dev:api
 
 Protected routes need `Authorization: Bearer <token>` from login/register.
 
-Shared typed client for web/mobile: `@repo/api-client` (`packages/api-client`).
+After `npm run db:seed`, sign in as `demo@habits.plus` with password `password`.
+
+Shared typed client: `@repo/api-client` (`packages/api-client`).
+
+## Tests
+
+```bash
+npm test          # Jest: web, API unit, API integration, shared packages
+npm run test:e2e  # Playwright: register, log a habit, first-visit language
+```
+
+API integration tests use the `habit_tracker_test` database. End-to-end tests use `habit_tracker_e2e`. Both are created from `DATABASE_URL` unless `TEST_DATABASE_URL` or `E2E_DATABASE_URL` is set.
+
+## CI
+
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests. Four jobs run in parallel: lint, typecheck, Jest, and Playwright.
+
+## Docs
+
+- Web app: `apps/web/README.md`
+- API: `apps/api/README.md`
+- API contract: `apps/api/openapi.yaml`
+- Mobile app: `apps/mobile/README.md` (not started)

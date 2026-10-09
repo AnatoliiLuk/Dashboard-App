@@ -422,37 +422,58 @@ npm start
 
 ## Phase 8: Testing & Polish (Day 11-14)
 
+Tests and CI are in place. The workflow checks lint, types, Jest, and Playwright. Deploy stays in Phase 9.
+
 ### 25. Write Tests
 
-**Backend tests:**
+**Status:** [x]
 
-- [ ] `apps/api/tests/integration/auth.test.ts`
-- [ ] `apps/api/tests/integration/habits.test.ts`
-- [ ] `apps/api/tests/unit/services/habits.service.test.ts`
+Tests sit next to the source. `npm test` runs Jest. `npm run test:e2e` runs Playwright.
 
-**Frontend tests:**
+**API:**
 
-- [ ] `apps/web/components/HabitCard/HabitCard.test.tsx`
-- [ ] `apps/web/lib/hooks/useHabits.test.ts`
+- [x] `apps/api/src/integration/auth.integration.test.ts`
+- [x] `apps/api/src/integration/habits.integration.test.ts`
+- [x] `apps/api/src/validators/auth.validator.test.ts`
+- [x] `apps/api/src/validators/habits.validator.test.ts`
+- [x] `apps/api/src/validators/completions.validator.test.ts`
+- [x] `apps/api/src/utils/password.util.test.ts`
+
+**Web:**
+
+- [x] `apps/web/components/HabitCard/HabitCard.test.tsx`
+- [x] `apps/web/components/LoginForm/LoginForm.test.tsx`
+- [x] `apps/web/components/LocaleSwitch/LocaleSwitch.test.tsx`
+- [x] `apps/web/lib/i18n/locale.test.ts`
+
+**Shared and end to end:**
+
+- [x] `packages/core` unit tests (`streak`, `date`, `colors`)
+- [x] `e2e/habits.spec.ts`
+- [x] `e2e/locale.spec.ts`
 
 ---
 
 ### 26. Add Documentation
 
-- [ ] Update root `README.md`
-- [ ] Create `apps/api/README.md`
-- [ ] Create `apps/web/README.md`
-- [ ] Create `apps/mobile/README.md`
-- [ ] Document API endpoints (Swagger/OpenAPI)
+**Status:** [x]
+
+- [x] Update root `README.md`
+- [x] Create `apps/api/README.md`
+- [x] Create `apps/web/README.md`
+- [x] Create `apps/mobile/README.md`
+- [x] Document API endpoints in `apps/api/openapi.yaml`
 
 ---
 
-### 27. Setup CI/CD
+### 27. Setup CI
 
-- [ ] Create `.github/workflows/ci.yml`
-- [ ] Add linting to CI
-- [ ] Add tests to CI
-- [ ] Add type checking to CI
+**Status:** [x]
+
+- [x] Create `.github/workflows/ci.yml`
+- [x] Add linting to CI
+- [x] Add tests to CI (Jest and Playwright)
+- [x] Add type checking to CI
 
 ---
 
@@ -526,8 +547,8 @@ eas submit --platform android
 
 ### Nice to Have:
 
-- [ ] Comprehensive tests
-- [ ] API documentation
+- [x] Comprehensive tests
+- [x] API documentation
 - [ ] Email notifications
 - [ ] Push notifications
 - [ ] Data export
