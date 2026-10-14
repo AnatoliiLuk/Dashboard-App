@@ -1,4 +1,4 @@
-import type { HabitColor } from '@repo/types';
+import type { GoalColor, HabitColor } from '@repo/types';
 
 /** Shapes returned by the Express API. */
 
@@ -30,6 +30,16 @@ export type ApiHabit = {
   createdAt: string;
   updatedAt: string;
   completions?: ApiCompletion[];
+};
+
+export type ApiGoal = {
+  id: string;
+  name: string;
+  color: GoalColor;
+  startDate: string;
+  endDate: string;
+  userId: string;
+  habitIds: string[];
 };
 
 export type ToggleCompletionResponse = {

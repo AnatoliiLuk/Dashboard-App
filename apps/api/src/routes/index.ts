@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import authRoutes from './auth.routes';
 import completionsRoutes from './completions.routes';
+import goalsRoutes from './goals.routes';
 import habitsRoutes from './habits.routes';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.get('/', (_req, res) => {
 router.use('/auth', authRoutes);
 router.use('/habits', habitsRoutes);
 router.use('/completions', completionsRoutes);
+router.use('/goals', goalsRoutes);
 
 export default router;
