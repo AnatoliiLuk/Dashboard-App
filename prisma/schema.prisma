@@ -21,6 +21,15 @@ enum HabitColor {
   teal
 }
 
+enum GoalColor {
+  indigo
+  orange
+  lime
+  magenta
+  slate
+  crimson
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -32,6 +41,7 @@ model User {
 
   habits      Habit[]
   completions Completion[]
+  goals       Goal[]
 
   @@map("users")
 }
@@ -46,6 +56,7 @@ model Habit {
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   completions Completion[]
+  goalHabits  GoalHabit[]
 
   @@index([userId])
   @@map("habits")
@@ -65,4 +76,31 @@ model Completion {
   @@index([userId])
   @@index([habitId])
   @@map("completions")
+}
+
+model Goal {
+  id        String    @id @default(cuid())
+  name      String
+  color     GoalColor
+  startDate DateTime  @db.Date
+  endDate   DateTime  @db.Date
+  userId    String
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habits GoalHabit[]
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model GoalHabit {
+  goalId  String
+  habitId String
+
+  goal  Goal  @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@id([goalId, habitId])
+  @@index([habitId])
+  @@map("goal_habits")
 }
