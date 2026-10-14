@@ -1,4 +1,9 @@
-export { HABIT_COLORS, habitColor } from './constants/colors';
+export {
+  GOAL_COLORS,
+  HABIT_COLORS,
+  goalColor,
+  habitColor,
+} from './constants/colors';
 
 export {
   addDays,
@@ -11,4 +16,5 @@ export {
   today,
   weekTitle,
 } from './utils/date';
+export { goalProgress } from './utils/goal-progress';
 export { streakFor } from './utils/streak';
