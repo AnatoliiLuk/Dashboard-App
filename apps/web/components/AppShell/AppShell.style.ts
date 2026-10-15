@@ -44,7 +44,7 @@ export const menuStyle = ({
   boxSizing: 'border-box' as const,
   height: spacingPx[40],
   gap: spacingPx[4],
-  p: spacingPx[4],
+  p: spacingPx[0],
   border: border[1],
   borderColor: vars.palette.divider,
   borderRadius: borderRadius.pill,
@@ -60,6 +60,8 @@ export const menuItemStyle = ({
 }: Theme) => ({
   display: 'inline-flex' as const,
   alignItems: 'center' as const,
+  boxSizing: 'border-box' as const,
+  height: '100%',
   px: spacingPx[12],
   py: spacingPx[0],
   borderRadius: borderRadius.pill,

@@ -29,6 +29,7 @@ import {
   tableWrapStyle,
   viewBarStyle,
   viewButtonActiveStyle,
+  viewButtonStyle,
   viewOptionsStyle,
 } from './HabitCalendar.style';
 
@@ -60,7 +61,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
               type="button"
               aria-pressed={view === option}
               sx={[
-                monthButtonStyle,
+                viewButtonStyle,
                 view === option ? viewButtonActiveStyle : null,
               ]}
               onClick={() => {

@@ -1,28 +1,25 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-/** Thumb size inside a 40px control (minus 1px borders and 4px inset). */
-const thumbSize = ({ spacingPx }: Theme) =>
-  `calc(${spacingPx[40]} - 2px - ${spacingPx[4]} * 2)`;
+const slotSize = ({ spacingPx }: Theme) => spacingPx[40];
 
-const endSlot = (theme: Theme) =>
-  `calc(${theme.spacingPx[4]} + ${thumbSize(theme)} + ${theme.spacingPx[4]})`;
+const endSlot = (theme: Theme) => slotSize(theme);
 
 export const themeToggleStyle = (theme: Theme) => {
   const { vars, spacingPx, border, borderRadius } = theme;
-  const size = thumbSize(theme);
+  const size = slotSize(theme);
 
   return {
     position: 'relative' as const,
     display: 'block' as const,
     flexShrink: 0,
     boxSizing: 'border-box' as const,
-    width: `calc(${size} * 2 + ${spacingPx[4]} * 3)`,
-    height: spacingPx[40],
+    width: `calc(${size} * 2)`,
+    height: size,
     m: spacingPx[0],
     p: spacingPx[0],
-    border: border[1],
-    borderColor: vars.palette.divider,
+    border: 'none' as const,
+    boxShadow: `inset 0 0 0 1px ${vars.palette.divider}`,
     backgroundColor: vars.palette.background.paper,
     borderRadius: borderRadius.pill,
     cursor: 'pointer' as const,
@@ -35,12 +32,12 @@ export const themeToggleStyle = (theme: Theme) => {
 
 export const thumbStyle = (theme: Theme) => {
   const { vars, spacingPx, borderRadius, getColorSchemeSelector } = theme;
-  const size = thumbSize(theme);
+  const size = slotSize(theme);
 
   return {
     position: 'absolute',
-    top: spacingPx[4],
-    left: spacingPx[4],
+    top: spacingPx[0],
+    left: spacingPx[0],
     width: size,
     height: size,
     borderRadius: borderRadius.pill,
@@ -54,12 +51,12 @@ export const thumbStyle = (theme: Theme) => {
 
 export const iconStyle = (atEnd: boolean) => (theme: Theme) => {
   const { vars, spacingPx, getColorSchemeSelector } = theme;
-  const size = thumbSize(theme);
+  const size = slotSize(theme);
 
   return {
     position: 'absolute',
-    top: spacingPx[4],
-    left: atEnd ? endSlot(theme) : spacingPx[4],
+    top: spacingPx[0],
+    left: atEnd ? endSlot(theme) : spacingPx[0],
     zIndex: 1,
     display: 'flex',
     alignItems: 'center',
