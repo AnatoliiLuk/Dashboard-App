@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import type { Habit } from '@repo/types';
+import type { Goal, Habit } from '@repo/types';
 import { Controller, useForm } from 'react-hook-form';
 
 import { GoalColorPicker } from '@/components/GoalColorPicker';
@@ -15,18 +15,48 @@ import { today } from '@/lib/habits/dates';
 import { useTranslation } from '@/lib/i18n';
 
 import {
+  actionsStyle,
   datesStyle,
+  editingStyle,
   formStyle,
   noteStyle,
-  submitStyle,
 } from './GoalForm.style';
 
 type GoalFormProps = {
   habits: Habit[];
+  editing?: Goal | null;
   onAdd: (values: GoalFormValues) => void | Promise<void>;
+  onUpdate?: (id: string, values: GoalFormValues) => void | Promise<void>;
+  onCancel?: () => void;
 };
 
-function GoalForm({ habits, onAdd }: GoalFormProps) {
+function blankGoal(): GoalFormValues {
+  return {
+    name: '',
+    color: GOAL_COLORS[0].id,
+    startDate: today(),
+    endDate: today(),
+    habitIds: [],
+  };
+}
+
+function valuesFromGoal(goal: Goal): GoalFormValues {
+  return {
+    name: goal.name,
+    color: goal.color,
+    startDate: goal.startDate,
+    endDate: goal.endDate,
+    habitIds: [...goal.habitIds],
+  };
+}
+
+function GoalForm({
+  habits,
+  editing = null,
+  onAdd,
+  onUpdate,
+  onCancel,
+}: GoalFormProps) {
   const { t } = useTranslation();
   const disabled = habits.length === 0;
   const {
@@ -37,16 +67,14 @@ function GoalForm({ habits, onAdd }: GoalFormProps) {
     formState: { errors },
   } = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema(t)),
-    defaultValues: {
-      name: '',
-      color: GOAL_COLORS[0].id,
-      startDate: today(),
-      endDate: today(),
-      habitIds: [],
-    },
+    defaultValues: editing ? valuesFromGoal(editing) : blankGoal(),
   });
 
   function submit(values: GoalFormValues) {
+    if (editing) {
+      return onUpdate?.(editing.id, values);
+    }
+
     void onAdd(values);
     reset({
       name: '',
@@ -71,8 +99,14 @@ function GoalForm({ habits, onAdd }: GoalFormProps) {
       noValidate
       sx={formStyle}
       aria-describedby={disabled ? 'goal-form-note' : undefined}
+      aria-labelledby={editing ? 'goal-form-editing' : undefined}
       onSubmit={handleSubmit(submit)}
     >
+      {editing ? (
+        <Typography id="goal-form-editing" sx={editingStyle}>
+          {t('goals.editing', { name: editing.name })}
+        </Typography>
+      ) : null}
       {disabled ? (
         <Typography id="goal-form-note" sx={noteStyle}>
           {t('goals.noHabits')}
@@ -84,6 +118,7 @@ function GoalForm({ habits, onAdd }: GoalFormProps) {
         helperText={errors.name?.message}
         size="small"
         disabled={disabled}
+        autoFocus={Boolean(editing)}
         {...registerField(register('name'))}
       />
       <Controller
@@ -93,7 +128,11 @@ function GoalForm({ habits, onAdd }: GoalFormProps) {
           <GoalColorPicker
             value={field.value}
             onChange={field.onChange}
-            label={t('goals.newGoalColor')}
+            label={
+              editing
+                ? t('goals.goalColor', { name: editing.name })
+                : t('goals.newGoalColor')
+            }
             disabled={disabled}
           />
         )}
@@ -143,14 +182,16 @@ function GoalForm({ habits, onAdd }: GoalFormProps) {
           />
         )}
       />
-      <Button
-        type="submit"
-        variant="contained"
-        disabled={disabled}
-        sx={submitStyle}
-      >
-        {t('common.add')}
-      </Button>
+      <Box sx={actionsStyle}>
+        <Button type="submit" variant="contained" disabled={disabled}>
+          {editing ? t('common.save') : t('common.add')}
+        </Button>
+        {editing ? (
+          <Button type="button" variant="outlined" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
+      </Box>
     </Box>
   );
 }

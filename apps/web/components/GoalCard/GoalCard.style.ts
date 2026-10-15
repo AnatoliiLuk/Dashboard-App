@@ -53,23 +53,8 @@ export const actionsStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[8],
 });
 
-export const editFieldStyle = {
-  flex: 1,
-  minWidth: 0,
-};
-
-export const editFieldsStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: spacingPx[12],
-  mt: spacingPx[12],
-});
-
-export const datesStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'flex-start',
-  gap: spacingPx[8],
+export const selectedGoalStyle = ({ vars }: Theme) => ({
+  borderColor: vars.palette.primary.main,
 });
 
 export const rangeStyle = ({ vars, spacingPx }: Theme) => ({

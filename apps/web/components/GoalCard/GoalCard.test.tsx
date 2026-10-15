@@ -36,7 +36,7 @@ describe('GoalCard', () => {
         goal={goal()}
         habits={[habit()]}
         percent={20}
-        onUpdate={jest.fn()}
+        onEdit={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -62,7 +62,7 @@ describe('GoalCard', () => {
         goal={goal()}
         habits={[habit()]}
         percent={20}
-        onUpdate={jest.fn()}
+        onEdit={jest.fn()}
         onDelete={onDelete}
       />,
     );
@@ -72,5 +72,30 @@ describe('GoalCard', () => {
 
     await user.click(screen.getByRole('button', { name: 'Delete' }));
     expect(onDelete).toHaveBeenCalledWith('goal-1');
+  });
+
+  it('asks the parent to edit the goal', async () => {
+    const user = userEvent.setup();
+    const onEdit = jest.fn();
+
+    renderWithProviders(
+      <GoalCard
+        goal={goal()}
+        habits={[habit()]}
+        percent={20}
+        onEdit={onEdit}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
+
+    expect(onEdit).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole('heading', { name: 'October focus' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Goal' }),
+    ).not.toBeInTheDocument();
   });
 });

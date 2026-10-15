@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { Habit } from '@repo/types';
+import type { Goal, Habit } from '@repo/types';
 
 import { formatDisplay, today } from '@/lib/habits/dates';
 
@@ -15,6 +15,18 @@ function habit(id: string, name: string): Habit {
     name,
     createdOn: '2026-10-01',
     color: 'sky',
+  };
+}
+
+function existingGoal(): Goal {
+  return {
+    id: 'goal-1',
+    ownerId: 'user-1',
+    name: 'October focus',
+    color: 'indigo',
+    startDate: '2026-10-01',
+    endDate: '2026-10-10',
+    habitIds: ['habit-1'],
   };
 }
 
@@ -59,5 +71,61 @@ describe('GoalForm', () => {
       'aria-disabled',
       'true',
     );
+  });
+
+  it('saves changes to the goal already in the form', async () => {
+    const user = userEvent.setup();
+    const onUpdate = jest.fn(async () => undefined);
+    const onAdd = jest.fn();
+
+    renderWithProviders(
+      <GoalForm
+        habits={[habit('habit-1', 'Read')]}
+        editing={existingGoal()}
+        onAdd={onAdd}
+        onUpdate={onUpdate}
+        onCancel={jest.fn()}
+      />,
+    );
+
+    const name = screen.getByRole('textbox', { name: 'Goal' });
+    expect(screen.getByText('Editing October focus')).toBeInTheDocument();
+    expect(name).toHaveValue('October focus');
+    expect(screen.getByRole('radio', { name: 'Indigo' })).toBeChecked();
+    expect(screen.getByText('Read')).toBeInTheDocument();
+
+    await user.clear(name);
+    await user.type(name, 'November focus');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onAdd).not.toHaveBeenCalled();
+    expect(onUpdate).toHaveBeenCalledWith('goal-1', {
+      name: 'November focus',
+      color: 'indigo',
+      startDate: '2026-10-01',
+      endDate: '2026-10-10',
+      habitIds: ['habit-1'],
+    });
+  });
+
+  it('leaves the goal unchanged when editing is cancelled', async () => {
+    const user = userEvent.setup();
+    const onCancel = jest.fn();
+    const onUpdate = jest.fn();
+
+    renderWithProviders(
+      <GoalForm
+        habits={[habit('habit-1', 'Read')]}
+        editing={existingGoal()}
+        onAdd={jest.fn()}
+        onUpdate={onUpdate}
+        onCancel={onCancel}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onUpdate).not.toHaveBeenCalled();
   });
 });

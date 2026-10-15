@@ -20,6 +20,12 @@ export const noteStyle = ({ vars }: Theme) => ({
   color: vars.palette.text.secondary,
 });
 
-export const submitStyle = {
-  alignSelf: 'flex-start',
-};
+export const editingStyle = ({ typography }: Theme) => ({
+  fontWeight: typography.fontWeightMedium,
+});
+
+export const actionsStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: spacingPx[8],
+});

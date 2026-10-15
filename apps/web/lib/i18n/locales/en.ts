@@ -89,6 +89,7 @@ export const en = {
       'Name a stretch of days and watch it fill as you log the habits you linked.',
     empty: 'Add a goal to track a stretch of days.',
     name: 'Goal',
+    editing: 'Editing {{name}}',
     newGoalColor: 'Color for the new goal',
     goalColor: 'Color for {{name}}',
     startDate: 'Start date',
