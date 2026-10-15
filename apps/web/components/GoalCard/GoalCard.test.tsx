@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Goal, Habit } from '@repo/types';
@@ -30,6 +30,10 @@ function habit(): Habit {
 }
 
 describe('GoalCard', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('shows the progress percent', () => {
     renderWithProviders(
       <GoalCard
@@ -51,6 +55,23 @@ describe('GoalCard', () => {
     ).toHaveAttribute('aria-valuenow', '20');
     expect(screen.getByText('Read')).toBeInTheDocument();
     expect(screen.getByText('01-10-2026 – 10-10-2026')).toBeInTheDocument();
+  });
+
+  it('shows the goal length and the days still left', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 9, 5, 12));
+
+    renderWithProviders(
+      <GoalCard
+        goal={goal()}
+        habits={[habit()]}
+        percent={20}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('10 days · 6 days left')).toBeInTheDocument();
   });
 
   it('deletes only after confirmation', async () => {

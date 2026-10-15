@@ -62,6 +62,11 @@ export const rangeStyle = ({ vars, spacingPx }: Theme) => ({
   color: vars.palette.text.secondary,
 });
 
+export const spanStyle = ({ vars, spacingPx }: Theme) => ({
+  mt: spacingPx[4],
+  color: vars.palette.text.secondary,
+});
+
 export const chipsStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   flexWrap: 'wrap',

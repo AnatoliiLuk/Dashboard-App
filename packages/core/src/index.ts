@@ -16,5 +16,5 @@ export {
   today,
   weekTitle,
 } from './utils/date';
-export { goalProgress } from './utils/goal-progress';
+export { goalDays, goalProgress } from './utils/goal-progress';
 export { streakFor } from './utils/streak';

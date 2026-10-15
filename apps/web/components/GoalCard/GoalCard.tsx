@@ -1,11 +1,12 @@
 'use client';
 
+import { goalDays } from '@repo/core';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 import { HabitTag } from '@/components/HabitTag';
-import { formatDisplay } from '@/lib/habits/dates';
+import { formatDisplay, today } from '@/lib/habits/dates';
 import { useTranslation } from '@/lib/i18n';
 
 import type { GoalCardProps } from './GoalCard.interface';
@@ -22,6 +23,7 @@ import {
   progressStyle,
   rangeStyle,
   selectedGoalStyle,
+  spanStyle,
   toggleStyle,
   topStyle,
 } from './GoalCard.style';
@@ -36,6 +38,7 @@ function GoalCard({
 }: GoalCardProps) {
   const { t } = useTranslation();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const { total, left } = goalDays(goal.startDate, goal.endDate, today());
   const linked = goal.habitIds.flatMap((id) => {
     const habit = habits.find((item) => item.id === id);
     return habit ? [habit] : [];
@@ -106,6 +109,12 @@ function GoalCard({
           {t('goals.range', {
             start: formatDisplay(goal.startDate),
             end: formatDisplay(goal.endDate),
+          })}
+        </Typography>
+        <Typography variant="body2" sx={spanStyle}>
+          {t('goals.summary', {
+            total: t('goals.totalDays', { count: total }),
+            left: t('goals.daysLeft', { count: left }),
           })}
         </Typography>
         {linked.length > 0 ? (

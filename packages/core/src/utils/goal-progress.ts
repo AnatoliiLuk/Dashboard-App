@@ -2,6 +2,8 @@ import type { Completion } from '@repo/types';
 
 import { addDays, compareDates } from './date';
 
+const MS_PER_DAY = 86_400_000;
+
 export function goalProgress(
   start: string,
   end: string,
@@ -30,11 +32,33 @@ export function goalProgress(
     covered.add(completion.date);
   }
 
-  let totalDays = 0;
+  const totalDays = inclusiveDayCount(start, end);
+  return Math.round((covered.size / totalDays) * 100);
+}
 
-  for (let day = start; compareDates(day, end) <= 0; day = addDays(day, 1)) {
-    totalDays += 1;
+export function goalDays(
+  start: string,
+  end: string,
+  asOf: string,
+): { total: number; left: number } {
+  const total = inclusiveDayCount(start, end);
+  if (total === 0 || compareDates(asOf, end) > 0) {
+    return { total, left: 0 };
   }
 
-  return Math.round((covered.size / totalDays) * 100);
+  const from = compareDates(asOf, start) < 0 ? start : asOf;
+  return { total, left: inclusiveDayCount(from, end) };
+}
+
+function inclusiveDayCount(start: string, end: string): number {
+  if (compareDates(start, end) > 0) {
+    return 0;
+  }
+
+  return utcDayNumber(end) - utcDayNumber(start) + 1;
+}
+
+function utcDayNumber(iso: string): number {
+  const [year, month, day] = iso.split('-').map(Number);
+  return Date.UTC(year, month - 1, day) / MS_PER_DAY;
 }
