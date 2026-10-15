@@ -6,7 +6,12 @@ import type { LoginDto, RegisterDto } from '@repo/types';
 import { useEffect, useSyncExternalStore } from 'react';
 
 import { api } from '@/lib/api/client';
-import { authKeys, completionKeys, habitKeys } from '@/lib/api/query-keys';
+import {
+  authKeys,
+  completionKeys,
+  goalKeys,
+  habitKeys,
+} from '@/lib/api/query-keys';
 import {
   clearToken,
   getToken,
@@ -58,6 +63,7 @@ export function useAuth() {
     queryClient.removeQueries({ queryKey: authKeys.all });
     queryClient.removeQueries({ queryKey: habitKeys.all });
     queryClient.removeQueries({ queryKey: completionKeys.all });
+    queryClient.removeQueries({ queryKey: goalKeys.all });
   }, [meQuery.isError, meQuery.error, queryClient]);
 
   const loginMutation = useMutation({
@@ -81,6 +87,7 @@ export function useAuth() {
     queryClient.removeQueries({ queryKey: authKeys.all });
     queryClient.removeQueries({ queryKey: habitKeys.all });
     queryClient.removeQueries({ queryKey: completionKeys.all });
+    queryClient.removeQueries({ queryKey: goalKeys.all });
   }
 
   return {

@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { theme } from '@/app/theme';
+import { DateLocalization } from '@/components/DateLocalization';
 import { createI18n } from '@/lib/i18n/createI18n';
 import type { Locale } from '@/lib/i18n/locale';
 
@@ -21,7 +22,7 @@ function Wrapper({
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme} defaultMode="light">
-        {children}
+        <DateLocalization>{children}</DateLocalization>
       </ThemeProvider>
     </I18nextProvider>
   );

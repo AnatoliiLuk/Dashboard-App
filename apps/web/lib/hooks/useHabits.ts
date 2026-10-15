@@ -5,7 +5,7 @@ import type { CreateHabitDto, UpdateHabitDto } from '@repo/types';
 
 import { api } from '@/lib/api/client';
 import { toHabit } from '@/lib/api/mappers';
-import { habitKeys } from '@/lib/api/query-keys';
+import { goalKeys, habitKeys } from '@/lib/api/query-keys';
 import { useAuthToken } from '@/lib/hooks/useAuth';
 
 export function useHabits() {
@@ -40,6 +40,7 @@ export function useHabits() {
     mutationFn: (id: string) => api.habits.delete(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: habitKeys.all });
+      void queryClient.invalidateQueries({ queryKey: goalKeys.all });
     },
   });
 

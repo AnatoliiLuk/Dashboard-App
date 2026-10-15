@@ -33,6 +33,7 @@
     "postgresql",
     "cuid",
     "healthcheck",
-    "isready"
+    "isready",
+    "Маджента"
   ]
 }

@@ -10,3 +10,7 @@ export const habitKeys = {
 export const completionKeys = {
   all: ['completions'] as const,
 };
+
+export const goalKeys = {
+  all: ['goals'] as const,
+};

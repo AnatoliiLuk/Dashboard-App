@@ -8,6 +8,7 @@ import { useState, type ReactNode } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { theme } from '@/app/theme';
+import { DateLocalization } from '@/components/DateLocalization';
 import { createI18n } from '@/lib/i18n/createI18n';
 import type { Locale } from '@/lib/i18n/locale';
 
@@ -45,7 +46,7 @@ export function Providers({
             disableTransitionOnChange
           >
             <CssBaseline />
-            {children}
+            <DateLocalization>{children}</DateLocalization>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </QueryClientProvider>
