@@ -47,6 +47,7 @@ describe('GoalCard', () => {
     expect(screen.getByText('20%')).toBeInTheDocument();
     expect(
       screen.getByRole('progressbar', { name: 'Progress' }),
+      // cspell:disable-next-line
     ).toHaveAttribute('aria-valuenow', '20');
     expect(screen.getByText('Read')).toBeInTheDocument();
     expect(screen.getByText('01-10-2026 – 10-10-2026')).toBeInTheDocument();
