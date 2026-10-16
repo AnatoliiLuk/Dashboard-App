@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import type { HabitToday } from '@/lib/habits/log';
@@ -58,5 +58,41 @@ describe('HabitLogger', () => {
     });
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Habit' })).toHaveValue('');
+  });
+
+  it('reorders habits from the sort control above the cards', async () => {
+    window.localStorage.clear();
+    const user = userEvent.setup();
+    const read = habitItem();
+    const walk = habitItem();
+    walk.habit = { ...walk.habit, id: 'habit-2', name: 'Walk' };
+    walk.doneToday = true;
+    walk.currentStreak = 4;
+
+    renderWithProviders(
+      <HabitLogger
+        habits={[read, walk]}
+        onAdd={jest.fn()}
+        onUpdate={jest.fn()}
+        onToggle={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const sort = screen.getByRole('group', { name: 'Sort habits' });
+    const names = () =>
+      screen.getAllByRole('listitem').map((item) => item.textContent ?? '');
+
+    expect(
+      within(sort).getByRole('button', { name: 'Not done' }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    expect(names()[0]).toContain('Read');
+
+    await user.click(within(sort).getByRole('button', { name: 'Longest' }));
+
+    expect(names()[0]).toContain('Walk');
+    expect(
+      within(sort).getByRole('button', { name: 'Longest' }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });

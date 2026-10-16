@@ -1,13 +1,16 @@
 'use client';
 
 import { Box, Typography } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { GoalCard } from '@/components/GoalCard';
 import { GoalForm } from '@/components/GoalForm';
+import { SegmentedControl } from '@/components/SegmentedControl';
 import type { GoalFormValues } from '@/lib/forms/schemas';
 import { useTranslation } from '@/lib/i18n';
 
+import { GOAL_SORTS, goalSortLabel } from './GoalLogger.constants';
+import { loadGoalSort, saveGoalSort, sortGoals } from './GoalLogger.helpers';
 import type { GoalLoggerProps } from './GoalLogger.interface';
 import { emptyStyle, listStyle } from './GoalLogger.style';
 
@@ -20,9 +23,11 @@ export function GoalLogger({
 }: GoalLoggerProps) {
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [sort, setSort] = useState(loadGoalSort);
   const formRef = useRef<HTMLDivElement>(null);
   const editing =
     goals.find((item) => item.goal.id === editingId)?.goal ?? null;
+  const sorted = useMemo(() => sortGoals(goals, sort), [goals, sort]);
 
   function beginEdit(id: string) {
     setEditingId(id);
@@ -48,22 +53,36 @@ export function GoalLogger({
           onCancel={() => setEditingId(null)}
         />
       </Box>
-      {goals.length === 0 ? (
+      {sorted.length === 0 ? (
         <Typography sx={emptyStyle}>{t('goals.empty')}</Typography>
       ) : (
-        <Box component="ul" sx={listStyle}>
-          {goals.map((item) => (
-            <GoalCard
-              key={item.goal.id}
-              goal={item.goal}
-              habits={habits}
-              timeline={item.timeline}
-              selected={item.goal.id === editing?.id}
-              onEdit={() => beginEdit(item.goal.id)}
-              onDelete={onDelete}
-            />
-          ))}
-        </Box>
+        <>
+          <SegmentedControl
+            label={t('goals.sort')}
+            value={sort}
+            options={GOAL_SORTS.map((option) => ({
+              id: option,
+              label: t(goalSortLabel[option]),
+            }))}
+            onChange={(option) => {
+              saveGoalSort(option);
+              setSort(option);
+            }}
+          />
+          <Box component="ul" sx={listStyle}>
+            {sorted.map((item) => (
+              <GoalCard
+                key={item.goal.id}
+                goal={item.goal}
+                habits={habits}
+                timeline={item.timeline}
+                selected={item.goal.id === editing?.id}
+                onEdit={() => beginEdit(item.goal.id)}
+                onDelete={onDelete}
+              />
+            ))}
+          </Box>
+        </>
       )}
     </section>
   );

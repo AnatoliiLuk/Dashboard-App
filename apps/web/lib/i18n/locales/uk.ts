@@ -90,6 +90,11 @@ export const uk: Copy<typeof en> = {
     editing: 'Редагування: {{name}}',
     undo: 'Відмінити',
     doneToday: 'Зроблено сьогодні',
+    sort: 'Сортування звичок',
+    doneSort: 'Зроблені',
+    openSort: 'Не зроблені',
+    longest: 'Найдовші',
+    shortest: 'Найкоротші',
   },
   goals: {
     description:
@@ -105,6 +110,11 @@ export const uk: Copy<typeof en> = {
     habitsHint: 'Оберіть від 1 до 4 звичок.',
     noHabits: 'Спершу створіть звичку, щоб додати ціль.',
     linkedHabits: "Пов'язані звички",
+    sort: 'Сортування цілей',
+    newest: 'Найновіші',
+    oldest: 'Найстаріші',
+    longest: 'Найдовші',
+    shortest: 'Найкоротші',
     range: '{{start}} – {{end}}',
     percent: '{{percent}}%',
     time: 'День {{day}} з {{total}} · {{left}}',

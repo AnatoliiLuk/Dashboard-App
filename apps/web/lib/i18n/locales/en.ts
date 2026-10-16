@@ -84,6 +84,11 @@ export const en = {
     editing: 'Editing {{name}}',
     undo: 'Undo',
     doneToday: 'Done today',
+    sort: 'Sort habits',
+    doneSort: 'Done today',
+    openSort: 'Not done',
+    longest: 'Longest',
+    shortest: 'Shortest',
   },
   goals: {
     description:
@@ -99,6 +104,11 @@ export const en = {
     habitsHint: 'Choose 1 to 4 habits.',
     noHabits: 'Create a habit before you can add a goal.',
     linkedHabits: 'Linked habits',
+    sort: 'Sort goals',
+    newest: 'Newest',
+    oldest: 'Oldest',
+    longest: 'Longest',
+    shortest: 'Shortest',
     range: '{{start}} – {{end}}',
     percent: '{{percent}}%',
     time: 'Day {{day}} of {{total}} · {{left}}',

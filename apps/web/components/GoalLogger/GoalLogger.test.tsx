@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { GoalTimeline } from '@repo/core';
 import type { Goal, Habit } from '@repo/types';
@@ -69,5 +69,47 @@ describe('GoalLogger', () => {
     );
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Goal' })).toHaveValue('');
+  });
+
+  it('reorders goals from the sort control above the cards', async () => {
+    window.localStorage.clear();
+    const user = userEvent.setup();
+    const short = goal();
+    short.id = 'c0';
+    short.name = 'Short';
+    const long = goal();
+    long.id = 'c1';
+    long.name = 'Long';
+
+    renderWithProviders(
+      <GoalLogger
+        goals={[
+          { goal: short, timeline: { ...emptyTimeline(), total: 2 } },
+          { goal: long, timeline: { ...emptyTimeline(), total: 20 } },
+        ]}
+        habits={[habit()]}
+        onAdd={jest.fn()}
+        onUpdate={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const sort = screen.getByRole('group', { name: 'Sort goals' });
+    const names = () =>
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent);
+
+    expect(
+      within(sort).getByRole('button', { name: 'Newest' }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    expect(names()).toEqual(['Long', 'Short']);
+
+    await user.click(within(sort).getByRole('button', { name: 'Shortest' }));
+
+    expect(names()).toEqual(['Short', 'Long']);
+    expect(
+      within(sort).getByRole('button', { name: 'Shortest' }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });
