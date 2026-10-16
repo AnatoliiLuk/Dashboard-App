@@ -5,6 +5,7 @@ export const rowStyle = ({ spacingPx }: Theme) => ({
   mb: spacingPx[16],
   maxWidth: '100%',
   overflowX: 'auto',
+  overflowY: 'hidden',
 });
 
 export const optionsStyle = ({
@@ -17,7 +18,7 @@ export const optionsStyle = ({
   alignItems: 'stretch',
   boxSizing: 'border-box' as const,
   width: 'fit-content',
-  height: spacingPx[40],
+  minHeight: spacingPx[44],
   gap: spacingPx[4],
   p: spacingPx[0],
   border: border[1],
@@ -38,7 +39,8 @@ export const optionStyle = ({
   justifyContent: 'center' as const,
   flexShrink: 0,
   boxSizing: 'border-box' as const,
-  height: '100%',
+  minWidth: spacingPx[44],
+  minHeight: spacingPx[44],
   px: spacingPx[12],
   py: spacingPx[0],
   border: 'none' as const,

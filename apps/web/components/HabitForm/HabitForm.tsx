@@ -5,7 +5,7 @@ import { Box, Button, TextField, Typography } from '@mui/material';
 import type { Habit } from '@repo/types';
 import { Controller, useForm } from 'react-hook-form';
 
-import { ColorPicker } from '@/components/ColorPicker';
+import { ColorSelect } from '@/components/ColorSelect';
 import { registerField } from '@/lib/forms/registerField';
 import { habitFormSchema, type HabitFormValues } from '@/lib/forms/schemas';
 import { HABIT_COLORS } from '@/lib/habits/colors';
@@ -98,8 +98,9 @@ function HabitForm({
             name="color"
             control={control}
             render={({ field }) => (
-              <ColorPicker
+              <ColorSelect
                 value={field.value}
+                options={HABIT_COLORS}
                 onChange={field.onChange}
                 label={t('common.color')}
               />

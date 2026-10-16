@@ -38,7 +38,10 @@ describe('GoalForm', () => {
       screen.getByText('Create a habit before you can add a goal.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
-    expect(screen.getByRole('radio', { name: 'Indigo' })).toBeDisabled();
+    expect(screen.getByRole('combobox', { name: 'Color' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     expect(screen.getByRole('combobox', { name: 'Habits' })).toBeDisabled();
   });
 
@@ -91,7 +94,9 @@ describe('GoalForm', () => {
     const name = screen.getByRole('textbox', { name: 'Goal' });
     expect(screen.getByText('Editing October focus')).toBeInTheDocument();
     expect(name).toHaveValue('October focus');
-    expect(screen.getByRole('radio', { name: 'Indigo' })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Color' })).toHaveTextContent(
+      'Indigo',
+    );
     expect(screen.getByText('Read')).toBeInTheDocument();
 
     await user.clear(name);

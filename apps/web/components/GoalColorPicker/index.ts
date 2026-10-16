@@ -1,1 +1,0 @@
-export { GoalColorPicker } from './GoalColorPicker';

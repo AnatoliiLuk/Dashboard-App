@@ -1,7 +1,7 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-const slotSize = ({ spacingPx }: Theme) => spacingPx[40];
+const slotSize = ({ spacingPx }: Theme) => spacingPx[44];
 
 const endSlot = (theme: Theme) => slotSize(theme);
 

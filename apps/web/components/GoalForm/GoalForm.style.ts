@@ -6,7 +6,7 @@ export const formStyle = ({ spacingPx }: Theme) => ({
   flexDirection: 'column',
   alignItems: 'stretch',
   gap: spacingPx[16],
-  mb: spacingPx[24],
+  mb: spacingPx[48],
 });
 
 export const nameRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
@@ -33,7 +33,7 @@ export const colorFieldStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
   minWidth: 0,
-  minHeight: spacingPx[40],
+  minHeight: spacingPx[44],
 });
 
 export const noteStyle = ({ vars }: Theme) => ({
@@ -49,10 +49,11 @@ export const actionsStyle = ({ spacingPx }: Theme) => ({
   alignItems: 'center',
   width: '100%',
   minWidth: 0,
-  minHeight: spacingPx[40],
+  minHeight: spacingPx[44],
   gap: spacingPx[8],
   '& > *': {
     flex: '1 1 0',
-    minWidth: 0,
+    minWidth: spacingPx[44],
+    minHeight: spacingPx[44],
   },
 });

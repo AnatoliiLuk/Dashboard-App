@@ -5,7 +5,7 @@ import { Box, Button, TextField, Typography } from '@mui/material';
 import type { Goal, Habit } from '@repo/types';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import { GoalColorPicker } from '@/components/GoalColorPicker';
+import { ColorSelect } from '@/components/ColorSelect';
 import { GoalDateField } from '@/components/GoalDateField';
 import { GoalHabitSelect } from '@/components/GoalHabitSelect';
 import { registerField } from '@/lib/forms/registerField';
@@ -183,8 +183,9 @@ function GoalForm({
             name="color"
             control={control}
             render={({ field }) => (
-              <GoalColorPicker
+              <ColorSelect
                 value={field.value}
+                options={GOAL_COLORS}
                 onChange={field.onChange}
                 label={t('common.color')}
                 disabled={disabled}

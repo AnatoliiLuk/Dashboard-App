@@ -1,7 +1,7 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-const DAY_SIZE = 36;
+const DAY_SIZE = 44;
 const DAY_MARGIN = 2;
 
 export type RangePlacement = {

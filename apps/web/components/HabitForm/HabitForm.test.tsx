@@ -24,12 +24,15 @@ describe('HabitForm', () => {
     renderWithProviders(<HabitForm onAdd={onAdd} />);
 
     await user.type(screen.getByRole('textbox', { name: 'Habit' }), 'Walk');
-    await user.click(screen.getByRole('radio', { name: 'Green' }));
+    await user.click(screen.getByRole('combobox', { name: 'Color' }));
+    await user.click(screen.getByRole('option', { name: 'Green' }));
     await user.click(screen.getByRole('button', { name: 'Add' }));
 
     expect(onAdd).toHaveBeenCalledWith('Walk', 'green');
     expect(screen.getByRole('textbox', { name: 'Habit' })).toHaveValue('');
-    expect(screen.getByRole('radio', { name: 'Green' })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Color' })).toHaveTextContent(
+      'Green',
+    );
   });
 
   it('saves changes to the habit already in the form', async () => {
@@ -49,11 +52,14 @@ describe('HabitForm', () => {
     const name = screen.getByRole('textbox', { name: 'Habit' });
     expect(screen.getByText('Editing Read')).toBeInTheDocument();
     expect(name).toHaveValue('Read');
-    expect(screen.getByRole('radio', { name: 'Sky' })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Color' })).toHaveTextContent(
+      'Sky',
+    );
 
     await user.clear(name);
     await user.type(name, 'Walk');
-    await user.click(screen.getByRole('radio', { name: 'Green' }));
+    await user.click(screen.getByRole('combobox', { name: 'Color' }));
+    await user.click(screen.getByRole('option', { name: 'Green' }));
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(onAdd).not.toHaveBeenCalled();

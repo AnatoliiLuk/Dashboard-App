@@ -1,6 +1,7 @@
 'use client';
 
 import { createTheme } from '@mui/material/styles';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
 
 import { colors, type Colors } from '@/lib/colors';
 
@@ -20,6 +21,7 @@ const spacingPx = {
   24: pxToRem(24),
   32: pxToRem(32),
   40: pxToRem(40),
+  44: pxToRem(44),
   48: pxToRem(48),
   576: pxToRem(576),
   768: pxToRem(768),
@@ -126,9 +128,55 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           boxSizing: 'border-box',
-          minHeight: theme.spacingPx[40],
-          height: theme.spacingPx[40],
+          minWidth: theme.spacingPx[44],
+          minHeight: theme.spacingPx[44],
           py: 0,
+        }),
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          boxSizing: 'border-box',
+          minWidth: theme.spacingPx[44],
+          minHeight: theme.spacingPx[44],
+        }),
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          minHeight: theme.spacingPx[44],
+        }),
+      },
+    },
+    MuiPickersInputBase: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          minHeight: theme.spacingPx[44],
+        }),
+      },
+    },
+    MuiPickersOutlinedInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          minHeight: theme.spacingPx[44],
+        }),
+      },
+    },
+    MuiPickersDay: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          minWidth: theme.spacingPx[44],
+          minHeight: theme.spacingPx[44],
+        }),
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          minWidth: theme.spacingPx[44],
+          minHeight: theme.spacingPx[44],
         }),
       },
     },
