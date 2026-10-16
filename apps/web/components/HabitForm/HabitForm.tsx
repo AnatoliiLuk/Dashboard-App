@@ -101,25 +101,21 @@ function HabitForm({
               <ColorPicker
                 value={field.value}
                 onChange={field.onChange}
-                label={
-                  editing
-                    ? t('log.habitColor', { name: editing.name })
-                    : t('log.newHabitColor')
-                }
+                label={t('common.color')}
               />
             )}
           />
         </Box>
-      </Box>
-      <Box sx={actionsStyle}>
-        <Button type="submit" variant="contained">
-          {editing ? t('common.save') : t('common.add')}
-        </Button>
-        {editing ? (
-          <Button type="button" variant="outlined" onClick={onCancel}>
-            {t('common.cancel')}
+        <Box sx={actionsStyle}>
+          <Button type="submit" variant="contained">
+            {editing ? t('common.save') : t('common.add')}
           </Button>
-        ) : null}
+          {editing ? (
+            <Button type="button" variant="outlined" onClick={onCancel}>
+              {t('common.cancel')}
+            </Button>
+          ) : null}
+        </Box>
       </Box>
     </Box>
   );

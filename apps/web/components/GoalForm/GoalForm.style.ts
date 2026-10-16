@@ -11,7 +11,7 @@ export const formStyle = ({ spacingPx }: Theme) => ({
 
 export const nameRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
   display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr)',
+  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
   alignItems: 'flex-start',
   gap: spacingPx[16],
   [breakpoints.down('sm')]: {
@@ -21,7 +21,7 @@ export const nameRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
 
 export const detailsRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
   display: 'grid',
-  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
   alignItems: 'flex-start',
   gap: spacingPx[16],
   [breakpoints.down('sm')]: {
@@ -46,6 +46,13 @@ export const editingStyle = ({ typography }: Theme) => ({
 
 export const actionsStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
-  flexWrap: 'wrap',
+  alignItems: 'center',
+  width: '100%',
+  minWidth: 0,
+  minHeight: spacingPx[40],
   gap: spacingPx[8],
+  '& > *': {
+    flex: '1 1 0',
+    minWidth: 0,
+  },
 });

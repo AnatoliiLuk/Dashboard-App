@@ -186,26 +186,22 @@ function GoalForm({
               <GoalColorPicker
                 value={field.value}
                 onChange={field.onChange}
-                label={
-                  editing
-                    ? t('goals.goalColor', { name: editing.name })
-                    : t('goals.newGoalColor')
-                }
+                label={t('common.color')}
                 disabled={disabled}
               />
             )}
           />
         </Box>
-      </Box>
-      <Box sx={actionsStyle}>
-        <Button type="submit" variant="contained" disabled={disabled}>
-          {editing ? t('common.save') : t('common.add')}
-        </Button>
-        {editing ? (
-          <Button type="button" variant="outlined" onClick={onCancel}>
-            {t('common.cancel')}
+        <Box sx={actionsStyle}>
+          <Button type="submit" variant="contained" disabled={disabled}>
+            {editing ? t('common.save') : t('common.add')}
           </Button>
-        ) : null}
+          {editing ? (
+            <Button type="button" variant="outlined" onClick={onCancel}>
+              {t('common.cancel')}
+            </Button>
+          ) : null}
+        </Box>
       </Box>
     </Box>
   );
