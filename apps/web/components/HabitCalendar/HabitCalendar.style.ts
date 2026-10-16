@@ -118,7 +118,12 @@ export const monthButtonStyle = ({
 });
 
 export const stepButtonStyle = ({ spacingPx }: Theme) => ({
-  px: spacingPx[8],
+  justifyContent: 'center',
+  width: spacingPx[44],
+  height: spacingPx[44],
+  px: spacingPx[0],
+  py: spacingPx[0],
+  lineHeight: 0,
 });
 
 export const tableWrapStyle = {
@@ -147,10 +152,10 @@ export const headerCellStyle = ({ vars, spacingPx, border }: Theme) => ({
   textAlign: 'left',
 });
 
-export const cellStyle = ({ vars, spacingPx, border }: Theme) => ({
+export const cellStyle = ({ vars, spacingPx, border, pxToRem }: Theme) => ({
   verticalAlign: 'top',
-  height: 'auto',
-  minHeight: 96,
+  height: pxToRem(120),
+  minHeight: pxToRem(120),
   padding: spacingPx[8],
   borderTop: border[1],
   borderTopColor: vars.palette.divider,
