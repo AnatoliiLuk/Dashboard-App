@@ -4,6 +4,7 @@ import type { Theme } from '@mui/material/styles';
 export const colorPickerStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
   gap: spacingPx[8],
 });
 

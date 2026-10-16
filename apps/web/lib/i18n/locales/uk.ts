@@ -87,6 +87,7 @@ export const uk: Copy<typeof en> = {
     empty: 'Додайте звичку, щоб почати серію.',
     newHabitColor: 'Колір нової звички',
     habitColor: 'Колір для {{name}}',
+    editing: 'Редагування: {{name}}',
     undo: 'Відмінити',
     doneToday: 'Зроблено сьогодні',
   },

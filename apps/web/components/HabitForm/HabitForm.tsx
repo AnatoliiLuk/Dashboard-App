@@ -1,7 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import type { Habit } from '@repo/types';
 import { Controller, useForm } from 'react-hook-form';
 
 import { ColorPicker } from '@/components/ColorPicker';
@@ -10,13 +11,44 @@ import { habitFormSchema, type HabitFormValues } from '@/lib/forms/schemas';
 import { HABIT_COLORS } from '@/lib/habits/colors';
 import { useTranslation } from '@/lib/i18n';
 
-import { formStyle, nameFieldStyle } from './HabitForm.style';
+import {
+  actionsStyle,
+  colorFieldStyle,
+  editingStyle,
+  fieldsStyle,
+  formStyle,
+} from './HabitForm.style';
 
 type HabitFormProps = {
-  onAdd: (name: string, color: HabitFormValues['color']) => void;
+  editing?: Habit | null;
+  onAdd: (
+    name: string,
+    color: HabitFormValues['color'],
+  ) => void | Promise<void>;
+  onUpdate?: (id: string, values: HabitFormValues) => void | Promise<void>;
+  onCancel?: () => void;
 };
 
-function HabitForm({ onAdd }: HabitFormProps) {
+function blankHabit(): HabitFormValues {
+  return {
+    name: '',
+    color: HABIT_COLORS[0].id,
+  };
+}
+
+function valuesFromHabit(habit: Habit): HabitFormValues {
+  return {
+    name: habit.name,
+    color: habit.color,
+  };
+}
+
+function HabitForm({
+  editing = null,
+  onAdd,
+  onUpdate,
+  onCancel,
+}: HabitFormProps) {
   const { t } = useTranslation();
   const {
     register,
@@ -26,11 +58,15 @@ function HabitForm({ onAdd }: HabitFormProps) {
     formState: { errors },
   } = useForm<HabitFormValues>({
     resolver: zodResolver(habitFormSchema(t)),
-    defaultValues: { name: '', color: HABIT_COLORS[0].id },
+    defaultValues: editing ? valuesFromHabit(editing) : blankHabit(),
   });
 
   function submit(values: HabitFormValues) {
-    onAdd(values.name, values.color);
+    if (editing) {
+      return onUpdate?.(editing.id, values);
+    }
+
+    void onAdd(values.name, values.color);
     reset({ name: '', color: values.color });
   }
 
@@ -39,30 +75,52 @@ function HabitForm({ onAdd }: HabitFormProps) {
       component="form"
       noValidate
       sx={formStyle}
+      aria-labelledby={editing ? 'habit-form-editing' : undefined}
       onSubmit={handleSubmit(submit)}
     >
-      <TextField
-        label={t('common.habit')}
-        error={Boolean(errors.name)}
-        helperText={errors.name?.message}
-        sx={nameFieldStyle}
-        size="small"
-        {...registerField(register('name'))}
-      />
-      <Controller
-        name="color"
-        control={control}
-        render={({ field }) => (
-          <ColorPicker
-            value={field.value}
-            onChange={field.onChange}
-            label={t('log.newHabitColor')}
+      {editing ? (
+        <Typography id="habit-form-editing" sx={editingStyle}>
+          {t('log.editing', { name: editing.name })}
+        </Typography>
+      ) : null}
+      <Box sx={fieldsStyle}>
+        <TextField
+          label={t('common.habit')}
+          error={Boolean(errors.name)}
+          helperText={errors.name?.message}
+          size="small"
+          fullWidth
+          autoFocus={Boolean(editing)}
+          {...registerField(register('name'))}
+        />
+        <Box sx={colorFieldStyle}>
+          <Controller
+            name="color"
+            control={control}
+            render={({ field }) => (
+              <ColorPicker
+                value={field.value}
+                onChange={field.onChange}
+                label={
+                  editing
+                    ? t('log.habitColor', { name: editing.name })
+                    : t('log.newHabitColor')
+                }
+              />
+            )}
           />
-        )}
-      />
-      <Button type="submit" variant="contained">
-        {t('common.add')}
-      </Button>
+        </Box>
+      </Box>
+      <Box sx={actionsStyle}>
+        <Button type="submit" variant="contained">
+          {editing ? t('common.save') : t('common.add')}
+        </Button>
+        {editing ? (
+          <Button type="button" variant="outlined" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
+      </Box>
     </Box>
   );
 }

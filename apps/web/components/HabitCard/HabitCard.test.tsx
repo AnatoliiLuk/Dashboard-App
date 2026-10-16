@@ -32,8 +32,7 @@ describe('HabitCard', () => {
       <HabitCard
         item={habitItem()}
         onToggle={onToggle}
-        onColor={jest.fn()}
-        onRename={jest.fn()}
+        onEdit={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -53,8 +52,7 @@ describe('HabitCard', () => {
       <HabitCard
         item={habitItem({ doneToday: true, currentStreak: 1 })}
         onToggle={jest.fn()}
-        onColor={jest.fn()}
-        onRename={jest.fn()}
+        onEdit={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -66,69 +64,26 @@ describe('HabitCard', () => {
     expect(screen.getByText('Nice. Today is done.')).toBeInTheDocument();
   });
 
-  it('renames the habit from the edit form', async () => {
+  it('asks the form to edit this habit', async () => {
     const user = userEvent.setup();
-    const onRename = jest.fn();
+    const onEdit = jest.fn();
 
     renderWithProviders(
       <HabitCard
         item={habitItem()}
+        selected
         onToggle={jest.fn()}
-        onColor={jest.fn()}
-        onRename={onRename}
+        onEdit={onEdit}
         onDelete={jest.fn()}
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-    const field = screen.getByRole('textbox', { name: 'Habit' });
-    await user.clear(field);
-    await user.type(field, 'Walk');
-    await user.click(screen.getByRole('button', { name: 'Save' }));
+    const edit = screen.getByRole('button', { name: 'Edit' });
+    expect(edit).toHaveAttribute('aria-pressed', 'true');
 
-    expect(onRename).toHaveBeenCalledWith('habit-1', 'Walk');
-  });
+    await user.click(edit);
 
-  it('keeps the saved name when the edit is blank', async () => {
-    const user = userEvent.setup();
-    const onRename = jest.fn();
-
-    renderWithProviders(
-      <HabitCard
-        item={habitItem()}
-        onToggle={jest.fn()}
-        onColor={jest.fn()}
-        onRename={onRename}
-        onDelete={jest.fn()}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-    await user.clear(screen.getByRole('textbox', { name: 'Habit' }));
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-
-    expect(onRename).not.toHaveBeenCalled();
-    expect(screen.getByRole('textbox', { name: 'Habit' })).toBeInTheDocument();
-  });
-
-  it('changes the color while editing', async () => {
-    const user = userEvent.setup();
-    const onColor = jest.fn();
-
-    renderWithProviders(
-      <HabitCard
-        item={habitItem()}
-        onToggle={jest.fn()}
-        onColor={onColor}
-        onRename={jest.fn()}
-        onDelete={jest.fn()}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
-    await user.click(screen.getByRole('radio', { name: 'Green' }));
-
-    expect(onColor).toHaveBeenCalledWith('habit-1', 'green');
+    expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
   it('deletes only after confirmation', async () => {
@@ -139,8 +94,7 @@ describe('HabitCard', () => {
       <HabitCard
         item={habitItem()}
         onToggle={jest.fn()}
-        onColor={jest.fn()}
-        onRename={jest.fn()}
+        onEdit={jest.fn()}
         onDelete={onDelete}
       />,
     );

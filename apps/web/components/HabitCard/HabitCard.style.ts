@@ -36,18 +36,13 @@ export const actionsStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[8],
 });
 
-export const editFieldStyle = {
-  flex: 1,
-  minWidth: 0,
-};
+export const selectedHabitStyle = ({ vars }: Theme) => ({
+  borderColor: vars.palette.primary.main,
+});
 
 export const deleteStyle = ({ vars }: Theme) => ({
   color: vars.palette.error.main,
   borderColor: vars.palette.error.main,
-});
-
-export const habitColorStyle = ({ spacingPx }: Theme) => ({
-  mt: spacingPx[12],
 });
 
 export const messageStyle =

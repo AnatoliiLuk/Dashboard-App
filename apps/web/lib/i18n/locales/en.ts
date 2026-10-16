@@ -81,6 +81,7 @@ export const en = {
     empty: 'Add a habit to start a streak.',
     newHabitColor: 'Color for the new habit',
     habitColor: 'Color for {{name}}',
+    editing: 'Editing {{name}}',
     undo: 'Undo',
     doneToday: 'Done today',
   },

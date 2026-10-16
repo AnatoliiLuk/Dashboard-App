@@ -70,18 +70,18 @@ export function useHabitLog() {
       }
       await createHabit({ name: trimmed, color });
     },
-    async renameHabit(habitId: string, name: string) {
-      const trimmed = name.trim();
+    async saveHabit(
+      habitId: string,
+      values: { name: string; color: HabitColor },
+    ) {
+      const trimmed = values.name.trim();
       if (!trimmed) {
         return;
       }
-      await updateHabit(habitId, { name: trimmed });
+      await updateHabit(habitId, { name: trimmed, color: values.color });
     },
     async deleteHabit(habitId: string) {
       await removeHabit(habitId);
-    },
-    async setHabitColor(habitId: string, color: HabitColor) {
-      await updateHabit(habitId, { color });
     },
     async toggleToday(habitId: string) {
       await toggleCompletion({ habitId, date });

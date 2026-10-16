@@ -32,8 +32,7 @@ function LogContent() {
     habits,
     addHabit,
     toggleToday,
-    setHabitColor,
-    renameHabit,
+    saveHabit,
     deleteHabit,
   } = useHabitLog();
 
@@ -52,9 +51,8 @@ function LogContent() {
       <HabitLogger
         habits={habits}
         onAdd={addHabit}
+        onUpdate={saveHabit}
         onToggle={toggleToday}
-        onColor={setHabitColor}
-        onRename={renameHabit}
         onDelete={deleteHabit}
       />
     );
