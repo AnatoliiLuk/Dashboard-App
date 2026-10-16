@@ -57,7 +57,7 @@ export function GoalLogger({
               key={item.goal.id}
               goal={item.goal}
               habits={habits}
-              percent={item.percent}
+              timeline={item.timeline}
               selected={item.goal.id === editing?.id}
               onEdit={() => beginEdit(item.goal.id)}
               onDelete={onDelete}

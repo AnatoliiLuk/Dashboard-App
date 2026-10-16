@@ -1,6 +1,6 @@
 'use client';
 
-import { goalProgress } from '@repo/core';
+import { goalTimeline, today } from '@repo/core';
 import { Button, Stack, Typography } from '@mui/material';
 import { useMemo } from 'react';
 
@@ -56,11 +56,12 @@ function GoalsContent() {
     () =>
       goals.map((goal) => ({
         goal,
-        percent: goalProgress(
+        timeline: goalTimeline(
           goal.startDate,
           goal.endDate,
           goal.habitIds,
           completions,
+          today(),
         ),
       })),
     [completions, goals],

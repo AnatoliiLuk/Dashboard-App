@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('logs a linked habit and moves the goal progress bar', async ({
+test('logs a linked habit on the goal timeline without moving the day', async ({
   page,
 }) => {
   const email = `e2e-${crypto.randomUUID()}@example.com`;
@@ -29,10 +29,15 @@ test('logs a linked habit and moves the goal progress bar', async ({
 
   const goal = page.getByRole('listitem').filter({ hasText: 'October focus' });
   await expect(goal.getByText('Read')).toBeVisible();
-  await expect(
-    goal.getByRole('progressbar', { name: 'Progress' }),
+  await expect(goal.getByText('100%')).toBeVisible();
+  await expect(goal.getByRole('progressbar')).toHaveAttribute(
     // cspell:disable-next-line
-  ).toHaveAttribute('aria-valuenow', '0');
+    'aria-valuenow',
+    '100',
+  );
+  await expect(
+    goal.getByRole('group', { name: /Today is still open/ }),
+  ).toBeVisible();
 
   await page.getByRole('link', { name: 'Log habits' }).click();
   const card = page.getByRole('listitem').filter({ hasText: 'Read' });
@@ -44,8 +49,12 @@ test('logs a linked habit and moves the goal progress bar', async ({
     .getByRole('listitem')
     .filter({ hasText: 'October focus' });
   await expect(updated.getByText('100%')).toBeVisible();
-  await expect(
-    updated.getByRole('progressbar', { name: 'Progress' }),
+  await expect(updated.getByRole('progressbar')).toHaveAttribute(
     // cspell:disable-next-line
-  ).toHaveAttribute('aria-valuenow', '100');
+    'aria-valuenow',
+    '100',
+  );
+  await expect(
+    updated.getByRole('group', { name: /Logged today/ }),
+  ).toBeVisible();
 });

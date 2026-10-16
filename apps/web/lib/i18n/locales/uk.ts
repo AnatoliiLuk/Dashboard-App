@@ -93,7 +93,7 @@ export const uk: Copy<typeof en> = {
   },
   goals: {
     description:
-      "Назвіть відрізок днів і стежте, як він заповнюється, коли ви позначаєте пов'язані звички.",
+      "Назвіть відрізок днів. Смуга показує, скільки часу минуло, а графік — скільки пов'язаних звичок ви позначили кожного дня.",
     empty: 'Додайте ціль, щоб стежити за відрізком днів.',
     name: 'Ціль',
     editing: 'Редагування: {{name}}',
@@ -105,18 +105,38 @@ export const uk: Copy<typeof en> = {
     habitsHint: 'Оберіть від 1 до 4 звичок.',
     noHabits: 'Спершу створіть звичку, щоб додати ціль.',
     linkedHabits: "Пов'язані звички",
-    progress: 'Прогрес',
-    percent: '{{percent}}%',
     range: '{{start}} – {{end}}',
-    summary: '{{total}} · {{left}}',
-    totalDays_one: '{{count}} день',
-    totalDays_few: '{{count}} дні',
-    totalDays_many: '{{count}} днів',
-    totalDays_other: '{{count}} днів',
+    percent: '{{percent}}%',
+    time: 'День {{day}} з {{total}} · {{left}}',
     daysLeft_one: '{{count}} день залишився',
     daysLeft_few: '{{count}} дні залишилося',
     daysLeft_many: '{{count}} днів залишилося',
     daysLeft_other: '{{count}} днів залишилося',
+    startsIn_one: 'Починається через {{count}} день',
+    startsIn_few: 'Починається через {{count}} дні',
+    startsIn_many: 'Починається через {{count}} днів',
+    startsIn_other: 'Починається через {{count}} дня',
+    complete: 'Завершено',
+    chart: 'Позначені звички',
+    loggedOf: '{{logged}} з {{total}}',
+    timeline_one:
+      'День {{day}} з {{total}}. Звички позначено в {{logged}} з {{count}} минулого дня.',
+    timeline_few:
+      'День {{day}} з {{total}}. Звички позначено в {{logged}} з {{count}} минулих днів.',
+    timeline_many:
+      'День {{day}} з {{total}}. Звички позначено в {{logged}} з {{count}} минулих днів.',
+    timeline_other:
+      'День {{day}} з {{total}}. Звички позначено в {{logged}} з {{count}} минулого дня.',
+    timelineTodayOpen: 'День {{day}} з {{total}}. Сьогодні ще відкрите.',
+    timelineTodayLogged: 'День {{day}} з {{total}}. Сьогодні позначено.',
+    timelineDone_one:
+      'Завершено. Звички позначено в {{logged}} з {{count}} дня.',
+    timelineDone_few:
+      'Завершено. Звички позначено в {{logged}} з {{count}} днів.',
+    timelineDone_many:
+      'Завершено. Звички позначено в {{logged}} з {{count}} днів.',
+    timelineDone_other:
+      'Завершено. Звички позначено в {{logged}} з {{count}} дня.',
     loading: 'Завантаження цілей…',
   },
   streak: {

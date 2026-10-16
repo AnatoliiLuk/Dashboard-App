@@ -41,10 +41,23 @@ export const topStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[16],
 });
 
-export const nameStyle = {
+export const titleStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'baseline',
+  flexWrap: 'wrap',
+  gap: spacingPx[8],
   minWidth: 0,
   flex: 1,
+});
+
+export const nameStyle = {
+  minWidth: 0,
 };
+
+export const statusStyle = ({ vars, typography }: Theme) => ({
+  color: vars.palette.text.secondary,
+  fontWeight: typography.fontWeightMedium,
+});
 
 export const actionsStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
@@ -57,14 +70,16 @@ export const selectedGoalStyle = ({ vars }: Theme) => ({
   borderColor: vars.palette.primary.main,
 });
 
-export const rangeStyle = ({ vars, spacingPx }: Theme) => ({
-  mt: spacingPx[8],
+export const rangeStyle = ({ vars }: Theme) => ({
+  flexShrink: 0,
   color: vars.palette.text.secondary,
 });
 
-export const spanStyle = ({ vars, spacingPx }: Theme) => ({
-  mt: spacingPx[4],
-  color: vars.palette.text.secondary,
+export const footerStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  mt: spacingPx[16],
 });
 
 export const chipsStyle = ({ spacingPx }: Theme) => ({
@@ -78,10 +93,13 @@ export const chipsStyle = ({ spacingPx }: Theme) => ({
 });
 
 export const progressRowStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: spacingPx[12],
-  mt: spacingPx[16],
+  mt: spacingPx[12],
+});
+
+export const progressTrackStyle = ({ spacingPx }: Theme) => ({
+  position: 'relative' as const,
+  width: '100%',
+  pb: spacingPx[24],
 });
 
 export const progressStyle =
@@ -90,7 +108,6 @@ export const progressStyle =
     const swatch = goalColor(color);
 
     return {
-      flex: 1,
       height: spacingPx[8],
       overflow: 'hidden',
       borderRadius: borderRadius.pill,
@@ -102,12 +119,35 @@ export const progressStyle =
     };
   };
 
-export const percentStyle = ({ typography }: Theme) => ({
-  flexShrink: 0,
-  minWidth: '3rem',
-  textAlign: 'right' as const,
-  fontWeight: typography.fontWeightMedium,
+export const percentStyle =
+  (percent: number) =>
+  ({ vars, spacingPx, typography }: Theme) => {
+    let translate = 'translateX(-50%)';
+    if (percent <= 0) {
+      translate = 'translateX(0)';
+    } else if (percent >= 100) {
+      translate = 'translateX(-100%)';
+    }
+
+    return {
+      position: 'absolute' as const,
+      top: spacingPx[12],
+      left: `${percent}%`,
+      transform: translate,
+      color: vars.palette.text.secondary,
+      fontWeight: typography.fontWeightMedium,
+      whiteSpace: 'nowrap' as const,
+    };
+  };
+
+export const chartLabelStyle = ({ vars, spacingPx }: Theme) => ({
+  mt: spacingPx[16],
+  color: vars.palette.text.secondary,
 });
+
+export const chartStyle = {
+  width: '100%',
+};
 
 export const deleteStyle = ({ vars }: Theme) => ({
   color: vars.palette.error.main,

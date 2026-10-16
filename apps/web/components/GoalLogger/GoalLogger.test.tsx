@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { GoalTimeline } from '@repo/core';
 import type { Goal, Habit } from '@repo/types';
 
 import { renderWithProviders } from '../../test/render';
@@ -16,6 +17,10 @@ function goal(): Goal {
     endDate: '2026-10-10',
     habitIds: ['habit-1'],
   };
+}
+
+function emptyTimeline(): GoalTimeline {
+  return { day: 5, total: 10, left: 6, startsIn: 0, days: [] };
 }
 
 function habit(): Habit {
@@ -35,7 +40,7 @@ describe('GoalLogger', () => {
 
     renderWithProviders(
       <GoalLogger
-        goals={[{ goal: goal(), percent: 20 }]}
+        goals={[{ goal: goal(), timeline: emptyTimeline() }]}
         habits={[habit()]}
         onAdd={jest.fn()}
         onUpdate={onUpdate}

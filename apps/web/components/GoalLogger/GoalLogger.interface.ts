@@ -1,10 +1,11 @@
+import type { GoalTimeline } from '@repo/core';
 import type { Goal, Habit } from '@repo/types';
 
 import type { GoalFormValues } from '@/lib/forms/schemas';
 
 export type GoalListItem = {
   goal: Goal;
-  percent: number;
+  timeline: GoalTimeline;
 };
 
 export type GoalLoggerProps = {

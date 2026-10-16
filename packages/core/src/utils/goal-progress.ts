@@ -4,36 +4,61 @@ import { addDays, compareDates } from './date';
 
 const MS_PER_DAY = 86_400_000;
 
-export function goalProgress(
+export type GoalDayState = 'future' | 'open' | 'closed';
+
+export type GoalTimelineDay = {
+  date: string;
+  logged: number;
+  state: GoalDayState;
+};
+
+export type GoalTimeline = {
+  day: number;
+  total: number;
+  left: number;
+  startsIn: number;
+  days: GoalTimelineDay[];
+};
+
+export function goalTimeline(
   start: string,
   end: string,
   habitIds: readonly string[],
   completions: readonly Completion[],
-): number {
-  if (compareDates(start, end) > 0) {
-    return 0;
+  asOf: string,
+): GoalTimeline {
+  const total = inclusiveDayCount(start, end);
+  const { left } = goalDays(start, end, asOf);
+
+  if (total === 0) {
+    return { day: 0, total: 0, left: 0, startsIn: 0, days: [] };
   }
 
-  const linked = new Set(habitIds);
-  const covered = new Set<string>();
+  const before = compareDates(asOf, start) < 0;
+  const after = compareDates(asOf, end) > 0;
+  let day = inclusiveDayCount(start, asOf);
+  if (before) {
+    day = 0;
+  } else if (after) {
+    day = total;
+  }
+  const startsIn = before ? inclusiveDayCount(asOf, start) - 1 : 0;
+  const loggedByDay = habitCounts(start, end, habitIds, completions);
 
-  for (const completion of completions) {
-    if (!linked.has(completion.habitId)) {
-      continue;
-    }
-
-    if (
-      compareDates(completion.date, start) < 0 ||
-      compareDates(completion.date, end) > 0
-    ) {
-      continue;
-    }
-
-    covered.add(completion.date);
+  const days: GoalTimelineDay[] = [];
+  for (
+    let date = start;
+    compareDates(date, end) <= 0;
+    date = addDays(date, 1)
+  ) {
+    days.push({
+      date,
+      logged: loggedByDay.get(date) ?? 0,
+      state: dayState(date, asOf, before, after),
+    });
   }
 
-  const totalDays = inclusiveDayCount(start, end);
-  return Math.round((covered.size / totalDays) * 100);
+  return { day, total, left, startsIn, days };
 }
 
 export function goalDays(
@@ -48,6 +73,54 @@ export function goalDays(
 
   const from = compareDates(asOf, start) < 0 ? start : asOf;
   return { total, left: inclusiveDayCount(from, end) };
+}
+
+function habitCounts(
+  start: string,
+  end: string,
+  habitIds: readonly string[],
+  completions: readonly Completion[],
+): Map<string, number> {
+  const linked = new Set(habitIds);
+  const byDay = new Map<string, Set<string>>();
+
+  for (const completion of completions) {
+    if (!linked.has(completion.habitId)) {
+      continue;
+    }
+
+    if (
+      compareDates(completion.date, start) < 0 ||
+      compareDates(completion.date, end) > 0
+    ) {
+      continue;
+    }
+
+    const habits = byDay.get(completion.date) ?? new Set<string>();
+    habits.add(completion.habitId);
+    byDay.set(completion.date, habits);
+  }
+
+  return new Map(
+    [...byDay.entries()].map(([date, habits]) => [date, habits.size]),
+  );
+}
+
+function dayState(
+  date: string,
+  asOf: string,
+  before: boolean,
+  after: boolean,
+): GoalDayState {
+  if (before || compareDates(date, asOf) > 0) {
+    return 'future';
+  }
+
+  if (after || compareDates(date, asOf) < 0) {
+    return 'closed';
+  }
+
+  return 'open';
 }
 
 function inclusiveDayCount(start: string, end: string): number {

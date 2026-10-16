@@ -87,7 +87,7 @@ export const en = {
   },
   goals: {
     description:
-      'Name a stretch of days and watch it fill as you log the habits you linked.',
+      'Name a stretch of days. The bar shows how much time has passed, and the chart shows how many linked habits you logged each day.',
     empty: 'Add a goal to track a stretch of days.',
     name: 'Goal',
     editing: 'Editing {{name}}',
@@ -99,18 +99,37 @@ export const en = {
     habitsHint: 'Choose 1 to 4 habits.',
     noHabits: 'Create a habit before you can add a goal.',
     linkedHabits: 'Linked habits',
-    progress: 'Progress',
-    percent: '{{percent}}%',
     range: '{{start}} – {{end}}',
-    summary: '{{total}} · {{left}}',
-    totalDays_one: '{{count}} day',
-    totalDays_few: '{{count}} days',
-    totalDays_many: '{{count}} days',
-    totalDays_other: '{{count}} days',
+    percent: '{{percent}}%',
+    time: 'Day {{day}} of {{total}} · {{left}}',
     daysLeft_one: '{{count}} day left',
     daysLeft_few: '{{count}} days left',
     daysLeft_many: '{{count}} days left',
     daysLeft_other: '{{count}} days left',
+    startsIn_one: 'Starts in {{count}} day',
+    startsIn_few: 'Starts in {{count}} days',
+    startsIn_many: 'Starts in {{count}} days',
+    startsIn_other: 'Starts in {{count}} days',
+    complete: 'Complete',
+    chart: 'Habits logged',
+    loggedOf: '{{logged}} of {{total}}',
+    timeline_one:
+      'Day {{day}} of {{total}}. Logged habits on {{logged}} of {{count}} closed day.',
+    timeline_few:
+      'Day {{day}} of {{total}}. Logged habits on {{logged}} of {{count}} closed days.',
+    timeline_many:
+      'Day {{day}} of {{total}}. Logged habits on {{logged}} of {{count}} closed days.',
+    timeline_other:
+      'Day {{day}} of {{total}}. Logged habits on {{logged}} of {{count}} closed days.',
+    timelineTodayOpen: 'Day {{day}} of {{total}}. Today is still open.',
+    timelineTodayLogged: 'Day {{day}} of {{total}}. Logged today.',
+    timelineDone_one: 'Complete. Logged habits on {{logged}} of {{count}} day.',
+    timelineDone_few:
+      'Complete. Logged habits on {{logged}} of {{count}} days.',
+    timelineDone_many:
+      'Complete. Logged habits on {{logged}} of {{count}} days.',
+    timelineDone_other:
+      'Complete. Logged habits on {{logged}} of {{count}} days.',
     loading: 'Loading goals…',
   },
   streak: {
