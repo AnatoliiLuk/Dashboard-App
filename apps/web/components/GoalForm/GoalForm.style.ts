@@ -9,11 +9,31 @@ export const formStyle = ({ spacingPx }: Theme) => ({
   mb: spacingPx[24],
 });
 
-export const datesStyle = ({ spacingPx }: Theme) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
+export const nameRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr)',
   alignItems: 'flex-start',
-  gap: spacingPx[8],
+  gap: spacingPx[16],
+  [breakpoints.down('sm')]: {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+export const detailsRowStyle = ({ spacingPx, breakpoints }: Theme) => ({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  alignItems: 'flex-start',
+  gap: spacingPx[16],
+  [breakpoints.down('sm')]: {
+    gridTemplateColumns: '1fr',
+  },
+});
+
+export const colorFieldStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  minWidth: 0,
+  minHeight: spacingPx[40],
 });
 
 export const noteStyle = ({ vars }: Theme) => ({

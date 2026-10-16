@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import type { Goal, Habit } from '@repo/types';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { GoalColorPicker } from '@/components/GoalColorPicker';
 import { GoalDateField } from '@/components/GoalDateField';
@@ -16,9 +16,11 @@ import { useTranslation } from '@/lib/i18n';
 
 import {
   actionsStyle,
-  datesStyle,
+  colorFieldStyle,
+  detailsRowStyle,
   editingStyle,
   formStyle,
+  nameRowStyle,
   noteStyle,
 } from './GoalForm.style';
 
@@ -69,6 +71,8 @@ function GoalForm({
     resolver: zodResolver(goalFormSchema(t)),
     defaultValues: editing ? valuesFromGoal(editing) : blankGoal(),
   });
+  const startDate = useWatch({ control, name: 'startDate' });
+  const endDate = useWatch({ control, name: 'endDate' });
 
   function submit(values: GoalFormValues) {
     if (editing) {
@@ -112,32 +116,34 @@ function GoalForm({
           {t('goals.noHabits')}
         </Typography>
       ) : null}
-      <TextField
-        label={t('goals.name')}
-        error={Boolean(errors.name)}
-        helperText={errors.name?.message}
-        size="small"
-        disabled={disabled}
-        autoFocus={Boolean(editing)}
-        {...registerField(register('name'))}
-      />
-      <Controller
-        name="color"
-        control={control}
-        render={({ field }) => (
-          <GoalColorPicker
-            value={field.value}
-            onChange={field.onChange}
-            label={
-              editing
-                ? t('goals.goalColor', { name: editing.name })
-                : t('goals.newGoalColor')
-            }
-            disabled={disabled}
-          />
-        )}
-      />
-      <Box sx={datesStyle}>
+      <Box sx={nameRowStyle}>
+        <TextField
+          label={t('goals.name')}
+          error={Boolean(errors.name)}
+          helperText={errors.name?.message}
+          size="small"
+          fullWidth
+          disabled={disabled}
+          autoFocus={Boolean(editing)}
+          {...registerField(register('name'))}
+        />
+        <Controller
+          name="habitIds"
+          control={control}
+          render={({ field }) => (
+            <GoalHabitSelect
+              habits={habits}
+              value={field.value}
+              onChange={field.onChange}
+              label={t('goals.habits')}
+              error={Boolean(errors.habitIds)}
+              helperText={habitHelper}
+              disabled={disabled}
+            />
+          )}
+        />
+      </Box>
+      <Box sx={detailsRowStyle}>
         <Controller
           name="startDate"
           control={control}
@@ -146,6 +152,9 @@ function GoalForm({
               label={t('goals.startDate')}
               value={field.value}
               onChange={field.onChange}
+              rangeStart={startDate}
+              rangeEnd={endDate}
+              fallbackDate={endDate}
               error={Boolean(fieldState.error)}
               helperText={fieldState.error?.message}
               disabled={disabled}
@@ -160,28 +169,34 @@ function GoalForm({
               label={t('goals.endDate')}
               value={field.value}
               onChange={field.onChange}
+              rangeStart={startDate}
+              rangeEnd={endDate}
+              fallbackDate={startDate}
               error={Boolean(fieldState.error)}
               helperText={fieldState.error?.message}
               disabled={disabled}
             />
           )}
         />
-      </Box>
-      <Controller
-        name="habitIds"
-        control={control}
-        render={({ field }) => (
-          <GoalHabitSelect
-            habits={habits}
-            value={field.value}
-            onChange={field.onChange}
-            label={t('goals.habits')}
-            error={Boolean(errors.habitIds)}
-            helperText={habitHelper}
-            disabled={disabled}
+        <Box sx={colorFieldStyle}>
+          <Controller
+            name="color"
+            control={control}
+            render={({ field }) => (
+              <GoalColorPicker
+                value={field.value}
+                onChange={field.onChange}
+                label={
+                  editing
+                    ? t('goals.goalColor', { name: editing.name })
+                    : t('goals.newGoalColor')
+                }
+                disabled={disabled}
+              />
+            )}
           />
-        )}
-      />
+        </Box>
+      </Box>
       <Box sx={actionsStyle}>
         <Button type="submit" variant="contained" disabled={disabled}>
           {editing ? t('common.save') : t('common.add')}
