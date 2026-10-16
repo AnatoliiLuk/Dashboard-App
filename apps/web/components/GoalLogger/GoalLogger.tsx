@@ -58,7 +58,7 @@ export function GoalLogger({
       ) : (
         <>
           <SegmentedControl
-            label={t('goals.sort')}
+            label={t('common.sortBy')}
             value={sort}
             options={GOAL_SORTS.map((option) => ({
               id: option,

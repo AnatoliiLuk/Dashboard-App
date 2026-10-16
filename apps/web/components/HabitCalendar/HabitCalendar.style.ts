@@ -5,13 +5,33 @@ export const calendarSectionStyle = ({ spacingPx }: Theme) => ({
   mb: spacingPx[32],
 });
 
-export const viewBarStyle = ({ spacingPx }: Theme) => ({
+export const toolbarStyle = ({ spacingPx, breakpoints }: Theme) => ({
+  display: 'grid',
+  gridTemplateColumns: 'minmax(max-content, 1fr) auto minmax(max-content, 1fr)',
+  alignItems: 'center',
+  columnGap: spacingPx[32],
+  mb: spacingPx[16],
+  [breakpoints.down('sm')]: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    rowGap: spacingPx[16],
+    columnGap: spacingPx[32],
+  },
+});
+
+export const toolbarStartStyle = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: spacingPx[12],
-  mb: spacingPx[16],
-});
+  justifyContent: 'flex-start',
+  minWidth: 0,
+};
+
+export const toolbarEndStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  minWidth: 0,
+};
 
 export const viewOptionsStyle = ({
   vars,
@@ -74,13 +94,18 @@ export const viewButtonActiveStyle = ({ vars }: Theme) => ({
   },
 });
 
-export const monthBarStyle = ({ spacingPx }: Theme) => ({
+export const titleGroupStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: spacingPx[12],
-  mb: spacingPx[16],
+  justifyContent: 'center',
+  gap: spacingPx[48],
+  minWidth: 0,
 });
+
+export const headingStyle = {
+  textAlign: 'center' as const,
+  whiteSpace: 'nowrap' as const,
+};
 
 export const monthButtonStyle = ({
   vars,

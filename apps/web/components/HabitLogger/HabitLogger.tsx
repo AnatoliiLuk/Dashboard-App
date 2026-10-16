@@ -61,7 +61,7 @@ export function HabitLogger({
       ) : (
         <>
           <SegmentedControl
-            label={t('log.sort')}
+            label={t('common.sortBy')}
             value={sort}
             options={HABIT_SORTS.map((option) => ({
               id: option,

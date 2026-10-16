@@ -13,6 +13,7 @@ export const en = {
     edit: 'Edit',
     habit: 'Habit',
     color: 'Color',
+    sortBy: 'Sort by',
     error: 'Something went wrong.',
     tryAgain: 'Try again',
     signInRequired: 'Sign in to sync habits with the server.',

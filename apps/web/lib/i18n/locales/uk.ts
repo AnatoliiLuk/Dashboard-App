@@ -19,6 +19,7 @@ export const uk: Copy<typeof en> = {
     edit: 'Редагувати',
     habit: 'Звичка',
     color: 'Колір',
+    sortBy: 'Сортувати за',
     error: 'Щось пішло не так.',
     tryAgain: 'Спробувати ще раз',
     signInRequired: 'Увійдіть, щоб синхронізувати звички з сервером.',

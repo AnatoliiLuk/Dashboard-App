@@ -79,7 +79,7 @@ describe('HabitLogger', () => {
       />,
     );
 
-    const sort = screen.getByRole('group', { name: 'Sort habits' });
+    const sort = screen.getByRole('group', { name: 'Sort by:' });
     const names = () =>
       screen.getAllByRole('listitem').map((item) => item.textContent ?? '');
 

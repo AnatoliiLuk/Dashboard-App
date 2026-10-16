@@ -94,7 +94,7 @@ describe('GoalLogger', () => {
       />,
     );
 
-    const sort = screen.getByRole('group', { name: 'Sort goals' });
+    const sort = screen.getByRole('group', { name: 'Sort by:' });
     const names = () =>
       screen
         .getAllByRole('heading', { level: 2 })
