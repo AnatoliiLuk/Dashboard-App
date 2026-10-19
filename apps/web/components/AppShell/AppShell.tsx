@@ -5,6 +5,7 @@ import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { SignOutIcon } from '@/components/icons';
 import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -22,6 +23,7 @@ import {
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
+  signOutStyle,
 } from './AppShell.style';
 
 type AppShellProps = {
@@ -42,7 +44,8 @@ export function AppShell({ children }: AppShellProps) {
         disabled
         tabIndex={-1}
         aria-hidden
-        sx={{ visibility: 'hidden' }}
+        startIcon={<SignOutIcon width={16} height={16} />}
+        sx={[signOutStyle, { visibility: 'hidden' }]}
       >
         {t('shell.signOut')}
       </Button>
@@ -51,6 +54,8 @@ export function AppShell({ children }: AppShellProps) {
     authAction = (
       <Button
         variant="outlined"
+        startIcon={<SignOutIcon width={16} height={16} />}
+        sx={signOutStyle}
         onClick={() => {
           logout();
           router.replace('/login');

@@ -33,6 +33,11 @@ export const brandStyle = ({ spacingPx }: Theme) => ({
   m: spacingPx[0],
 });
 
+export const signOutStyle = ({ pxToRem }: Theme) => ({
+  height: pxToRem(50),
+  minHeight: pxToRem(50),
+});
+
 export const menuStyle = ({
   vars,
   spacingPx,

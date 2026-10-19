@@ -130,9 +130,24 @@ export const monthButtonStyle = ({
   fontWeight: typography.button.fontWeight,
   lineHeight: typography.button.lineHeight,
   cursor: 'pointer' as const,
+  transition: 'border-color 150ms ease, color 150ms ease',
   '& svg': {
     display: 'block' as const,
     flexShrink: 0,
+  },
+  '@media (hover: hover)': {
+    '&:hover:not(:disabled)': {
+      borderColor: vars.palette.text.secondary,
+      backgroundColor: vars.palette.background.paper,
+      color: vars.palette.text.primary,
+    },
+  },
+  '&:active:not(:disabled)': {
+    borderColor: vars.palette.text.primary,
+  },
+  '&:focus-visible': {
+    outline: `${border[2]} ${vars.palette.text.primary}`,
+    outlineOffset: spacingPx[4],
   },
   '&:disabled': {
     cursor: 'default' as const,

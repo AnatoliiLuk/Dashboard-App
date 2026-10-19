@@ -1,5 +1,6 @@
 'use client';
 
+import type {} from '@mui/material/themeCssVarsAugmentation';
 import { createTheme } from '@mui/material/styles';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 
@@ -119,19 +120,90 @@ export const theme = createTheme({
     h6: type(20, 500, 1.6),
     body1: type(16, 400, 1.5),
     body2: type(14, 400, 1.43),
-    button: type(14, 500, 1.25),
+    button: {
+      ...type(14, 500, 1.25),
+      letterSpacing: 'normal',
+      textTransform: 'none',
+    },
   },
   shape: {
     borderRadius: 16,
   },
   components: {
     MuiButton: {
+      defaultProps: {
+        disableElevation: true,
+        disableRipple: true,
+      },
       styleOverrides: {
         root: ({ theme }) => ({
           boxSizing: 'border-box',
           minWidth: theme.spacingPx[44],
+          height: theme.spacingPx[44],
           minHeight: theme.spacingPx[44],
-          py: 0,
+          padding: `${theme.spacingPx[0]} ${theme.spacingPx[24]}`,
+          borderRadius: theme.borderRadius.pill,
+          boxShadow: 'none',
+          textTransform: 'none',
+          letterSpacing: 'normal',
+          whiteSpace: 'nowrap',
+          '&:focus-visible': {
+            outline: `${theme.border[2]} ${theme.vars.palette.text.primary}`,
+            outlineOffset: theme.spacingPx[4],
+          },
+        }),
+        contained: ({ theme }) => ({
+          padding: `${theme.spacingPx[0]} ${theme.spacingPx[24]}`,
+          boxShadow: 'none',
+          '&:hover, &:active, &.Mui-focusVisible': {
+            boxShadow: 'none',
+          },
+        }),
+        containedPrimary: ({ theme }) => ({
+          backgroundColor: theme.vars.palette.text.primary,
+          color: theme.vars.palette.background.paper,
+          '@media (hover: hover)': {
+            '&:hover': {
+              backgroundColor: `color-mix(in srgb, ${theme.vars.palette.text.primary} 88%, ${theme.vars.palette.background.default})`,
+            },
+          },
+        }),
+        outlined: ({ theme }) => ({
+          padding: `${theme.spacingPx[0]} ${theme.spacingPx[24]}`,
+          backgroundColor: theme.vars.palette.background.paper,
+        }),
+        outlinedPrimary: ({ theme }) => ({
+          borderColor: theme.vars.palette.divider,
+          color: theme.vars.palette.text.primary,
+          '@media (hover: hover)': {
+            '&:hover': {
+              borderColor: theme.vars.palette.text.secondary,
+              backgroundColor: theme.vars.palette.background.paper,
+              color: theme.vars.palette.text.primary,
+            },
+          },
+        }),
+        outlinedError: ({ theme }) => ({
+          borderColor: theme.vars.palette.error.main,
+          color: theme.vars.palette.error.main,
+          '@media (hover: hover)': {
+            '&:hover': {
+              borderColor: theme.vars.palette.error.main,
+              backgroundColor: theme.vars.palette.error.light,
+              color: theme.vars.palette.error.main,
+            },
+          },
+        }),
+        text: ({ theme }) => ({
+          padding: `${theme.spacingPx[0]} ${theme.spacingPx[16]}`,
+        }),
+        textPrimary: ({ theme }) => ({
+          color: theme.vars.palette.text.primary,
+          '@media (hover: hover)': {
+            '&:hover': {
+              backgroundColor: theme.vars.palette.action.hover,
+            },
+          },
         }),
       },
     },

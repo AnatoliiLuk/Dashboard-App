@@ -148,36 +148,3 @@ export const chartLabelStyle = ({ vars, spacingPx }: Theme) => ({
 export const chartStyle = {
   width: '100%',
 };
-
-export const deleteStyle = ({ vars }: Theme) => ({
-  color: vars.palette.error.main,
-  borderColor: vars.palette.error.main,
-});
-
-export const toggleStyle = ({
-  vars,
-  spacingPx,
-  border,
-  borderRadius,
-  typography,
-}: Theme) => ({
-  boxSizing: 'border-box' as const,
-  display: 'inline-flex' as const,
-  alignItems: 'center' as const,
-  justifyContent: 'center' as const,
-  flexShrink: 0,
-  minWidth: spacingPx[44],
-  minHeight: spacingPx[44],
-  border: border[1],
-  borderColor: vars.palette.divider,
-  backgroundColor: vars.palette.background.paper,
-  color: vars.palette.text.primary,
-  borderRadius: borderRadius.pill,
-  px: spacingPx[24],
-  py: spacingPx[0],
-  fontFamily: typography.button.fontFamily,
-  fontSize: typography.button.fontSize,
-  fontWeight: typography.button.fontWeight,
-  lineHeight: typography.button.lineHeight,
-  cursor: 'pointer' as const,
-});

@@ -15,14 +15,12 @@ import {
   dayDoneStyle,
   dayStyle,
   daysStyle,
-  deleteStyle,
   footerStyle,
   habitNameStyle,
   habitStyle,
   habitTopStyle,
   messageStyle,
   selectedHabitStyle,
-  toggleStyle,
 } from './HabitCard.style';
 
 function HabitCard({
@@ -77,42 +75,39 @@ function HabitCard({
         <Box sx={actionsStyle}>
           {confirmDelete ? (
             <>
-              <Box
-                component="button"
+              <Button
                 type="button"
-                sx={[toggleStyle, deleteStyle]}
+                variant="outlined"
+                color="error"
                 onClick={() => onDelete(id)}
               >
                 {t('common.delete')}
-              </Box>
-              <Box
-                component="button"
+              </Button>
+              <Button
                 type="button"
-                sx={toggleStyle}
+                variant="outlined"
                 onClick={() => setConfirmDelete(false)}
               >
                 {t('common.cancel')}
-              </Box>
+              </Button>
             </>
           ) : (
             <>
-              <Box
-                component="button"
+              <Button
                 type="button"
-                sx={toggleStyle}
+                variant="outlined"
                 aria-pressed={selected}
                 onClick={onEdit}
               >
                 {t('common.edit')}
-              </Box>
-              <Box
-                component="button"
+              </Button>
+              <Button
                 type="button"
-                sx={toggleStyle}
+                variant="outlined"
                 onClick={() => setConfirmDelete(true)}
               >
                 {t('common.delete')}
-              </Box>
+              </Button>
             </>
           )}
         </Box>

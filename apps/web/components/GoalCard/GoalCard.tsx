@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -18,11 +18,9 @@ import {
   bandStyle,
   bodyStyle,
   chipsStyle,
-  deleteStyle,
   footerStyle,
   goalStyle,
   selectedGoalStyle,
-  toggleStyle,
 } from './GoalCard.style';
 import { GoalCardHeader } from './GoalCardHeader';
 import { GoalHabitChart } from './GoalHabitChart';
@@ -49,46 +47,43 @@ function GoalCard({
   if (confirmDelete) {
     actions = (
       <>
-        <Box
-          component="button"
+        <Button
           type="button"
-          sx={[toggleStyle, deleteStyle]}
+          variant="outlined"
+          color="error"
           onClick={() => {
             void onDelete(goal.id);
           }}
         >
           {t('common.delete')}
-        </Box>
-        <Box
-          component="button"
+        </Button>
+        <Button
           type="button"
-          sx={toggleStyle}
+          variant="outlined"
           onClick={() => setConfirmDelete(false)}
         >
           {t('common.cancel')}
-        </Box>
+        </Button>
       </>
     );
   } else {
     actions = (
       <>
-        <Box
-          component="button"
+        <Button
           type="button"
-          sx={toggleStyle}
+          variant="outlined"
           aria-pressed={selected}
           onClick={onEdit}
         >
           {t('common.edit')}
-        </Box>
-        <Box
-          component="button"
+        </Button>
+        <Button
           type="button"
-          sx={toggleStyle}
+          variant="outlined"
           onClick={() => setConfirmDelete(true)}
         >
           {t('common.delete')}
-        </Box>
+        </Button>
       </>
     );
   }
