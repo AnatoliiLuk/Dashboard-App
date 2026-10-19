@@ -154,9 +154,10 @@ export const en = {
     start: 'Do it today to start a streak.',
   },
   theme: {
-    toggle: 'Toggle color theme',
-    toLight: 'Switch to light theme',
-    toDark: 'Switch to dark theme',
+    label: 'Color theme',
+    light: 'Light theme',
+    system: 'Use system theme',
+    dark: 'Dark theme',
   },
   colors: {
     sky: 'Sky',

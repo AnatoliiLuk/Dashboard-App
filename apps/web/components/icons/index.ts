@@ -3,5 +3,6 @@ export { ArrowRightIcon } from './ArrowRightIcon';
 export { CircleCheckIcon } from './CircleCheckIcon';
 export { CircleExclamationIcon } from './CircleExclamationIcon';
 export { CircleInfoIcon } from './CircleInfoIcon';
+export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { SunIcon } from './SunIcon';
