@@ -1,10 +1,11 @@
 'use client';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoalCard } from '@/components/GoalCard';
 import { GoalForm } from '@/components/GoalForm';
+import { PageIntro } from '@/components/PageIntro';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import type { GoalFormValues } from '@/lib/forms/schemas';
 import { useTranslation } from '@/lib/i18n';
@@ -12,7 +13,7 @@ import { useTranslation } from '@/lib/i18n';
 import { GOAL_SORTS, goalSortLabel } from './GoalLogger.constants';
 import { loadGoalSort, saveGoalSort, sortGoals } from './GoalLogger.helpers';
 import type { GoalLoggerProps } from './GoalLogger.interface';
-import { emptyStyle, listStyle, revealStyle } from './GoalLogger.style';
+import { emptyStyle, listStyle } from './GoalLogger.style';
 
 export function GoalLogger({
   goals,
@@ -70,6 +71,11 @@ export function GoalLogger({
 
   return (
     <section>
+      <PageIntro
+        description={t('goals.description')}
+        actionLabel={formOpen ? undefined : t('goals.addGoal')}
+        onAction={formOpen ? undefined : openNew}
+      />
       {formOpen ? (
         <Box ref={formRef}>
           <GoalForm
@@ -81,11 +87,7 @@ export function GoalLogger({
             onCancel={closeForm}
           />
         </Box>
-      ) : (
-        <Button variant="outlined" sx={revealStyle} onClick={openNew}>
-          {t('goals.addGoal')}
-        </Button>
-      )}
+      ) : null}
       {sorted.length === 0 ? (
         <Typography sx={emptyStyle}>{t('goals.empty')}</Typography>
       ) : (

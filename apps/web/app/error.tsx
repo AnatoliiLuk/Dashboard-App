@@ -1,12 +1,10 @@
 'use client';
 
-import { Box } from '@mui/material';
 import { useEffect } from 'react';
 
 import { AppShell } from '@/components/AppShell';
+import { PageIntro } from '@/components/PageIntro';
 import { useTranslation } from '@/lib/i18n';
-
-import { retryStyle } from './error.style';
 
 export default function Error({
   error,
@@ -22,15 +20,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <AppShell description={t('common.error')}>
-      <Box
-        component="button"
-        type="button"
-        sx={retryStyle}
-        onClick={() => retry()}
-      >
-        {t('common.tryAgain')}
-      </Box>
+    <AppShell>
+      <PageIntro
+        description={t('common.error')}
+        actionLabel={t('common.tryAgain')}
+        onAction={() => retry()}
+      />
     </AppShell>
   );
 }

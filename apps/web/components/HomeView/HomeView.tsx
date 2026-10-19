@@ -6,16 +6,15 @@ import type { ReactNode } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AppShell } from '@/components/AppShell';
 import { HabitCalendar } from '@/components/HabitCalendar';
+import { PageIntro } from '@/components/PageIntro';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
 import { useTranslation } from '@/lib/i18n';
 
 import { loadingStyle } from '@/app/page.style';
 
 export function HomeView() {
-  const { t } = useTranslation();
-
   return (
-    <AppShell description={t('calendar.description')}>
+    <AppShell>
       <AuthGuard>
         <HomeContent />
       </AuthGuard>
@@ -43,5 +42,10 @@ function HomeContent() {
     content = <Typography sx={loadingStyle}>{t('common.loading')}</Typography>;
   }
 
-  return content;
+  return (
+    <>
+      <PageIntro description={t('calendar.description')} />
+      {content}
+    </>
+  );
 }

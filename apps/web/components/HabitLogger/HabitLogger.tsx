@@ -1,10 +1,11 @@
 'use client';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { HabitCard } from '@/components/HabitCard';
 import { HabitForm } from '@/components/HabitForm';
+import { PageIntro } from '@/components/PageIntro';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import type { HabitFormValues } from '@/lib/forms/schemas';
 import { useTranslation } from '@/lib/i18n';
@@ -16,7 +17,7 @@ import {
   sortHabits,
 } from './HabitLogger.helpers';
 import type { HabitLoggerProps } from './HabitLogger.interface';
-import { emptyStyle, listStyle, revealStyle } from './HabitLogger.style';
+import { emptyStyle, listStyle } from './HabitLogger.style';
 
 export function HabitLogger({
   habits,
@@ -74,6 +75,11 @@ export function HabitLogger({
 
   return (
     <section>
+      <PageIntro
+        description={t('log.description')}
+        actionLabel={formOpen ? undefined : t('log.addHabit')}
+        onAction={formOpen ? undefined : openNew}
+      />
       {formOpen ? (
         <Box ref={formRef}>
           <HabitForm
@@ -84,11 +90,7 @@ export function HabitLogger({
             onCancel={closeForm}
           />
         </Box>
-      ) : (
-        <Button variant="outlined" sx={revealStyle} onClick={openNew}>
-          {t('log.addHabit')}
-        </Button>
-      )}
+      ) : null}
       {sorted.length === 0 ? (
         <Typography sx={emptyStyle}>{t('log.empty')}</Typography>
       ) : (

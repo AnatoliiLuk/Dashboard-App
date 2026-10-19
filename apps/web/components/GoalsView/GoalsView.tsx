@@ -8,6 +8,7 @@ import { loadingStyle } from '@/app/page.style';
 import { AppShell } from '@/components/AppShell';
 import { AuthGuard } from '@/components/AuthGuard';
 import { GoalLogger } from '@/components/GoalLogger';
+import { PageIntro } from '@/components/PageIntro';
 import { useCompletions } from '@/lib/hooks/useCompletions';
 import { useGoals } from '@/lib/hooks/useGoals';
 import { useHabits } from '@/lib/hooks/useHabits';
@@ -15,10 +16,8 @@ import { useTranslation } from '@/lib/i18n';
 import type { GoalFormValues } from '@/lib/forms/schemas';
 
 export function GoalsView() {
-  const { t } = useTranslation();
-
   return (
-    <AppShell description={t('goals.description')}>
+    <AppShell>
       <AuthGuard>
         <GoalsContent />
       </AuthGuard>
@@ -81,17 +80,25 @@ function GoalsContent() {
 
   if (isError) {
     return (
-      <Stack spacing={2} alignItems="flex-start">
-        <Typography sx={loadingStyle}>{t('common.error')}</Typography>
-        <Button variant="outlined" onClick={() => void refetch()}>
-          {t('common.tryAgain')}
-        </Button>
-      </Stack>
+      <>
+        <PageIntro description={t('goals.description')} />
+        <Stack spacing={2} alignItems="flex-start">
+          <Typography sx={loadingStyle}>{t('common.error')}</Typography>
+          <Button variant="outlined" onClick={() => void refetch()}>
+            {t('common.tryAgain')}
+          </Button>
+        </Stack>
+      </>
     );
   }
 
   if (!ready) {
-    return <Typography sx={loadingStyle}>{t('goals.loading')}</Typography>;
+    return (
+      <>
+        <PageIntro description={t('goals.description')} />
+        <Typography sx={loadingStyle}>{t('goals.loading')}</Typography>
+      </>
+    );
   }
 
   return (

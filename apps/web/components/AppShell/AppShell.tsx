@@ -18,7 +18,6 @@ import {
   barStartStyle,
   barStyle,
   brandStyle,
-  descriptionStyle,
   headerStyle,
   menuItemActiveStyle,
   menuItemStyle,
@@ -26,11 +25,10 @@ import {
 } from './AppShell.style';
 
 type AppShellProps = {
-  description: string;
   children: ReactNode;
 };
 
-export function AppShell({ description, children }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
@@ -102,7 +100,6 @@ export function AppShell({ description, children }: AppShellProps) {
               {authAction}
             </Box>
           </Box>
-          <Typography sx={descriptionStyle}>{description}</Typography>
         </Box>
         {children}
       </Box>

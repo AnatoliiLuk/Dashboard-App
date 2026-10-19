@@ -2,7 +2,7 @@ import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
 export const headerStyle = ({ spacingPx }: Theme) => ({
-  mb: spacingPx[32],
+  mb: spacingPx[16],
 });
 
 export const barStyle = ({ vars, spacingPx, border }: Theme) => ({
@@ -87,10 +87,4 @@ export const menuItemActiveStyle = ({ vars }: Theme) => ({
   '&:hover': {
     color: vars.palette.background.paper,
   },
-});
-
-export const descriptionStyle = ({ vars, spacingPx }: Theme) => ({
-  mt: spacingPx[16],
-  maxWidth: spacingPx[576],
-  color: vars.palette.text.secondary,
 });
