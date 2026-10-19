@@ -12,6 +12,7 @@ const pxToRem = (value: number) =>
 
 const spacingPx = {
   0: pxToRem(0),
+  2: pxToRem(2),
   4: pxToRem(4),
   6: pxToRem(6),
   8: pxToRem(8),

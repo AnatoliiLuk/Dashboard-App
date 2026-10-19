@@ -3,21 +3,24 @@ import type { Theme } from '@mui/material/styles';
 
 const slotSize = ({ spacingPx }: Theme) => spacingPx[44];
 
-const endSlot = (theme: Theme) => slotSize(theme);
+const inset = ({ spacingPx }: Theme) => spacingPx[2];
+
+const endSlot = (theme: Theme) => `calc(${inset(theme)} + ${slotSize(theme)})`;
 
 export const themeToggleStyle = (theme: Theme) => {
   const { vars, spacingPx, border, borderRadius } = theme;
   const size = slotSize(theme);
+  const pad = inset(theme);
 
   return {
     position: 'relative' as const,
     display: 'block' as const,
     flexShrink: 0,
     boxSizing: 'border-box' as const,
-    width: `calc(${size} * 2)`,
-    height: size,
+    width: `calc(${size} * 2 + ${pad} * 2)`,
+    height: `calc(${size} + ${pad} * 2)`,
     m: spacingPx[0],
-    p: spacingPx[0],
+    p: pad,
     border: 'none' as const,
     boxShadow: `inset 0 0 0 1px ${vars.palette.divider}`,
     backgroundColor: vars.palette.background.paper,
@@ -31,13 +34,13 @@ export const themeToggleStyle = (theme: Theme) => {
 };
 
 export const thumbStyle = (theme: Theme) => {
-  const { vars, spacingPx, borderRadius, getColorSchemeSelector } = theme;
+  const { vars, borderRadius, getColorSchemeSelector } = theme;
   const size = slotSize(theme);
 
   return {
     position: 'absolute',
-    top: spacingPx[0],
-    left: spacingPx[0],
+    top: inset(theme),
+    left: inset(theme),
     width: size,
     height: size,
     borderRadius: borderRadius.pill,
@@ -55,8 +58,8 @@ export const iconStyle = (atEnd: boolean) => (theme: Theme) => {
 
   return {
     position: 'absolute',
-    top: spacingPx[0],
-    left: atEnd ? endSlot(theme) : spacingPx[0],
+    top: inset(theme),
+    left: atEnd ? endSlot(theme) : inset(theme),
     zIndex: 1,
     display: 'flex',
     alignItems: 'center',
