@@ -124,7 +124,7 @@ function GoalForm({
           size="small"
           fullWidth
           disabled={disabled}
-          autoFocus={Boolean(editing)}
+          autoFocus
           {...registerField(register('name'))}
         />
         <Controller
@@ -197,7 +197,7 @@ function GoalForm({
           <Button type="submit" variant="contained" disabled={disabled}>
             {editing ? t('common.save') : t('common.add')}
           </Button>
-          {editing ? (
+          {onCancel ? (
             <Button type="button" variant="outlined" onClick={onCancel}>
               {t('common.cancel')}
             </Button>

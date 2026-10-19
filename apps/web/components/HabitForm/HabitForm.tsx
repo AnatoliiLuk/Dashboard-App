@@ -90,7 +90,7 @@ function HabitForm({
           helperText={errors.name?.message}
           size="small"
           fullWidth
-          autoFocus={Boolean(editing)}
+          autoFocus
           {...registerField(register('name'))}
         />
         <Box sx={colorFieldStyle}>
@@ -111,7 +111,7 @@ function HabitForm({
           <Button type="submit" variant="contained">
             {editing ? t('common.save') : t('common.add')}
           </Button>
-          {editing ? (
+          {onCancel ? (
             <Button type="button" variant="outlined" onClick={onCancel}>
               {t('common.cancel')}
             </Button>

@@ -1,7 +1,7 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
-import { useMemo, useRef, useState } from 'react';
+import { Box, Button, Typography } from '@mui/material';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoalCard } from '@/components/GoalCard';
 import { GoalForm } from '@/components/GoalForm';
@@ -12,7 +12,7 @@ import { useTranslation } from '@/lib/i18n';
 import { GOAL_SORTS, goalSortLabel } from './GoalLogger.constants';
 import { loadGoalSort, saveGoalSort, sortGoals } from './GoalLogger.helpers';
 import type { GoalLoggerProps } from './GoalLogger.interface';
-import { emptyStyle, listStyle } from './GoalLogger.style';
+import { emptyStyle, listStyle, revealStyle } from './GoalLogger.style';
 
 export function GoalLogger({
   goals,
@@ -23,36 +23,69 @@ export function GoalLogger({
 }: GoalLoggerProps) {
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [sort, setSort] = useState(loadGoalSort);
   const formRef = useRef<HTMLDivElement>(null);
   const editing =
     goals.find((item) => item.goal.id === editingId)?.goal ?? null;
   const sorted = useMemo(() => sortGoals(goals, sort), [goals, sort]);
 
+  useEffect(() => {
+    if (!formOpen) {
+      return;
+    }
+
+    const field = formRef.current?.querySelector('input:not([disabled])');
+    if (field instanceof HTMLInputElement) {
+      field.focus({ preventScroll: true });
+    }
+    formRef.current?.scrollIntoView?.({ block: 'center' });
+  }, [formOpen, editingId]);
+
+  function openNew() {
+    setEditingId(null);
+    setFormOpen(true);
+  }
+
   function beginEdit(id: string) {
     setEditingId(id);
-    if (typeof formRef.current?.scrollIntoView === 'function') {
-      formRef.current.scrollIntoView({ block: 'start' });
-    }
+    setFormOpen(true);
+  }
+
+  function closeForm() {
+    setEditingId(null);
+    setFormOpen(false);
+  }
+
+  function addGoal(values: GoalFormValues) {
+    const result = onAdd(values);
+    setFormOpen(false);
+    return result;
   }
 
   async function saveGoal(id: string, values: GoalFormValues) {
     await onUpdate(id, values);
-    setEditingId(null);
+    closeForm();
   }
 
   return (
     <section>
-      <Box ref={formRef}>
-        <GoalForm
-          key={editing?.id ?? 'new'}
-          habits={habits}
-          editing={editing}
-          onAdd={onAdd}
-          onUpdate={saveGoal}
-          onCancel={() => setEditingId(null)}
-        />
-      </Box>
+      {formOpen ? (
+        <Box ref={formRef}>
+          <GoalForm
+            key={editing?.id ?? 'new'}
+            habits={habits}
+            editing={editing}
+            onAdd={addGoal}
+            onUpdate={saveGoal}
+            onCancel={closeForm}
+          />
+        </Box>
+      ) : (
+        <Button variant="outlined" sx={revealStyle} onClick={openNew}>
+          {t('goals.addGoal')}
+        </Button>
+      )}
       {sorted.length === 0 ? (
         <Typography sx={emptyStyle}>{t('goals.empty')}</Typography>
       ) : (

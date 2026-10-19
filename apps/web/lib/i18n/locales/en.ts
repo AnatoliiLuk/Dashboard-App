@@ -81,6 +81,7 @@ export const en = {
   log: {
     description: 'Add a habit and mark what you did today.',
     empty: 'Add a habit to start a streak.',
+    addHabit: 'Add habit',
     editing: 'Editing {{name}}',
     undo: 'Undo',
     doneToday: 'Done today',
@@ -94,6 +95,7 @@ export const en = {
     description:
       'Name a stretch of days. The bar shows how much time has passed, and the chart shows how many linked habits you logged each day.',
     empty: 'Add a goal to track a stretch of days.',
+    addGoal: 'Add goal',
     name: 'Goal',
     editing: 'Editing {{name}}',
     startDate: 'Start date',

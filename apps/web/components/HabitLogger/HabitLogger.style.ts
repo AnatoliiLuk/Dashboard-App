@@ -1,6 +1,10 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
+export const revealStyle = ({ spacingPx }: Theme) => ({
+  mb: spacingPx[16],
+});
+
 export const listStyle = ({ spacingPx }: Theme) => ({
   display: 'grid',
   gap: spacingPx[16],

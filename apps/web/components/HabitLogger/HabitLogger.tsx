@@ -1,7 +1,7 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
-import { useMemo, useRef, useState } from 'react';
+import { Box, Button, Typography } from '@mui/material';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { HabitCard } from '@/components/HabitCard';
 import { HabitForm } from '@/components/HabitForm';
@@ -16,7 +16,7 @@ import {
   sortHabits,
 } from './HabitLogger.helpers';
 import type { HabitLoggerProps } from './HabitLogger.interface';
-import { emptyStyle, listStyle } from './HabitLogger.style';
+import { emptyStyle, listStyle, revealStyle } from './HabitLogger.style';
 
 export function HabitLogger({
   habits,
@@ -27,35 +27,68 @@ export function HabitLogger({
 }: HabitLoggerProps) {
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [sort, setSort] = useState(loadHabitSort);
   const formRef = useRef<HTMLDivElement>(null);
   const editing =
     habits.find((item) => item.habit.id === editingId)?.habit ?? null;
   const sorted = useMemo(() => sortHabits(habits, sort), [habits, sort]);
 
+  useEffect(() => {
+    if (!formOpen) {
+      return;
+    }
+
+    const field = formRef.current?.querySelector('input:not([disabled])');
+    if (field instanceof HTMLInputElement) {
+      field.focus({ preventScroll: true });
+    }
+    formRef.current?.scrollIntoView?.({ block: 'center' });
+  }, [formOpen, editingId]);
+
+  function openNew() {
+    setEditingId(null);
+    setFormOpen(true);
+  }
+
   function beginEdit(id: string) {
     setEditingId(id);
-    if (typeof formRef.current?.scrollIntoView === 'function') {
-      formRef.current.scrollIntoView({ block: 'start' });
-    }
+    setFormOpen(true);
+  }
+
+  function closeForm() {
+    setEditingId(null);
+    setFormOpen(false);
+  }
+
+  function addHabit(name: string, color: HabitFormValues['color']) {
+    const result = onAdd(name, color);
+    setFormOpen(false);
+    return result;
   }
 
   async function saveHabit(id: string, values: HabitFormValues) {
     await onUpdate(id, values);
-    setEditingId(null);
+    closeForm();
   }
 
   return (
     <section>
-      <Box ref={formRef}>
-        <HabitForm
-          key={editing?.id ?? 'new'}
-          editing={editing}
-          onAdd={onAdd}
-          onUpdate={saveHabit}
-          onCancel={() => setEditingId(null)}
-        />
-      </Box>
+      {formOpen ? (
+        <Box ref={formRef}>
+          <HabitForm
+            key={editing?.id ?? 'new'}
+            editing={editing}
+            onAdd={addHabit}
+            onUpdate={saveHabit}
+            onCancel={closeForm}
+          />
+        </Box>
+      ) : (
+        <Button variant="outlined" sx={revealStyle} onClick={openNew}>
+          {t('log.addHabit')}
+        </Button>
+      )}
       {sorted.length === 0 ? (
         <Typography sx={emptyStyle}>{t('log.empty')}</Typography>
       ) : (

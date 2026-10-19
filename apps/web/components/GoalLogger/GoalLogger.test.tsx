@@ -48,11 +48,21 @@ describe('GoalLogger', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add goal' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Goal' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Add goal' }));
+    expect(screen.getByRole('textbox', { name: 'Goal' })).toHaveFocus();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     await user.click(screen.getByRole('button', { name: 'Edit' }));
 
     const name = screen.getByRole('textbox', { name: 'Goal' });
+    expect(name).toHaveFocus();
     expect(name).toHaveValue('October focus');
     expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute(
       'aria-pressed',
@@ -67,8 +77,12 @@ describe('GoalLogger', () => {
       'goal-1',
       expect.objectContaining({ name: 'November focus' }),
     );
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Goal' })).toHaveValue('');
+    expect(
+      screen.getByRole('button', { name: 'Add goal' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Goal' }),
+    ).not.toBeInTheDocument();
   });
 
   it('reorders goals from the sort control above the cards', async () => {

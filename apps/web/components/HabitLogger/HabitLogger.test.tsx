@@ -37,11 +37,21 @@ describe('HabitLogger', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add habit' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Habit' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Add habit' }));
+    expect(screen.getByRole('textbox', { name: 'Habit' })).toHaveFocus();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     await user.click(screen.getByRole('button', { name: 'Edit' }));
 
     const name = screen.getByRole('textbox', { name: 'Habit' });
+    expect(name).toHaveFocus();
     expect(name).toHaveValue('Read');
     expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute(
       'aria-pressed',
@@ -56,8 +66,12 @@ describe('HabitLogger', () => {
       name: 'Walk',
       color: 'sky',
     });
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Habit' })).toHaveValue('');
+    expect(
+      screen.getByRole('button', { name: 'Add habit' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Habit' }),
+    ).not.toBeInTheDocument();
   });
 
   it('reorders habits from the sort control above the cards', async () => {
