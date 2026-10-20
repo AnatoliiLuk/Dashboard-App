@@ -32,6 +32,7 @@ function LogContent() {
     addHabit,
     toggleToday,
     saveHabit,
+    archiveHabit,
     deleteHabit,
   } = useHabitLog();
 
@@ -55,6 +56,7 @@ function LogContent() {
         onAdd={addHabit}
         onUpdate={saveHabit}
         onToggle={toggleToday}
+        onArchive={archiveHabit}
         onDelete={deleteHabit}
       />
     );

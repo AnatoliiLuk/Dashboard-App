@@ -33,6 +33,7 @@ describe('HabitLogger', () => {
         onAdd={jest.fn()}
         onUpdate={onUpdate}
         onToggle={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -89,6 +90,7 @@ describe('HabitLogger', () => {
         onAdd={jest.fn()}
         onUpdate={jest.fn()}
         onToggle={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -108,5 +110,44 @@ describe('HabitLogger', () => {
     expect(
       within(sort).getByRole('button', { name: 'Longest' }),
     ).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('switches between current and archived habits from the sort row', async () => {
+    const user = userEvent.setup();
+    const read = habitItem();
+    const walk = habitItem();
+    walk.habit = {
+      ...walk.habit,
+      id: 'habit-2',
+      name: 'Walk',
+      archivedAt: '2026-10-18T09:00:00.000Z',
+    };
+
+    renderWithProviders(
+      <HabitLogger
+        habits={[read, walk]}
+        onAdd={jest.fn()}
+        onUpdate={jest.fn()}
+        onToggle={jest.fn()}
+        onArchive={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const names = () =>
+      screen.getAllByRole('listitem').map((item) => item.textContent ?? '');
+
+    expect(names()).toHaveLength(1);
+    expect(names()[0]).toContain('Read');
+
+    await user.click(screen.getByRole('button', { name: 'Archive (1)' }));
+
+    expect(names()).toHaveLength(1);
+    expect(names()[0]).toContain('Walk');
+    expect(screen.getByRole('button', { name: 'Restore' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Current habits' }));
+
+    expect(names()[0]).toContain('Read');
   });
 });

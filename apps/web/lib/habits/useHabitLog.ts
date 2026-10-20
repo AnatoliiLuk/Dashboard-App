@@ -80,6 +80,9 @@ export function useHabitLog() {
       }
       await updateHabit(habitId, { name: trimmed, color: values.color });
     },
+    async archiveHabit(habitId: string, archived: boolean) {
+      await updateHabit(habitId, { archived });
+    },
     async deleteHabit(habitId: string) {
       await removeHabit(habitId);
     },

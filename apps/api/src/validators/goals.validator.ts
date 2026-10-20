@@ -34,6 +34,7 @@ export const updateGoalSchema = z
     startDate: isoDateSchema.optional(),
     endDate: isoDateSchema.optional(),
     habitIds: habitIdsSchema.optional(),
+    archived: z.boolean().optional(),
   })
   .refine(
     (data) =>
@@ -41,7 +42,8 @@ export const updateGoalSchema = z
       data.color !== undefined ||
       data.startDate !== undefined ||
       data.endDate !== undefined ||
-      data.habitIds !== undefined,
+      data.habitIds !== undefined ||
+      data.archived !== undefined,
     { message: 'At least one field is required' },
   )
   .refine(

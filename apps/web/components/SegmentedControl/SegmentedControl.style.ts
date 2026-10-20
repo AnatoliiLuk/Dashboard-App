@@ -19,6 +19,11 @@ export const labelStyle = ({ vars, typography }: Theme) => ({
   lineHeight: 1,
 });
 
+export const actionStyle = {
+  flexShrink: 0,
+  ml: 'auto',
+};
+
 export const optionsScrollStyle = {
   minWidth: 0,
   overflowX: 'auto' as const,

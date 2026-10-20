@@ -8,4 +8,5 @@ export type CreateHabitDto = {
 export type UpdateHabitDto = {
   name?: string;
   color?: HabitColor;
+  archived?: boolean;
 };

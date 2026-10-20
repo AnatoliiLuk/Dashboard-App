@@ -44,7 +44,10 @@ export class GoalsService {
   }
 
   async delete(id: string, userId: string): Promise<void> {
-    await this.getOwnedGoal(id, userId);
+    const goal = await this.getOwnedGoal(id, userId);
+    if (!goal.archivedAt) {
+      throw new AppError(409, 'Archive the goal before deleting it');
+    }
     await this.repository.delete(id);
   }
 

@@ -67,6 +67,7 @@ function renderCard(overrides: Partial<GoalTimeline> = {}) {
       habits={[habit('habit-1', 'Read'), habit('habit-2', 'Walk')]}
       timeline={timeline(overrides)}
       onEdit={jest.fn()}
+      onArchive={jest.fn()}
       onDelete={jest.fn()}
     />,
   );
@@ -110,6 +111,7 @@ describe('GoalCard', () => {
           days: [day('2026-10-15', 1, 'closed')],
         })}
         onEdit={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -174,9 +176,9 @@ describe('GoalCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('deletes only after confirmation', async () => {
+  it('archives an active goal instead of deleting it', async () => {
     const user = userEvent.setup();
-    const onDelete = jest.fn();
+    const onArchive = jest.fn();
 
     renderWithProviders(
       <GoalCard
@@ -184,14 +186,43 @@ describe('GoalCard', () => {
         habits={[habit('habit-1', 'Read')]}
         timeline={timeline()}
         onEdit={jest.fn()}
+        onArchive={onArchive}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'Delete' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Archive' }));
+
+    expect(onArchive).toHaveBeenCalledWith('goal-1', true);
+  });
+
+  it('restores or deletes an archived goal forever after confirmation', async () => {
+    const user = userEvent.setup();
+    const onArchive = jest.fn();
+    const onDelete = jest.fn();
+
+    renderWithProviders(
+      <GoalCard
+        goal={goal({ archivedAt: '2026-10-18T09:00:00.000Z' })}
+        habits={[habit('habit-1', 'Read')]}
+        timeline={timeline()}
+        onEdit={jest.fn()}
+        onArchive={onArchive}
         onDelete={onDelete}
       />,
     );
 
+    await user.click(screen.getByRole('button', { name: 'Restore' }));
+    expect(onArchive).toHaveBeenCalledWith('goal-1', false);
+
     await user.click(screen.getByRole('button', { name: 'Delete' }));
     expect(onDelete).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Delete forever' }));
     expect(onDelete).toHaveBeenCalledWith('goal-1');
   });
 
@@ -205,6 +236,7 @@ describe('GoalCard', () => {
         habits={[habit('habit-1', 'Read')]}
         timeline={timeline()}
         onEdit={onEdit}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );

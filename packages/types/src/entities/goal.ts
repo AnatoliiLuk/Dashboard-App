@@ -8,4 +8,5 @@ export type Goal = {
   startDate: string;
   endDate: string;
   habitIds: string[];
+  archivedAt?: string | null;
 };

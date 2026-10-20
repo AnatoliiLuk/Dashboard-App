@@ -32,6 +32,11 @@ describe('updateHabitSchema', () => {
     ).toBe(true);
   });
 
+  it('accepts archiving or restoring on its own', () => {
+    expect(updateHabitSchema.safeParse({ archived: true }).success).toBe(true);
+    expect(updateHabitSchema.safeParse({ archived: false }).success).toBe(true);
+  });
+
   it('rejects an empty update', () => {
     expect(updateHabitSchema.safeParse({}).success).toBe(false);
   });

@@ -7,5 +7,6 @@ export type GoalCardProps = {
   timeline: GoalTimeline;
   selected?: boolean;
   onEdit: () => void;
+  onArchive: (id: string, archived: boolean) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
 };

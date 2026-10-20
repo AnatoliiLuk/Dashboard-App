@@ -19,7 +19,7 @@ const range = {
 };
 
 describe('goals', () => {
-  it('creates, lists, updates, and deletes a goal', async () => {
+  it('creates, lists, updates, archives, and deletes a goal', async () => {
     const { token } = await registerUser();
     const habit = await request(app)
       .post('/api/habits')
@@ -72,8 +72,23 @@ describe('goals', () => {
         name: 'November focus',
         color: 'crimson',
         habitIds: [habitId],
+        archivedAt: null,
       }),
     );
+
+    const active = await request(app)
+      .delete(`/api/goals/${created.body.id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(active.status).toBe(409);
+
+    const archived = await request(app)
+      .patch(`/api/goals/${created.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ archived: true });
+
+    expect(archived.status).toBe(200);
+    expect(archived.body.archivedAt).toEqual(expect.any(String));
 
     const removed = await request(app)
       .delete(`/api/goals/${created.body.id}`)

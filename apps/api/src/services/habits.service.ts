@@ -34,6 +34,9 @@ export class HabitsService {
 
   async delete(id: string, userId: string) {
     await this.ensureOwnership(id, userId);
+    if (!(await this.repository.isArchived(id))) {
+      throw new AppError(409, 'Archive the habit before deleting it');
+    }
     await this.repository.delete(id);
   }
 

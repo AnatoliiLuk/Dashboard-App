@@ -7,5 +7,6 @@ export type HabitCardProps = {
   selected?: boolean;
   onToggle: (habitId: string) => void | Promise<void>;
   onEdit: () => void;
+  onArchive: (habitId: string, archived: boolean) => void | Promise<void>;
   onDelete: (habitId: string) => void | Promise<void>;
 };

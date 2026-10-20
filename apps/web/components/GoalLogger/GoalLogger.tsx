@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoalCard } from '@/components/GoalCard';
@@ -20,16 +20,31 @@ export function GoalLogger({
   habits,
   onAdd,
   onUpdate,
+  onArchive,
   onDelete,
 }: GoalLoggerProps) {
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [sort, setSort] = useState(loadGoalSort);
+  const [showArchived, setShowArchived] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const editing =
     goals.find((item) => item.goal.id === editingId)?.goal ?? null;
-  const sorted = useMemo(() => sortGoals(goals, sort), [goals, sort]);
+  const formHabits = habits.filter(
+    (habit) => !habit.archivedAt || editing?.habitIds.includes(habit.id),
+  );
+  const archivedCount = goals.filter((item) => item.goal.archivedAt).length;
+  const sorted = useMemo(
+    () =>
+      sortGoals(
+        goals.filter((item) => Boolean(item.goal.archivedAt) === showArchived),
+        sort,
+      ),
+    [goals, showArchived, sort],
+  );
+  const showToolbar = sorted.length > 0 || archivedCount > 0 || showArchived;
+  const emptyText = showArchived ? t('goals.archiveEmpty') : t('goals.empty');
 
   useEffect(() => {
     if (!formOpen) {
@@ -45,7 +60,13 @@ export function GoalLogger({
 
   function openNew() {
     setEditingId(null);
+    setShowArchived(false);
     setFormOpen(true);
+  }
+
+  function toggleArchived() {
+    closeForm();
+    setShowArchived((current) => !current);
   }
 
   function beginEdit(id: string) {
@@ -80,7 +101,7 @@ export function GoalLogger({
         <Box ref={formRef}>
           <GoalForm
             key={editing?.id ?? 'new'}
-            habits={habits}
+            habits={formHabits}
             editing={editing}
             onAdd={addGoal}
             onUpdate={saveGoal}
@@ -88,36 +109,46 @@ export function GoalLogger({
           />
         </Box>
       ) : null}
+      {showToolbar ? (
+        <SegmentedControl
+          label={t('common.sortBy')}
+          value={sort}
+          options={GOAL_SORTS.map((option) => ({
+            id: option,
+            label: t(goalSortLabel[option]),
+          }))}
+          onChange={(option) => {
+            saveGoalSort(option);
+            setSort(option);
+          }}
+          action={
+            archivedCount > 0 || showArchived ? (
+              <Button type="button" variant="outlined" onClick={toggleArchived}>
+                {showArchived
+                  ? t('goals.showCurrent')
+                  : t('goals.showArchived', { count: archivedCount })}
+              </Button>
+            ) : null
+          }
+        />
+      ) : null}
       {sorted.length === 0 ? (
-        <Typography sx={emptyStyle}>{t('goals.empty')}</Typography>
+        <Typography sx={emptyStyle}>{emptyText}</Typography>
       ) : (
-        <>
-          <SegmentedControl
-            label={t('common.sortBy')}
-            value={sort}
-            options={GOAL_SORTS.map((option) => ({
-              id: option,
-              label: t(goalSortLabel[option]),
-            }))}
-            onChange={(option) => {
-              saveGoalSort(option);
-              setSort(option);
-            }}
-          />
-          <Box component="ul" sx={listStyle}>
-            {sorted.map((item) => (
-              <GoalCard
-                key={item.goal.id}
-                goal={item.goal}
-                habits={habits}
-                timeline={item.timeline}
-                selected={item.goal.id === editing?.id}
-                onEdit={() => beginEdit(item.goal.id)}
-                onDelete={onDelete}
-              />
-            ))}
-          </Box>
-        </>
+        <Box component="ul" sx={listStyle}>
+          {sorted.map((item) => (
+            <GoalCard
+              key={item.goal.id}
+              goal={item.goal}
+              habits={habits}
+              timeline={item.timeline}
+              selected={item.goal.id === editing?.id}
+              onEdit={() => beginEdit(item.goal.id)}
+              onArchive={onArchive}
+              onDelete={onDelete}
+            />
+          ))}
+        </Box>
       )}
     </section>
   );

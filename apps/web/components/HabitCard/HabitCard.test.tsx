@@ -23,6 +23,14 @@ function habitItem(overrides: Partial<HabitToday> = {}): HabitToday {
   };
 }
 
+function archivedItem(): HabitToday {
+  const item = habitItem();
+  return {
+    ...item,
+    habit: { ...item.habit, archivedAt: '2026-10-18T09:00:00.000Z' },
+  };
+}
+
 describe('HabitCard', () => {
   it('marks today done', async () => {
     const user = userEvent.setup();
@@ -33,6 +41,7 @@ describe('HabitCard', () => {
         item={habitItem()}
         onToggle={onToggle}
         onEdit={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -53,6 +62,7 @@ describe('HabitCard', () => {
         item={habitItem({ doneToday: true, currentStreak: 1 })}
         onToggle={jest.fn()}
         onEdit={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -74,6 +84,7 @@ describe('HabitCard', () => {
         selected
         onToggle={jest.fn()}
         onEdit={onEdit}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -86,15 +97,63 @@ describe('HabitCard', () => {
     expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
-  it('deletes only after confirmation', async () => {
+  it('archives an active habit instead of deleting it', async () => {
     const user = userEvent.setup();
-    const onDelete = jest.fn();
+    const onArchive = jest.fn();
 
     renderWithProviders(
       <HabitCard
         item={habitItem()}
         onToggle={jest.fn()}
         onEdit={jest.fn()}
+        onArchive={onArchive}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'Delete' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Archive' }));
+
+    expect(onArchive).toHaveBeenCalledWith('habit-1', true);
+  });
+
+  it('restores an archived habit', async () => {
+    const user = userEvent.setup();
+    const onArchive = jest.fn();
+
+    renderWithProviders(
+      <HabitCard
+        item={archivedItem()}
+        onToggle={jest.fn()}
+        onEdit={jest.fn()}
+        onArchive={onArchive}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Archived on 18 Oct 2026')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Done today' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Restore' }));
+
+    expect(onArchive).toHaveBeenCalledWith('habit-1', false);
+  });
+
+  it('deletes an archived habit forever only after confirmation', async () => {
+    const user = userEvent.setup();
+    const onDelete = jest.fn();
+
+    renderWithProviders(
+      <HabitCard
+        item={archivedItem()}
+        onToggle={jest.fn()}
+        onEdit={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={onDelete}
       />,
     );
@@ -102,7 +161,7 @@ describe('HabitCard', () => {
     await user.click(screen.getByRole('button', { name: 'Delete' }));
     expect(onDelete).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Delete forever' }));
     expect(onDelete).toHaveBeenCalledWith('habit-1');
   });
 });

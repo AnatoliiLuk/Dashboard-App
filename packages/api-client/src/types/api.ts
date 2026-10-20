@@ -27,6 +27,7 @@ export type ApiHabit = {
   name: string;
   color: HabitColor;
   userId: string;
+  archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
   completions?: ApiCompletion[];
@@ -40,6 +41,7 @@ export type ApiGoal = {
   endDate: string;
   userId: string;
   habitIds: string[];
+  archivedAt: string | null;
 };
 
 export type ToggleCompletionResponse = {

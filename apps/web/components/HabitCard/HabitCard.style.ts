@@ -53,6 +53,11 @@ export const messageStyle =
     },
   });
 
+export const archivedMessageStyle = ({ vars, spacingPx }: Theme) => ({
+  mt: spacingPx[8],
+  color: vars.palette.text.secondary,
+});
+
 export const footerStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',

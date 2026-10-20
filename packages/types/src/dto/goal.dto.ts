@@ -14,4 +14,5 @@ export type UpdateGoalDto = {
   startDate?: string;
   endDate?: string;
   habitIds?: string[];
+  archived?: boolean;
 };

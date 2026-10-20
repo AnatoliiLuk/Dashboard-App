@@ -10,7 +10,14 @@ export const updateHabitSchema = z
   .object({
     name: z.string().min(1).max(100).optional(),
     color: z.nativeEnum(HabitColor).optional(),
+    archived: z.boolean().optional(),
   })
-  .refine((data) => data.name !== undefined || data.color !== undefined, {
-    message: 'At least one field (name or color) is required',
-  });
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.color !== undefined ||
+      data.archived !== undefined,
+    { message: 'At least one field (name, color, or archived) is required' },
+  );
+
+export type UpdateHabitBody = z.infer<typeof updateHabitSchema>;

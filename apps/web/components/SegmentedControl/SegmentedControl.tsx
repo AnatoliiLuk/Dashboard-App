@@ -1,9 +1,10 @@
 'use client';
 
 import { Box } from '@mui/material';
-import { useId } from 'react';
+import { useId, type ReactNode } from 'react';
 
 import {
+  actionStyle,
   labelStyle,
   optionActiveStyle,
   optionStyle,
@@ -22,6 +23,7 @@ type SegmentedControlProps<T extends string> = {
   value: T;
   options: readonly SegmentedOption<T>[];
   onChange: (value: T) => void;
+  action?: ReactNode;
 };
 
 export function SegmentedControl<T extends string>({
@@ -29,6 +31,7 @@ export function SegmentedControl<T extends string>({
   value,
   options,
   onChange,
+  action,
 }: SegmentedControlProps<T>) {
   const labelId = useId();
 
@@ -53,6 +56,7 @@ export function SegmentedControl<T extends string>({
           ))}
         </Box>
       </Box>
+      {action ? <Box sx={actionStyle}>{action}</Box> : null}
     </Box>
   );
 }

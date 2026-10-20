@@ -6,4 +6,5 @@ export type Habit = {
   name: string;
   createdOn: string;
   color: HabitColor;
+  archivedAt?: string | null;
 };

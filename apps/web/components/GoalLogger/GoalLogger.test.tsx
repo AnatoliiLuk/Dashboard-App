@@ -44,6 +44,7 @@ describe('GoalLogger', () => {
         habits={[habit()]}
         onAdd={jest.fn()}
         onUpdate={onUpdate}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -104,6 +105,7 @@ describe('GoalLogger', () => {
         habits={[habit()]}
         onAdd={jest.fn()}
         onUpdate={jest.fn()}
+        onArchive={jest.fn()}
         onDelete={jest.fn()}
       />,
     );
@@ -125,5 +127,45 @@ describe('GoalLogger', () => {
     expect(
       within(sort).getByRole('button', { name: 'Shortest' }),
     ).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows archived goals only in the archive', async () => {
+    const user = userEvent.setup();
+    const current = goal();
+    const archived = {
+      ...goal(),
+      id: 'goal-2',
+      name: 'September focus',
+      archivedAt: '2026-10-18T09:00:00.000Z',
+    };
+
+    renderWithProviders(
+      <GoalLogger
+        goals={[
+          { goal: current, timeline: emptyTimeline() },
+          { goal: archived, timeline: emptyTimeline() },
+        ]}
+        habits={[habit()]}
+        onAdd={jest.fn()}
+        onUpdate={jest.fn()}
+        onArchive={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const names = () =>
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent);
+
+    expect(names()).toEqual(['October focus']);
+
+    await user.click(screen.getByRole('button', { name: 'Archive (1)' }));
+
+    expect(names()).toEqual(['September focus']);
+
+    await user.click(screen.getByRole('button', { name: 'Current goals' }));
+
+    expect(names()).toEqual(['October focus']);
   });
 });

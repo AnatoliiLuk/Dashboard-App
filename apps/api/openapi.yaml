@@ -165,8 +165,8 @@ paths:
           $ref: '#/components/responses/Error'
     patch:
       tags: [Habits]
-      summary: Rename a habit or change its color
-      description: At least one of name or color is required.
+      summary: Rename, recolor, archive, or restore a habit
+      description: At least one of name, color, or archived is required.
       security:
         - bearerAuth: []
       requestBody:
@@ -190,7 +190,8 @@ paths:
           $ref: '#/components/responses/Error'
     delete:
       tags: [Habits]
-      summary: Delete a habit
+      summary: Permanently delete an archived habit
+      description: Removes the habit and its completions. Archive the habit first.
       security:
         - bearerAuth: []
       responses:
@@ -199,6 +200,8 @@ paths:
         '401':
           $ref: '#/components/responses/Error'
         '404':
+          $ref: '#/components/responses/Error'
+        '409':
           $ref: '#/components/responses/Error'
   /api/completions:
     get:
@@ -387,9 +390,11 @@ components:
           maxLength: 100
         color:
           $ref: '#/components/schemas/HabitColor'
+        archived:
+          type: boolean
     Habit:
       type: object
-      required: [id, name, color, userId, createdAt, updatedAt]
+      required: [id, name, color, userId, archivedAt, createdAt, updatedAt]
       properties:
         id:
           type: string
@@ -399,6 +404,10 @@ components:
           $ref: '#/components/schemas/HabitColor'
         userId:
           type: string
+        archivedAt:
+          type: string
+          format: date-time
+          nullable: true
         createdAt:
           type: string
           format: date-time

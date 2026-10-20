@@ -62,6 +62,10 @@ describe('createGoalSchema', () => {
 });
 
 describe('updateGoalSchema', () => {
+  it('accepts archiving on its own', () => {
+    expect(updateGoalSchema.safeParse({ archived: true }).success).toBe(true);
+  });
+
   it('rejects a start date after the end date', () => {
     const result = updateGoalSchema.safeParse({
       startDate: '2026-10-11',

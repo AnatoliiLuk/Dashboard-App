@@ -32,6 +32,7 @@ function GoalCard({
   timeline,
   selected = false,
   onEdit,
+  onArchive,
   onDelete,
 }: GoalCardProps) {
   const { t } = useTranslation();
@@ -44,7 +45,29 @@ function GoalCard({
   const percent = timePercent(timeline);
 
   let actions: ReactNode;
-  if (confirmDelete) {
+  if (!goal.archivedAt) {
+    actions = (
+      <>
+        <Button
+          type="button"
+          variant="outlined"
+          aria-pressed={selected}
+          onClick={onEdit}
+        >
+          {t('common.edit')}
+        </Button>
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={() => {
+            void onArchive(goal.id, true);
+          }}
+        >
+          {t('common.archive')}
+        </Button>
+      </>
+    );
+  } else if (confirmDelete) {
     actions = (
       <>
         <Button
@@ -55,7 +78,7 @@ function GoalCard({
             void onDelete(goal.id);
           }}
         >
-          {t('common.delete')}
+          {t('common.deleteForever')}
         </Button>
         <Button
           type="button"
@@ -72,10 +95,11 @@ function GoalCard({
         <Button
           type="button"
           variant="outlined"
-          aria-pressed={selected}
-          onClick={onEdit}
+          onClick={() => {
+            void onArchive(goal.id, false);
+          }}
         >
-          {t('common.edit')}
+          {t('common.restore')}
         </Button>
         <Button
           type="button"

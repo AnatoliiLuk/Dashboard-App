@@ -78,6 +78,10 @@ function GoalsContent() {
     await updateGoal(id, values);
   }
 
+  async function archiveGoal(id: string, archived: boolean) {
+    await updateGoal(id, { archived });
+  }
+
   if (isError) {
     return (
       <>
@@ -107,6 +111,7 @@ function GoalsContent() {
       habits={habits}
       onAdd={addGoal}
       onUpdate={editGoal}
+      onArchive={archiveGoal}
       onDelete={deleteGoal}
     />
   );

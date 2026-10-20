@@ -2,6 +2,7 @@ import type { HabitColor } from '@prisma/client';
 import type { NextFunction, Request, Response } from 'express';
 
 import { HabitsService } from '../services/habits.service';
+import type { UpdateHabitBody } from '../validators/habits.validator';
 
 export class HabitsController {
   private service = new HabitsService();
@@ -47,7 +48,7 @@ export class HabitsController {
       const userId = req.user!.id;
       const habit = await this.service.update(
         id,
-        req.body as { name?: string; color?: HabitColor },
+        req.body as UpdateHabitBody,
         userId,
       );
       res.json(habit);

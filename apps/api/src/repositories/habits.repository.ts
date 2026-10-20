@@ -1,6 +1,7 @@
 import type { HabitColor } from '@prisma/client';
 
 import { prisma } from '../config/database';
+import { archivedAtFor } from '../utils/archive.util';
 
 export type CreateHabitInput = {
   name: string;
@@ -11,6 +12,7 @@ export type CreateHabitInput = {
 export type UpdateHabitInput = {
   name?: string;
   color?: HabitColor;
+  archived?: boolean;
 };
 
 export class HabitsRepository {
@@ -44,11 +46,22 @@ export class HabitsRepository {
     });
   }
 
-  async update(id: string, data: UpdateHabitInput) {
+  async update(id: string, { archived, ...data }: UpdateHabitInput) {
     return prisma.habit.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        archivedAt: archivedAtFor(archived),
+      },
     });
+  }
+
+  async isArchived(id: string): Promise<boolean> {
+    const habit = await prisma.habit.findUnique({
+      where: { id },
+      select: { archivedAt: true },
+    });
+    return Boolean(habit?.archivedAt);
   }
 
   async delete(id: string) {

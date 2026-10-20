@@ -64,6 +64,58 @@ describe('habits and completions', () => {
     expect(off.body).toEqual({ completed: false, completion: null });
   });
 
+  it('keeps completions when a habit is archived and deletes it only from the archive', async () => {
+    const { token } = await registerUser();
+    const created = await request(app)
+      .post('/api/habits')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Read', color: 'sky' });
+    const habitId = created.body.id as string;
+
+    await request(app)
+      .post('/api/completions/toggle')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ habitId, date: '2026-10-06' });
+
+    const active = await request(app)
+      .delete(`/api/habits/${habitId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(active.status).toBe(409);
+
+    const archived = await request(app)
+      .patch(`/api/habits/${habitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ archived: true });
+
+    expect(archived.status).toBe(200);
+    expect(archived.body.archivedAt).toEqual(expect.any(String));
+
+    const completions = await request(app)
+      .get('/api/completions')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(completions.body).toEqual([expect.objectContaining({ habitId })]);
+
+    const restored = await request(app)
+      .patch(`/api/habits/${habitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ archived: false });
+
+    expect(restored.body.archivedAt).toBeNull();
+
+    await request(app)
+      .patch(`/api/habits/${habitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ archived: true });
+
+    const removed = await request(app)
+      .delete(`/api/habits/${habitId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(removed.status).toBe(204);
+  });
+
   it('rejects a completion for a habit the user does not own', async () => {
     const { token } = await registerUser();
 

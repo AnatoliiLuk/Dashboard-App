@@ -9,6 +9,7 @@ export function toHabit(habit: ApiHabit): Habit {
     name: habit.name,
     color: habit.color,
     createdOn: habit.createdAt.slice(0, 10),
+    archivedAt: habit.archivedAt ?? null,
   };
 }
 
@@ -21,6 +22,7 @@ export function toGoal(goal: ApiGoal): Goal {
     startDate: goal.startDate.slice(0, 10),
     endDate: goal.endDate.slice(0, 10),
     habitIds: goal.habitIds,
+    archivedAt: goal.archivedAt ?? null,
   };
 }
 

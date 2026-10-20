@@ -1,6 +1,7 @@
 import { Prisma, type GoalColor } from '@prisma/client';
 
 import { prisma } from '../config/database';
+import { archivedAtFor } from '../utils/archive.util';
 
 const withHabitIds = {
   habits: {
@@ -19,6 +20,7 @@ export type GoalRecord = {
   endDate: string;
   userId: string;
   habitIds: string[];
+  archivedAt: string | null;
 };
 
 export type CreateGoalInput = {
@@ -36,6 +38,7 @@ export type UpdateGoalInput = {
   startDate?: string;
   endDate?: string;
   habitIds?: string[];
+  archived?: boolean;
 };
 
 export class GoalsRepository {
@@ -92,6 +95,7 @@ export class GoalsRepository {
           color: data.color,
           startDate: data.startDate ? toUtcDate(data.startDate) : undefined,
           endDate: data.endDate ? toUtcDate(data.endDate) : undefined,
+          archivedAt: archivedAtFor(data.archived),
         },
         include: withHabitIds,
       });
@@ -120,6 +124,7 @@ function toGoalRecord(goal: GoalWithHabits): GoalRecord {
     endDate: toDateString(goal.endDate),
     userId: goal.userId,
     habitIds: goal.habits.map((link) => link.habitId),
+    archivedAt: goal.archivedAt?.toISOString() ?? null,
   };
 }
 
