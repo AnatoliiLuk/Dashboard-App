@@ -69,6 +69,7 @@ export const uk: Copy<typeof en> = {
     description: 'Кожен день показує звички, які ви позначили виконаними.',
     month: 'Місяць',
     week: 'Тиждень',
+    today: 'Сьогодні: {{date}}',
     backTo: 'Назад до {{date}}',
     previousMonth: 'Попередній місяць',
     nextMonth: 'Наступний місяць',

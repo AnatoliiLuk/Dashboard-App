@@ -66,7 +66,9 @@ export function currentPeriodLabel(
   translate: TFunction,
 ) {
   const date = formatDisplay(today);
-  return here ? date : translate('calendar.backTo', { date });
+  return here
+    ? translate('calendar.today', { date })
+    : translate('calendar.backTo', { date });
 }
 
 export function calendarStepLabel(

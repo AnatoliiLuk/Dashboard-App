@@ -63,6 +63,7 @@ export const en = {
     description: 'Each day lists the habits you marked done.',
     month: 'Month',
     week: 'Week',
+    today: 'Today: {{date}}',
     backTo: 'Back to {{date}}',
     previousMonth: 'Previous month',
     nextMonth: 'Next month',
