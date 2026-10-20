@@ -3,6 +3,8 @@ export type ApiClientConfig = {
   baseURL: string;
   getToken?: () => string | null | undefined;
   onUnauthorized?: () => void;
+  /** Bumped when a new sign-in replaces any check already in flight. */
+  getSessionEpoch?: () => number;
 };
 
 export class ApiError extends Error {
@@ -22,6 +24,7 @@ type RequestOptions = ApiClientConfig & {
   data?: unknown;
   /** When false, do not attach Authorization (login/register). Default true. */
   auth?: boolean;
+  signal?: AbortSignal;
 };
 
 export async function request<T>(options: RequestOptions): Promise<T> {
@@ -29,11 +32,14 @@ export async function request<T>(options: RequestOptions): Promise<T> {
     baseURL,
     getToken,
     onUnauthorized,
+    getSessionEpoch,
     method,
     url,
     data,
     auth = true,
+    signal,
   } = options;
+  const startedEpoch = getSessionEpoch?.();
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
@@ -53,10 +59,20 @@ export async function request<T>(options: RequestOptions): Promise<T> {
   const response = await fetch(`${baseURL.replace(/\/$/, '')}${url}`, {
     method,
     headers,
+    credentials: 'include',
     body: data === undefined ? undefined : JSON.stringify(data),
+    signal,
   });
 
-  if (response.status === 401) {
+  const superseded =
+    signal?.aborted ||
+    (getSessionEpoch !== undefined && getSessionEpoch() !== startedEpoch);
+
+  if (superseded) {
+    throw new DOMException('The operation was aborted.', 'AbortError');
+  }
+
+  if (auth && response.status === 401) {
     onUnauthorized?.();
   }
 

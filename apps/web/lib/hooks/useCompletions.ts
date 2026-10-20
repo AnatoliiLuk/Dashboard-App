@@ -6,11 +6,11 @@ import type { CreateCompletionDto } from '@repo/types';
 import { api } from '@/lib/api/client';
 import { toCompletion } from '@/lib/api/mappers';
 import { completionKeys, habitKeys } from '@/lib/api/query-keys';
-import { useAuthToken } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export function useCompletions() {
   const queryClient = useQueryClient();
-  const token = useAuthToken();
+  const { isAuthenticated } = useAuth();
 
   const completionsQuery = useQuery({
     queryKey: completionKeys.all,
@@ -18,7 +18,7 @@ export function useCompletions() {
       const completions = await api.completions.getAll();
       return completions.map(toCompletion);
     },
-    enabled: Boolean(token),
+    enabled: isAuthenticated,
   });
 
   const invalidateRelated = () => {

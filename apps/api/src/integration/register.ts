@@ -1,6 +1,7 @@
 import request from 'supertest';
 
 import { app } from '../app';
+import { tokenFromSetCookie } from '../utils/session-cookie';
 
 const email = 'ada@example.com';
 const password = 'long-enough';
@@ -16,6 +17,6 @@ export async function registerUser() {
     email,
     password,
     response,
-    token: response.body.token as string,
+    token: tokenFromSetCookie(response.headers['set-cookie']),
   };
 }

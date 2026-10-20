@@ -12,19 +12,10 @@ import {
   goalKeys,
   habitKeys,
 } from '@/lib/api/query-keys';
-import {
-  clearToken,
-  getToken,
-  setToken,
-  subscribeToken,
-} from '@/lib/api/token';
-
-export function useAuthToken() {
-  return useSyncExternalStore(subscribeToken, getToken, () => null);
-}
+import { getSignedIn, setSignedIn, subscribeSession } from '@/lib/api/session';
 
 /** False on the server / first hydrate; true once the client store is active. */
-function useAuthReady() {
+function useClientReady() {
   return useSyncExternalStore(
     () => () => {},
     () => true,
@@ -32,20 +23,33 @@ function useAuthReady() {
   );
 }
 
+function useSignedIn() {
+  return useSyncExternalStore(subscribeSession, getSignedIn, () => null);
+}
+
 export function useAuth() {
   const queryClient = useQueryClient();
-  const token = useAuthToken();
-  const isAuthReady = useAuthReady();
-  const isAuthenticated = Boolean(token);
+  const isClientReady = useClientReady();
+  const signedIn = useSignedIn();
+  const isAuthenticated = signedIn === true;
+  const isAuthReady = isClientReady && signedIn !== null;
 
   const meQuery = useQuery({
     queryKey: authKeys.me,
-    queryFn: () => api.auth.me(),
-    enabled: isAuthReady && isAuthenticated,
+    queryFn: ({ signal }) => api.auth.me(signal),
+    enabled: isClientReady && signedIn !== false,
     retry: false,
   });
 
-  // Stale JWT after DB wipe / deleted user — drop the session.
+  useEffect(() => {
+    if (!meQuery.isSuccess) {
+      return;
+    }
+
+    setSignedIn(true);
+  }, [meQuery.isSuccess]);
+
+  // A rejected session check means the cookie is missing or no longer valid.
   useEffect(() => {
     if (!meQuery.isError) {
       return;
@@ -59,35 +63,45 @@ export function useAuth() {
       return;
     }
 
-    clearToken();
+    setSignedIn(false);
+  }, [meQuery.isError, meQuery.error]);
+
+  useEffect(() => {
+    if (signedIn !== false) {
+      return;
+    }
+
     queryClient.removeQueries({ queryKey: authKeys.all });
     queryClient.removeQueries({ queryKey: habitKeys.all });
     queryClient.removeQueries({ queryKey: completionKeys.all });
     queryClient.removeQueries({ queryKey: goalKeys.all });
-  }, [meQuery.isError, meQuery.error, queryClient]);
+  }, [queryClient, signedIn]);
 
   const loginMutation = useMutation({
     mutationFn: (dto: LoginDto) => api.auth.login(dto),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: authKeys.me });
+    },
     onSuccess: (data) => {
-      setToken(data.token);
       queryClient.setQueryData(authKeys.me, data.user);
+      setSignedIn(true);
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: (dto: RegisterDto) => api.auth.register(dto),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: authKeys.me });
+    },
     onSuccess: (data) => {
-      setToken(data.token);
       queryClient.setQueryData(authKeys.me, data.user);
+      setSignedIn(true);
     },
   });
 
   function logout() {
-    clearToken();
-    queryClient.removeQueries({ queryKey: authKeys.all });
-    queryClient.removeQueries({ queryKey: habitKeys.all });
-    queryClient.removeQueries({ queryKey: completionKeys.all });
-    queryClient.removeQueries({ queryKey: goalKeys.all });
+    setSignedIn(false);
+    void api.auth.logout();
   }
 
   return {

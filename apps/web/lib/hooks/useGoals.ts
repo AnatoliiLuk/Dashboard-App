@@ -6,11 +6,11 @@ import type { CreateGoalDto, UpdateGoalDto } from '@repo/types';
 import { api } from '@/lib/api/client';
 import { toGoal } from '@/lib/api/mappers';
 import { goalKeys } from '@/lib/api/query-keys';
-import { useAuthToken } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export function useGoals() {
   const queryClient = useQueryClient();
-  const token = useAuthToken();
+  const { isAuthenticated } = useAuth();
 
   const goalsQuery = useQuery({
     queryKey: goalKeys.all,
@@ -18,7 +18,7 @@ export function useGoals() {
       const goals = await api.goals.getAll();
       return goals.map(toGoal);
     },
-    enabled: Boolean(token),
+    enabled: isAuthenticated,
   });
 
   const invalidate = () => {

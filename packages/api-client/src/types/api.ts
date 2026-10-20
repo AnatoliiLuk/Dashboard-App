@@ -11,7 +11,6 @@ export type ApiUser = {
 
 export type AuthResponse = {
   user: ApiUser;
-  token: string;
 };
 
 export type ApiCompletion = {

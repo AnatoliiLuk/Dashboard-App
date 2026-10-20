@@ -46,7 +46,7 @@ npm run dev:api
 - Habits: `GET|POST /api/habits`, `GET|PATCH|DELETE /api/habits/:id`
 - Completions: `GET|POST /api/completions`, `POST /api/completions/toggle`, `DELETE /api/completions/:id`
 
-Protected routes need `Authorization: Bearer <token>` from login/register.
+Protected routes accept the httpOnly session cookie from login, or `Authorization: Bearer <token>`.
 
 After `npm run db:seed`, sign in as `demo@habits.plus` with password `password`.
 

@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
 
 import { app } from '../app';
+import { tokenFromSetCookie } from '../utils/session-cookie';
 import { disconnectDatabase, resetDatabase } from './db';
 import { registerUser } from './register';
 
@@ -133,9 +134,10 @@ describe('goals', () => {
       name: 'Grace',
     });
 
+    const otherToken = tokenFromSetCookie(other.headers['set-cookie']);
     const created = await request(app)
       .post('/api/goals')
-      .set('Authorization', `Bearer ${other.body.token}`)
+      .set('Authorization', `Bearer ${otherToken}`)
       .send({
         name: 'October focus',
         color: 'indigo',
@@ -148,7 +150,7 @@ describe('goals', () => {
 
     const listed = await request(app)
       .get('/api/goals')
-      .set('Authorization', `Bearer ${other.body.token}`);
+      .set('Authorization', `Bearer ${otherToken}`);
 
     expect(listed.status).toBe(200);
     expect(listed.body).toEqual([]);

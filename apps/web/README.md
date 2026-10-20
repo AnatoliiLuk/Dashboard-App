@@ -27,7 +27,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 | `/login`    | Guest sign-in       |
 | `/register` | Guest registration  |
 
-The signed-in token is stored in `localStorage` under `habits-plus-token`.
+The session is an httpOnly cookie set by the API. Page scripts cannot read it.
 
 ## Language
 

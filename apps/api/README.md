@@ -27,4 +27,4 @@ The seed creates `demo@habits.plus` / `password` when that user is missing.
 
 ## Auth
 
-`POST /api/auth/register` and `POST /api/auth/login` return `{ user, token }`. Send the token as `Authorization: Bearer <token>` on habit and completion routes, and on `GET /api/auth/me`.
+`POST /api/auth/register` and `POST /api/auth/login` return `{ user }` and set an httpOnly `habits_plus_token` cookie. `POST /api/auth/logout` clears it. Protected routes accept that cookie or `Authorization: Bearer <token>`.

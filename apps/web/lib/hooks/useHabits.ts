@@ -6,11 +6,11 @@ import type { CreateHabitDto, UpdateHabitDto } from '@repo/types';
 import { api } from '@/lib/api/client';
 import { toHabit } from '@/lib/api/mappers';
 import { goalKeys, habitKeys } from '@/lib/api/query-keys';
-import { useAuthToken } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export function useHabits() {
   const queryClient = useQueryClient();
-  const token = useAuthToken();
+  const { isAuthenticated } = useAuth();
 
   const habitsQuery = useQuery({
     queryKey: habitKeys.all,
@@ -18,7 +18,7 @@ export function useHabits() {
       const habits = await api.habits.getAll();
       return habits.map(toHabit);
     },
-    enabled: Boolean(token),
+    enabled: isAuthenticated,
   });
 
   const createMutation = useMutation({

@@ -1,6 +1,6 @@
 import { ApiClient } from '@repo/api-client';
 
-import { clearToken, getToken } from './token';
+import { getSessionEpoch, setSignedIn } from './session';
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ??
@@ -8,8 +8,8 @@ const baseURL =
 
 export const api = new ApiClient({
   baseURL,
-  getToken,
+  getSessionEpoch,
   onUnauthorized: () => {
-    clearToken();
+    setSignedIn(false);
   },
 });

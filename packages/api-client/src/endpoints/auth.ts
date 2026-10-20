@@ -27,11 +27,21 @@ export class AuthApi {
     });
   }
 
-  me(): Promise<ApiUser> {
+  logout(): Promise<void> {
+    return request<void>({
+      ...this.config,
+      method: 'POST',
+      url: '/auth/logout',
+      auth: false,
+    });
+  }
+
+  me(signal?: AbortSignal): Promise<ApiUser> {
     return request<ApiUser>({
       ...this.config,
       method: 'GET',
       url: '/auth/me',
+      signal,
     });
   }
 }

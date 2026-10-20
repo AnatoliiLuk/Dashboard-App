@@ -8,6 +8,7 @@ import {
   notFoundMiddleware,
 } from './middleware/error.middleware';
 import { loggerMiddleware } from './middleware/logger.middleware';
+import { originMiddleware } from './middleware/origin.middleware';
 import routes from './routes';
 
 export const app = express();
@@ -21,6 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(originMiddleware);
 app.use(loggerMiddleware);
 
 app.get('/health', async (_req, res) => {
