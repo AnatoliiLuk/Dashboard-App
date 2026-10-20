@@ -81,7 +81,7 @@ describe('GoalCard', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Read')).toBeInTheDocument();
     expect(screen.getByText('Walk')).toBeInTheDocument();
-    expect(screen.getByText('01-10-2026 – 10-10-2026')).toBeInTheDocument();
+    expect(screen.getByText('1 – 10 Oct 2026')).toBeInTheDocument();
     expect(screen.getByText('Habits logged')).toBeInTheDocument();
     expect(screen.getByText('50%')).toBeInTheDocument();
     expect(screen.getByText('Day 5 of 10 · 6 days left')).toBeInTheDocument();
@@ -96,6 +96,25 @@ describe('GoalCard', () => {
         name: 'Day 5 of 10. Logged habits on 3 of 4 closed days.',
       }),
     ).toBeInTheDocument();
+  });
+
+  it('shows one date when the goal lasts a single day', () => {
+    renderWithProviders(
+      <GoalCard
+        goal={goal({ startDate: '2026-10-15', endDate: '2026-10-15' })}
+        habits={[habit('habit-1', 'Read')]}
+        timeline={timeline({
+          day: 1,
+          total: 1,
+          left: 0,
+          days: [day('2026-10-15', 1, 'closed')],
+        })}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('15 Oct 2026')).toBeInTheDocument();
   });
 
   it('fills today when a habit is already logged and keeps the day open', () => {

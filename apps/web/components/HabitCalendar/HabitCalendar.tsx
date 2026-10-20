@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
 import { monthWeeks, WEEKDAYS, weekDays } from '@/lib/habits/calendar';
-import { useTranslation } from '@/lib/i18n';
+import { displayLocale, useTranslation } from '@/lib/i18n';
 import type { HabitStore } from '@/lib/habits/types';
 
 import { DayCell } from './DayCell';
@@ -43,6 +43,7 @@ type HabitCalendarProps = {
 
 export function HabitCalendar({ store, today }: HabitCalendarProps) {
   const { t, i18n } = useTranslation();
+  const locale = displayLocale(i18n.resolvedLanguage ?? i18n.language);
   const [cursor, setCursor] = useState(today);
   const [view, setView] = useState(loadCalendarView);
   const weeks =
@@ -93,7 +94,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
             <ArrowLeftIcon width={16} height={16} />
           </Box>
           <Typography variant="h6" component="h2" sx={headingStyle}>
-            {calendarHeading(cursor, view, i18n.language)}
+            {calendarHeading(cursor, view, locale)}
           </Typography>
           <Box
             component="button"
@@ -113,7 +114,7 @@ export function HabitCalendar({ store, today }: HabitCalendarProps) {
             disabled={here}
             onClick={() => setCursor(today)}
           >
-            {currentPeriodLabel(today, here, t)}
+            {currentPeriodLabel(today, here, locale, t)}
           </Box>
         </Box>
       </Box>

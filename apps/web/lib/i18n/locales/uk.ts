@@ -116,7 +116,6 @@ export const uk: Copy<typeof en> = {
     oldest: 'Найстаріші',
     longest: 'Найдовші',
     shortest: 'Найкоротші',
-    range: '{{start}} – {{end}}',
     percent: '{{percent}}%',
     time: 'День {{day}} з {{total}} · {{left}}',
     daysLeft_one: '{{count}} день залишився',

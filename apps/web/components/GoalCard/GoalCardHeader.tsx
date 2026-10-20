@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 
-import { formatDisplay } from '@/lib/habits/dates';
-import { useTranslation } from '@/lib/i18n';
+import { formatDateRange } from '@/lib/habits/dates';
+import { displayLocale, useTranslation } from '@/lib/i18n';
 
 import {
   nameStyle,
@@ -24,7 +24,8 @@ function GoalCardHeader({
   startDate,
   endDate,
 }: GoalCardHeaderProps) {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const locale = displayLocale(i18n.resolvedLanguage ?? i18n.language);
 
   return (
     <Box sx={topStyle}>
@@ -45,10 +46,7 @@ function GoalCardHeader({
         </Typography>
       </Box>
       <Typography variant="body2" sx={rangeStyle}>
-        {t('goals.range', {
-          start: formatDisplay(startDate),
-          end: formatDisplay(endDate),
-        })}
+        {formatDateRange(startDate, endDate, locale)}
       </Typography>
     </Box>
   );

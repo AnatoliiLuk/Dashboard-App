@@ -2,6 +2,7 @@ export {
   addDays,
   addMonths,
   compareDates,
+  formatDateRange,
   formatDisplay,
   monthTitle,
   startOfMonth,

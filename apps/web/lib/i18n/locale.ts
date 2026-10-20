@@ -12,6 +12,12 @@ export function isLocale(value: string | undefined): value is Locale {
   return LOCALES.some((locale) => locale === value);
 }
 
+export function displayLocale(language: string | undefined): Locale {
+  return language === 'uk' || language?.startsWith('uk')
+    ? 'uk'
+    : DEFAULT_LOCALE;
+}
+
 type RankedLanguage = {
   tag: string;
   quality: number;

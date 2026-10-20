@@ -110,7 +110,6 @@ export const en = {
     oldest: 'Oldest',
     longest: 'Longest',
     shortest: 'Shortest',
-    range: '{{start}} – {{end}}',
     percent: '{{percent}}%',
     time: 'Day {{day}} of {{total}} · {{left}}',
     daysLeft_one: '{{count}} day left',

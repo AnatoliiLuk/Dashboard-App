@@ -4,7 +4,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 
 import { formatDisplay } from '@/lib/habits/dates';
 import { goalColor, type GoalColor } from '@/lib/goals/colors';
-import { useTranslation } from '@/lib/i18n';
+import { displayLocale, useTranslation } from '@/lib/i18n';
 
 import { chartValue } from './GoalCard.helpers';
 import { chartLabelStyle, chartStyle } from './GoalCard.style';
@@ -22,7 +22,8 @@ function GoalHabitChart({
   color,
   label,
 }: GoalHabitChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = displayLocale(i18n.resolvedLanguage ?? i18n.language);
 
   if (days.length === 0) {
     return null;
@@ -47,7 +48,7 @@ function GoalHabitChart({
               valueFormatter: (value, context) =>
                 context.location === 'tick'
                   ? String(value).slice(8)
-                  : formatDisplay(String(value)),
+                  : formatDisplay(String(value), locale),
               height: 28,
             },
           ]}

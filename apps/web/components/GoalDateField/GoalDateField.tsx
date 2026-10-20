@@ -18,7 +18,7 @@ import {
   type RangePlacement,
 } from './GoalDateField.style';
 
-/** Same day-month-year order as `formatDisplay`. */
+/** Day-month-year order for the date field. */
 const DISPLAY_FORMAT = 'DD-MM-YYYY';
 
 type RangeDates = {

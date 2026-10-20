@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { isLocale, localeFromAcceptLanguage } from './locale';
+import { displayLocale, isLocale, localeFromAcceptLanguage } from './locale';
 
 describe('localeFromAcceptLanguage', () => {
   it('picks the first supported language', () => {
@@ -27,6 +27,15 @@ describe('localeFromAcceptLanguage', () => {
 
   it('treats a wildcard as english before a lower-ranked language', () => {
     expect(localeFromAcceptLanguage('de,*;q=0.8,uk;q=0.2')).toBe('en');
+  });
+});
+
+describe('displayLocale', () => {
+  it('keeps ukrainian and falls back to english', () => {
+    expect(displayLocale('uk')).toBe('uk');
+    expect(displayLocale('uk-UA')).toBe('uk');
+    expect(displayLocale('en')).toBe('en');
+    expect(displayLocale(undefined)).toBe('en');
   });
 });
 

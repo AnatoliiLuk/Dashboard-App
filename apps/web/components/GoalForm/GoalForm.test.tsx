@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Goal, Habit } from '@repo/types';
 
-import { formatDisplay, today } from '@/lib/habits/dates';
+import { today } from '@/lib/habits/dates';
 
 import { renderWithProviders } from '../../test/render';
 import { GoalForm } from './GoalForm';
@@ -50,7 +50,7 @@ describe('GoalForm', () => {
       <GoalForm habits={[habit('habit-1', 'Read')]} onAdd={jest.fn()} />,
     );
 
-    const [day, month, year] = formatDisplay(today()).split('-');
+    const [year, month, day] = today().split('-');
     const start = screen.getByRole('group', { name: 'Start date' });
     const digits = start.textContent?.replace(/\D/g, '') ?? '';
     expect(digits).toContain(`${day}${month}${year}`);

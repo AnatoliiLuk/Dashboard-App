@@ -63,9 +63,10 @@ export function isCurrentPeriod(
 export function currentPeriodLabel(
   today: string,
   here: boolean,
+  locale: string,
   translate: TFunction,
 ) {
-  const date = formatDisplay(today);
+  const date = formatDisplay(today, locale);
   return here
     ? translate('calendar.today', { date })
     : translate('calendar.backTo', { date });

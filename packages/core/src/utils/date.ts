@@ -6,9 +6,19 @@ export function today(): string {
   return `${year}-${month}-${day}`;
 }
 
-export function formatDisplay(iso: string): string {
-  const [year, month, day] = iso.split('-');
-  return `${day}-${month}-${year}`;
+export function formatDisplay(iso: string, locale?: string): string {
+  return displayFormat(locale).format(parse(iso));
+}
+
+export function formatDateRange(
+  start: string,
+  end: string,
+  locale: string,
+): string {
+  if (start === end) {
+    return formatDisplay(start, locale);
+  }
+  return displayFormat(locale).formatRange(parse(start), parse(end));
 }
 
 export function addDays(iso: string, days: number): string {
@@ -75,8 +85,20 @@ export function compareDates(left: string, right: string): number {
   return left < right ? -1 : 1;
 }
 
-function intlLocale(locale: string): string {
-  return locale === 'uk' || locale.startsWith('uk') ? 'uk-UA' : 'en-GB';
+function displayFormat(locale: string | undefined) {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function intlLocale(locale: string | undefined): string {
+  if (locale === 'uk' || locale?.startsWith('uk')) {
+    return 'uk-UA';
+  }
+  return 'en-GB';
 }
 
 function parse(iso: string): Date {

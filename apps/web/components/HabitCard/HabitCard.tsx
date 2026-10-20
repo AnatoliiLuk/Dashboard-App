@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { HabitTag } from '@/components/HabitTag';
 import { formatDisplay } from '@/lib/habits/dates';
-import { useTranslation } from '@/lib/i18n';
+import { displayLocale, useTranslation } from '@/lib/i18n';
 
 import { statusIcon } from './HabitCard.constants';
 import { streakMessage } from './HabitCard.helpers';
@@ -30,7 +30,8 @@ function HabitCard({
   onEdit,
   onDelete,
 }: HabitCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = displayLocale(i18n.resolvedLanguage ?? i18n.language);
   const { habit, currentStreak, doneToday, days } = item;
   const { id, name, color } = habit;
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -68,7 +69,7 @@ function HabitCard({
             <Box
               key={date}
               sx={done ? dayDoneStyle : dayStyle}
-              title={formatDisplay(date)}
+              title={formatDisplay(date, locale)}
             />
           ))}
         </Box>

@@ -21,6 +21,10 @@
     {
       "filename": "e2e/locale.spec.ts",
       "language": "en,uk"
+    },
+    {
+      "filename": "packages/core/src/utils/date.test.ts",
+      "language": "en,uk"
     }
   ],
   "words": [
@@ -34,6 +38,7 @@
     "cuid",
     "healthcheck",
     "isready",
-    "Маджента"
+    "Маджента",
+    "жовт"
   ]
 }

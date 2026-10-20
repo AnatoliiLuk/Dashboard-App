@@ -4,6 +4,7 @@ import {
   addDays,
   addMonths,
   compareDates,
+  formatDateRange,
   formatDisplay,
   monthTitle,
   startOfMonth,
@@ -40,8 +41,42 @@ describe('today', () => {
 });
 
 describe('formatDisplay', () => {
-  it('renders the day before the month', () => {
-    expect(formatDisplay('2026-10-06')).toBe('06-10-2026');
+  it('uses a short month name for the locale', () => {
+    expect(formatDisplay('2026-10-15', 'en')).toBe('15 Oct 2026');
+    expect(formatDisplay('2026-10-15', 'uk')).toBe('15 жовт. 2026 р.');
+  });
+
+  it('uses english when the locale is missing', () => {
+    expect(formatDisplay('2026-10-15')).toBe('15 Oct 2026');
+  });
+});
+
+describe('formatDateRange', () => {
+  it('collapses a single day into one date', () => {
+    expect(formatDateRange('2026-10-15', '2026-10-15', 'en')).toBe(
+      '15 Oct 2026',
+    );
+    expect(formatDateRange('2026-10-15', '2026-10-15', 'uk')).toBe(
+      '15 жовт. 2026 р.',
+    );
+  });
+
+  it('keeps both ends when the stretch is longer', () => {
+    expect(formatDateRange('2026-10-01', '2026-10-10', 'en')).toBe(
+      '1\u2009–\u200910 Oct 2026',
+    );
+    expect(formatDateRange('2026-10-01', '2026-10-10', 'uk')).toBe(
+      '1–10 жовт. 2026 р.',
+    );
+  });
+
+  it('names the year when the range crosses one', () => {
+    expect(formatDateRange('2026-12-28', '2027-01-04', 'en')).toBe(
+      '28 Dec 2026\u2009–\u20094 Jan 2027',
+    );
+    expect(formatDateRange('2026-12-28', '2027-01-04', 'uk')).toBe(
+      '28 груд. 2026 – 4 січ. 2027 рр.',
+    );
   });
 });
 
