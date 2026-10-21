@@ -9,7 +9,7 @@ import { formatDisplay } from '@/lib/habits/dates';
 import { displayLocale, useTranslation } from '@/lib/i18n';
 
 import { statusIcon } from './HabitCard.constants';
-import { streakMessage } from './HabitCard.helpers';
+import { streakMessage, weekdayInitial } from './HabitCard.helpers';
 import type { HabitCardProps } from './HabitCard.interface';
 import {
   actionsStyle,
@@ -139,13 +139,16 @@ function HabitCard({
         </Typography>
       )}
       <Box sx={footerStyle}>
-        <Box sx={daysStyle} aria-hidden="true">
+        <Box sx={daysStyle}>
           {days.map(({ date, done }) => (
             <Box
               key={date}
+              component="span"
               sx={done ? dayDoneStyle : dayStyle}
               title={formatDisplay(date, locale)}
-            />
+            >
+              {weekdayInitial(date, t)}
+            </Box>
           ))}
         </Box>
         <Box sx={actionsStyle}>{actions}</Box>

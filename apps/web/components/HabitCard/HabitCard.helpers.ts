@@ -1,6 +1,15 @@
 import type { TFunction } from 'i18next';
 
+import { WEEKDAYS } from '@/lib/habits/calendar';
+
 import type { HabitStatus } from './HabitCard.interface';
+
+export function weekdayInitial(iso: string, translate: TFunction): string {
+  const [year, month, day] = iso.split('-').map(Number);
+  const jsDay = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  const key = WEEKDAYS[(jsDay + 6) % 7];
+  return translate(`calendar.weekdays.${key}`).charAt(0);
+}
 
 export function streakMessage(
   currentStreak: number,

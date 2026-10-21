@@ -47,6 +47,7 @@ describe('HabitCard', () => {
     );
 
     expect(screen.getByText('Read')).toBeInTheDocument();
+    expect(screen.getByTitle('6 Oct 2026')).toHaveTextContent('T');
     expect(
       screen.getByText('Do it today to start a streak.'),
     ).toBeInTheDocument();

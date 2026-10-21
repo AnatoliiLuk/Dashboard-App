@@ -72,16 +72,27 @@ export const daysStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[8],
 });
 
-export const dayStyle = ({ vars, borderRadius }: Theme) => ({
-  width: 12,
-  height: 12,
+const dayMarkStyle = ({ borderRadius, pxToRem }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+  width: pxToRem(32),
+  height: pxToRem(32),
   borderRadius: borderRadius.pill,
-  backgroundColor: vars.palette.divider,
+  fontSize: pxToRem(13),
+  fontWeight: 600,
+  lineHeight: 1,
 });
 
-export const dayDoneStyle = ({ vars, borderRadius }: Theme) => ({
-  width: 12,
-  height: 12,
-  borderRadius: borderRadius.pill,
-  backgroundColor: vars.palette.text.primary,
+export const dayStyle = (theme: Theme) => ({
+  ...dayMarkStyle(theme),
+  backgroundColor: theme.vars.palette.divider,
+  color: theme.vars.palette.text.secondary,
+});
+
+export const dayDoneStyle = (theme: Theme) => ({
+  ...dayMarkStyle(theme),
+  backgroundColor: theme.vars.palette.text.primary,
+  color: theme.vars.palette.background.paper,
 });
