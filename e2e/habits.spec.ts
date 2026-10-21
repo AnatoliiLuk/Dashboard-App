@@ -17,6 +17,7 @@ test('registers, logs a habit, and shows it on the calendar', async ({
 
   await page.getByRole('link', { name: 'Log habits' }).click();
   await page.waitForURL('**/log');
+  await page.getByRole('button', { name: 'Add habit' }).click();
   await page.getByRole('textbox', { name: 'Habit' }).fill('Read');
   await page.getByRole('button', { name: 'Add' }).click();
 

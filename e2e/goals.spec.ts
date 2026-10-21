@@ -13,6 +13,7 @@ test('logs a linked habit on the goal timeline without moving the day', async ({
 
   await page.getByRole('link', { name: 'Log habits' }).click();
   await page.waitForURL('**/log');
+  await page.getByRole('button', { name: 'Add habit' }).click();
   await page.getByRole('textbox', { name: 'Habit' }).fill('Read');
   await page.getByRole('button', { name: 'Add' }).click();
   await expect(
@@ -21,6 +22,7 @@ test('logs a linked habit on the goal timeline without moving the day', async ({
 
   await page.getByRole('link', { name: 'My goals' }).click();
   await page.waitForURL('**/goals');
+  await page.getByRole('button', { name: 'Add goal' }).click();
   await page.getByRole('textbox', { name: 'Goal' }).fill('October focus');
   await page.getByRole('combobox', { name: 'Habits' }).click();
   await page.getByRole('option', { name: 'Read' }).click();

@@ -17,6 +17,30 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
+/** CLDR punctuation differs between Node builds, so expect Intl's own text. */
+function expectedDisplay(iso: string, locale?: string): string {
+  return displayFormatter(locale).format(utcDate(iso));
+}
+
+function expectedRange(start: string, end: string, locale: string): string {
+  return displayFormatter(locale).formatRange(utcDate(start), utcDate(end));
+}
+
+function displayFormatter(locale: string | undefined): Intl.DateTimeFormat {
+  const tag = locale === 'uk' ? 'uk-UA' : 'en-GB';
+  return new Intl.DateTimeFormat(tag, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function utcDate(iso: string): Date {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
 describe('compareDates', () => {
   it('orders an earlier date first', () => {
     expect(compareDates('2026-01-01', '2026-01-02')).toBe(-1);
@@ -42,41 +66,53 @@ describe('today', () => {
 
 describe('formatDisplay', () => {
   it('uses a short month name for the locale', () => {
-    expect(formatDisplay('2026-10-15', 'en')).toBe('15 Oct 2026');
-    expect(formatDisplay('2026-10-15', 'uk')).toBe('15 жовт. 2026 р.');
+    expect(formatDisplay('2026-10-15', 'en')).toBe(
+      expectedDisplay('2026-10-15', 'en'),
+    );
+    expect(formatDisplay('2026-10-15', 'uk')).toBe(
+      expectedDisplay('2026-10-15', 'uk'),
+    );
+    expect(formatDisplay('2026-10-15', 'uk')).not.toBe(
+      formatDisplay('2026-10-15', 'en'),
+    );
   });
 
   it('uses english when the locale is missing', () => {
-    expect(formatDisplay('2026-10-15')).toBe('15 Oct 2026');
+    expect(formatDisplay('2026-10-15')).toBe(expectedDisplay('2026-10-15'));
   });
 });
 
 describe('formatDateRange', () => {
   it('collapses a single day into one date', () => {
     expect(formatDateRange('2026-10-15', '2026-10-15', 'en')).toBe(
-      '15 Oct 2026',
+      formatDisplay('2026-10-15', 'en'),
     );
     expect(formatDateRange('2026-10-15', '2026-10-15', 'uk')).toBe(
-      '15 жовт. 2026 р.',
+      formatDisplay('2026-10-15', 'uk'),
     );
   });
 
   it('keeps both ends when the stretch is longer', () => {
     expect(formatDateRange('2026-10-01', '2026-10-10', 'en')).toBe(
-      '1\u2009–\u200910 Oct 2026',
+      expectedRange('2026-10-01', '2026-10-10', 'en'),
     );
     expect(formatDateRange('2026-10-01', '2026-10-10', 'uk')).toBe(
-      '1–10 жовт. 2026 р.',
+      expectedRange('2026-10-01', '2026-10-10', 'uk'),
+    );
+    expect(formatDateRange('2026-10-01', '2026-10-10', 'en')).not.toBe(
+      formatDateRange('2026-10-01', '2026-10-10', 'uk'),
     );
   });
 
   it('names the year when the range crosses one', () => {
     expect(formatDateRange('2026-12-28', '2027-01-04', 'en')).toBe(
-      '28 Dec 2026\u2009–\u20094 Jan 2027',
+      expectedRange('2026-12-28', '2027-01-04', 'en'),
     );
     expect(formatDateRange('2026-12-28', '2027-01-04', 'uk')).toBe(
-      '28 груд. 2026 – 4 січ. 2027 рр.',
+      expectedRange('2026-12-28', '2027-01-04', 'uk'),
     );
+    expect(formatDateRange('2026-12-28', '2027-01-04', 'en')).toContain('2026');
+    expect(formatDateRange('2026-12-28', '2027-01-04', 'en')).toContain('2027');
   });
 });
 
