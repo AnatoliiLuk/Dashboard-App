@@ -7,7 +7,8 @@ alwaysApply: true
 
 Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
 
-- One subject line, 72 characters or fewer.
+- One subject line, 72 characters or fewer; aim for 50.
+- Description is 3-7 words: no "and", no commas, no lists.
 - Format: `type(scope): description`
 - Type is `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, or `chore`.
 - Scope is optional. Description is imperative and lowercase.

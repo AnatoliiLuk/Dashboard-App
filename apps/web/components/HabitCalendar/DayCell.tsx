@@ -6,6 +6,7 @@ import type { CalendarDay } from '@/lib/habits/calendar';
 import {
   cellStyle,
   dayNumberStyle,
+  habitItemStyle,
   habitListStyle,
   outsideStyle,
   todayStyle,
@@ -34,8 +35,8 @@ function DayCell({ day, today }: DayCellProps) {
       {habits.length > 0 ? (
         <Box component="ul" sx={habitListStyle}>
           {habits.map(({ id, name, color }) => (
-            <Box component="li" key={id}>
-              <HabitTag name={name} color={color} />
+            <Box component="li" key={id} sx={habitItemStyle}>
+              <HabitTag name={name} color={color} wrap />
             </Box>
           ))}
         </Box>

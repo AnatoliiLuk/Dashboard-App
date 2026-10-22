@@ -227,3 +227,8 @@ export const habitListStyle = ({ spacingPx }: Theme) => ({
   p: spacingPx[0],
   listStyle: 'none',
 });
+
+export const habitItemStyle = {
+  maxWidth: '100%',
+  minWidth: 0,
+};

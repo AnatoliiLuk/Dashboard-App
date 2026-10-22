@@ -6,7 +6,8 @@ Format: type(scope): description
 - type is required: feat, fix, docs, style, refactor, perf, test, build, ci, or chore
 - scope is optional
 - description is imperative, lowercase, and states why
-- the whole line is 72 characters or fewer
+- the whole line is 72 characters or fewer; aim for 50
+- the description is 3-7 words: no "and", no commas, no lists
 - add ! before the colon only for a breaking change
 
 Examples:

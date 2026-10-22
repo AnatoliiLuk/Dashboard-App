@@ -7,11 +7,12 @@ import { habitTagStyle } from './HabitTag.style';
 type HabitTagProps = {
   name: string;
   color: HabitColor;
+  wrap?: boolean;
 };
 
-function HabitTag({ name, color }: HabitTagProps) {
+function HabitTag({ name, color, wrap = false }: HabitTagProps) {
   return (
-    <Box component="span" title={name} sx={habitTagStyle(color)}>
+    <Box component="span" title={name} sx={habitTagStyle(color, wrap)}>
       {name}
     </Box>
   );
