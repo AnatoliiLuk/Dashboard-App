@@ -8,7 +8,7 @@ Format: type(scope): description
 
 - type is required: feat, fix, docs, style, refactor, perf, test, build, ci, or chore
 - scope is optional
-- description is imperative and lowercase, and says why
+- description is imperative, starts with a lowercase word (acronyms like AI are fine later), and says why
 - the whole line is 72 characters or fewer; aim for 50, because longer lines are rejected
 - keep the description to 3-7 words: no "and", no commas, no lists of files or docs
 - prefer a short scope (e.g. docs, calendar, habits) over repeating it in the description

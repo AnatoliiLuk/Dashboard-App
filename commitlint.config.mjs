@@ -19,7 +19,11 @@ export default {
       ],
     ],
     'header-max-length': [2, 'always', 72],
-    'subject-case': [2, 'always', 'lower-case'],
+    'subject-case': [
+      2,
+      'never',
+      ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
+    ],
     'body-empty': [2, 'always'],
     'footer-empty': [2, 'always'],
   },

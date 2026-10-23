@@ -28,6 +28,28 @@ const envSchema = z.object({
         .map((origin) => origin.trim())
         .filter(Boolean),
     ),
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  ANTHROPIC_MODEL: z.string().min(1).default('claude-opus-5-5'),
+  AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().default(2048),
+  // z.coerce.boolean() would turn the string "false" into true.
+  AI_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((value) => value === 'true'),
 });
 
-export const env = envSchema.parse(process.env);
+export const env = envSchema
+  .superRefine((data, ctx) => {
+    if (
+      data.NODE_ENV !== 'test' &&
+      data.AI_ENABLED &&
+      !data.ANTHROPIC_API_KEY
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['ANTHROPIC_API_KEY'],
+        message: 'ANTHROPIC_API_KEY is required unless AI_ENABLED=false',
+      });
+    }
+  })
+  .parse(process.env);
