@@ -2,15 +2,16 @@ import Anthropic from '@anthropic-ai/sdk';
 
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
+import {
+  buildCoachSystemPrompt,
+  COACH_PROMPT_VERSION,
+  type CoachLocale,
+} from './prompts/coach.system';
 
-// Placeholder until Phase 2 adds the versioned prompt in ai/prompts.
-export const COACH_SYSTEM_PROMPT =
-  'You are a supportive habit coach in the Habits+ app. ' +
-  'Help the user build and keep habits, goals and routines. ' +
-  'Keep answers short: a few sentences unless asked for more.';
-
-const REFUSAL_REPLY =
-  "Sorry, I can't help with that. Let's talk about your habits.";
+const REFUSAL_REPLIES: Record<CoachLocale, string> = {
+  en: "Sorry, I can't help with that. Let's talk about your habits.",
+  uk: 'Вибачте, з цим я не допоможу. Поговорімо про ваші звички.',
+};
 
 export interface CoachConfig {
   enabled: boolean;
@@ -19,12 +20,13 @@ export interface CoachConfig {
 }
 
 export interface CoachReplyInput {
-  system: string;
   messages: Anthropic.MessageParam[];
+  locale: CoachLocale;
 }
 
 export interface CoachReply {
   text: string;
+  promptVersion: string;
   stopReason: Anthropic.StopReason | null;
   truncated: boolean;
   usage: {
@@ -39,7 +41,7 @@ export class CoachService {
     private config: CoachConfig,
   ) {}
 
-  async reply({ system, messages }: CoachReplyInput): Promise<CoachReply> {
+  async reply({ messages, locale }: CoachReplyInput): Promise<CoachReply> {
     if (!this.config.enabled) {
       throw new AppError(503, 'The AI coach is turned off');
     }
@@ -49,7 +51,7 @@ export class CoachService {
       max_tokens: this.config.maxOutputTokens,
       // Short chat replies do not need deep thinking.
       output_config: { effort: 'low' },
-      system,
+      system: buildCoachSystemPrompt(locale),
       messages,
     });
 
@@ -60,7 +62,8 @@ export class CoachService {
 
     if (response.stop_reason === 'refusal') {
       return {
-        text: REFUSAL_REPLY,
+        text: REFUSAL_REPLIES[locale],
+        promptVersion: COACH_PROMPT_VERSION,
         stopReason: response.stop_reason,
         truncated: false,
         usage,
@@ -79,6 +82,7 @@ export class CoachService {
 
     return {
       text,
+      promptVersion: COACH_PROMPT_VERSION,
       stopReason: response.stop_reason,
       truncated: response.stop_reason === 'max_tokens',
       usage,

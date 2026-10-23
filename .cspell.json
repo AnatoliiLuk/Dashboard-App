@@ -11,7 +11,8 @@
     "package-lock.json",
     "public",
     "next-env.d.ts",
-    "*.tsbuildinfo"
+    "*.tsbuildinfo",
+    "apps/api/scratch"
   ],
   "overrides": [
     {
@@ -25,6 +26,22 @@
     {
       "filename": "packages/core/src/utils/date.test.ts",
       "language": "en,uk"
+    },
+    {
+      "filename": "apps/api/src/ai/prompts/coach.examples.ts",
+      "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "apps/api/src/ai/coach.service.ts",
+      "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "apps/api/src/ai/coach.service.test.ts",
+      "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "docs/ai-coach/PROMPT_NOTES.md",
+      "language": "en,en-GB,uk"
     }
   ],
   "words": [

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { COACH_LOCALES } from '../ai/prompts/coach.system';
+
 export const COACH_MAX_MESSAGES = 20;
 export const COACH_MAX_MESSAGE_LENGTH = 2000;
 
@@ -30,6 +32,11 @@ export const coachChatSchema = z
         COACH_MAX_MESSAGES,
         `At most ${COACH_MAX_MESSAGES} messages are allowed`,
       ),
+    locale: z
+      .enum(COACH_LOCALES, {
+        errorMap: () => ({ message: 'Locale must be en or uk' }),
+      })
+      .default('en'),
   })
   .strict()
   .refine((data) => data.messages[0]?.role === 'user', {

@@ -83,4 +83,21 @@ describe('coachChatSchema', () => {
         .success,
     ).toBe(false);
   });
+
+  it('defaults the locale to en', () => {
+    const result = coachChatSchema.parse({ messages: [user('Hi')] });
+
+    expect(result.locale).toBe('en');
+  });
+
+  it('accepts uk and rejects other locales', () => {
+    expect(
+      coachChatSchema.safeParse({ messages: [user('Hi')], locale: 'uk' })
+        .success,
+    ).toBe(true);
+    expect(
+      coachChatSchema.safeParse({ messages: [user('Hi')], locale: 'ru' })
+        .success,
+    ).toBe(false);
+  });
 });

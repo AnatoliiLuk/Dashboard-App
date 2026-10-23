@@ -4,6 +4,10 @@ import Anthropic from '@anthropic-ai/sdk';
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
 import { CoachService, type CoachConfig } from './coach.service';
+import {
+  buildCoachSystemPrompt,
+  COACH_PROMPT_VERSION,
+} from './prompts/coach.system';
 
 const config: CoachConfig = {
   enabled: true,
@@ -12,8 +16,8 @@ const config: CoachConfig = {
 };
 
 const input = {
-  system: 'You are a habit coach.',
   messages: [{ role: 'user' as const, content: 'How do I read more?' }],
+  locale: 'en' as const,
 };
 
 function message(
@@ -55,6 +59,7 @@ describe('CoachService', () => {
 
     await expect(service.reply(input)).resolves.toEqual({
       text: 'Read ten pages a day.',
+      promptVersion: COACH_PROMPT_VERSION,
       stopReason: 'end_turn',
       truncated: false,
       usage: { inputTokens: 12, outputTokens: 7 },
@@ -63,7 +68,7 @@ describe('CoachService', () => {
       expect.objectContaining({
         model: 'test-model',
         max_tokens: 512,
-        system: input.system,
+        system: buildCoachSystemPrompt('en'),
         messages: input.messages,
       }),
     );
@@ -90,6 +95,17 @@ describe('CoachService', () => {
 
     expect(reply.stopReason).toBe('refusal');
     expect(reply.text).toMatch(/habits/);
+  });
+
+  it('gives the refusal reply in the requested locale', async () => {
+    const service = new CoachService(
+      fakeClient(message({ stop_reason: 'refusal', content: [] })),
+      config,
+    );
+
+    const reply = await service.reply({ ...input, locale: 'uk' });
+
+    expect(reply.text).toMatch(/звички/);
   });
 
   it('fails with 502 when the model returns no text', async () => {
