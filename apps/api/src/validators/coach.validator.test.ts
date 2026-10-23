@@ -100,4 +100,21 @@ describe('coachChatSchema', () => {
         .success,
     ).toBe(false);
   });
+
+  it('accepts today within one day of the server date', () => {
+    const utcToday = new Date().toISOString().slice(0, 10);
+
+    expect(
+      coachChatSchema.safeParse({ messages: [user('Hi')], today: utcToday })
+        .success,
+    ).toBe(true);
+  });
+
+  it('rejects a today far from the server date or in another format', () => {
+    for (const today of ['2020-01-01', '23.10.2026']) {
+      expect(
+        coachChatSchema.safeParse({ messages: [user('Hi')], today }).success,
+      ).toBe(false);
+    }
+  });
 });

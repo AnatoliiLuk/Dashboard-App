@@ -1,3 +1,4 @@
+import { addDays, compareDates } from '@repo/core';
 import { z } from 'zod';
 
 import { COACH_LOCALES } from '../ai/prompts/coach.system';
@@ -37,6 +38,13 @@ export const coachChatSchema = z
         errorMap: () => ({ message: 'Locale must be en or uk' }),
       })
       .default('en'),
+    // The person's local date from the browser, so streaks match the UI.
+    // Every time zone is within one day of UTC.
+    today: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Today must be YYYY-MM-DD')
+      .refine(isNearUtcToday, 'Today must be within one day of the server date')
+      .optional(),
   })
   .strict()
   .refine((data) => data.messages[0]?.role === 'user', {
@@ -47,3 +55,11 @@ export const coachChatSchema = z
   });
 
 export type CoachChatBody = z.infer<typeof coachChatSchema>;
+
+function isNearUtcToday(value: string): boolean {
+  const utcToday = new Date().toISOString().slice(0, 10);
+  return (
+    compareDates(value, addDays(utcToday, -1)) >= 0 &&
+    compareDates(value, addDays(utcToday, 1)) <= 0
+  );
+}

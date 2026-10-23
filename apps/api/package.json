@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsc --noEmit",
+    "start": "tsx src/server.ts",
     "test": "jest && jest --config jest.integration.config.cjs",
     "typecheck": "tsc --noEmit"
   },
@@ -20,6 +20,7 @@
     "express": "^4.21.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "tsx": "^4.20.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -30,7 +31,6 @@
     "@types/node": "^26.6.2",
     "@types/supertest": "^7.2.1",
     "supertest": "^7.3.1",
-    "tsx": "^4.20.5",
     "typescript": "^6.0.3"
   }
 }
