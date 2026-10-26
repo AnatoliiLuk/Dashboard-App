@@ -10,6 +10,7 @@ import {
   type OutputGuardFlag,
 } from './guardrails/output.guard';
 import type { TokenBudget, TokenUsage } from './guardrails/token-budget';
+import type { AiUsageRecord, UsageStore } from './usage.repository';
 import { COACH_TOOLS } from './tools';
 import type { CoachToolRunner } from './tools/handlers';
 import type { HabitProposal } from './tools/schemas';
@@ -54,47 +55,98 @@ export interface CoachReply {
 // inputTokens is uncached input only. Cached input is in the cache fields.
 export type CoachUsage = TokenUsage;
 
+export interface CoachDependencies {
+  client: ModelClient;
+  tools: CoachToolRunner;
+  context: CoachContextSource;
+  budget: TokenBudget;
+  usage: Pick<UsageStore, 'record'>;
+}
+
+// Counters that survive a failed run, so failures are recorded too.
+interface RunStats {
+  usage: CoachUsage;
+  toolCalls: number;
+}
+
 export class CoachService {
   constructor(
-    private client: ModelClient,
-    private tools: CoachToolRunner,
-    private context: CoachContextSource,
-    private budget: TokenBudget,
+    private deps: CoachDependencies,
     private config: CoachConfig,
   ) {}
 
   async reply(input: CoachReplyInput): Promise<CoachReply> {
+    // Kill switch: checked first, so nothing else runs and nothing is spent.
     if (!this.config.enabled) {
       throw new AppError(503, 'The AI coach is turned off');
     }
 
-    this.budget.assertAvailable(input.userId);
-    const usage: CoachUsage = {
-      inputTokens: 0,
-      outputTokens: 0,
-      cacheReadTokens: 0,
-      cacheWriteTokens: 0,
+    const started = Date.now();
+    const stats: RunStats = {
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+        cacheReadTokens: 0,
+        cacheWriteTokens: 0,
+      },
+      toolCalls: 0,
     };
+    let reply: CoachReply | undefined;
+    let errorStatus: number | null = null;
 
     try {
-      return await this.run(input, usage);
+      await this.deps.budget.assertAvailable(input.userId);
+      reply = await this.run(input, stats);
+      return reply;
+    } catch (error) {
+      errorStatus = error instanceof AppError ? error.statusCode : 500;
+      throw error;
     } finally {
-      // Failed requests still cost tokens, so they count too.
-      this.budget.record(input.userId, usage);
+      await this.track(
+        {
+          userId: input.userId,
+          model: this.config.model,
+          promptVersion: COACH_PROMPT_VERSION,
+          ...stats.usage,
+          latencyMs: Date.now() - started,
+          toolCalls: stats.toolCalls,
+          status: statusOf(reply),
+          errorStatus,
+        },
+        reply,
+      );
+    }
+  }
+
+  // One row and one log line per request. Metadata only, never messages.
+  // A failed write is logged but never fails the person's request.
+  private async track(row: AiUsageRecord, reply?: CoachReply): Promise<void> {
+    console.log(
+      JSON.stringify({
+        event: 'ai_request',
+        ...row,
+        guardFlags: reply?.guardFlags ?? [],
+      }),
+    );
+
+    try {
+      await this.deps.usage.record(row);
+    } catch (error) {
+      console.error('Could not save AI usage:', error);
     }
   }
 
   private async run(
     { messages, locale, userId, today }: CoachReplyInput,
-    usage: CoachUsage,
+    stats: RunStats,
   ): Promise<CoachReply> {
-    const habitData = await this.context.build(userId, today);
+    const { usage } = stats;
+    const habitData = await this.deps.context.build(userId, today);
     const system = buildCoachSystem(locale, today, habitData);
     // The API is stateless: each round sends the whole conversation,
     // including earlier tool calls and their results.
     const conversation = guardInput(messages);
     let proposal: HabitProposal | null = null;
-    let toolCalls = 0;
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
       const response = await this.callModel({
@@ -118,7 +170,7 @@ export class CoachService {
       if (response.stop_reason !== 'tool_use' || toolUses.length === 0) {
         return this.finish(response, locale, {
           proposal,
-          toolCalls,
+          toolCalls: stats.toolCalls,
           usage,
         });
       }
@@ -127,9 +179,9 @@ export class CoachService {
       conversation.push({ role: 'assistant', content: response.content });
 
       const outcomes = await Promise.all(
-        toolUses.map((block) => this.tools.run(block, { userId, today })),
+        toolUses.map((block) => this.deps.tools.run(block, { userId, today })),
       );
-      toolCalls += outcomes.length;
+      stats.toolCalls += outcomes.length;
       proposal =
         outcomes.filter((outcome) => outcome.proposal).at(-1)?.proposal ??
         proposal;
@@ -192,11 +244,21 @@ export class CoachService {
     params: Anthropic.MessageCreateParamsNonStreaming,
   ): Promise<Anthropic.Message> {
     try {
-      return await this.client.createMessage(params);
+      return await this.deps.client.createMessage(params);
     } catch (error) {
       throw toAppError(error);
     }
   }
+}
+
+function statusOf(reply?: CoachReply): AiUsageRecord['status'] {
+  if (!reply) {
+    return 'error';
+  }
+  if (reply.stopReason === 'refusal') {
+    return 'refusal';
+  }
+  return reply.truncated ? 'truncated' : 'ok';
 }
 
 function addUsage(total: CoachUsage, usage: Anthropic.Usage): void {

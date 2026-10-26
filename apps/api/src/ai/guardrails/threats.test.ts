@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { AppError } from '../../middleware/error.middleware';
@@ -12,7 +12,12 @@ import { CoachService } from '../coach.service';
 import { COACH_RULES } from '../prompts/coach.system';
 import { COACH_TOOLS, TOOL_NAMES } from '../tools';
 import { CoachToolHandlers } from '../tools/handlers';
-import { InMemoryTokenBudget } from './token-budget';
+import type { AiUsageRecord, UsageStore } from '../usage.repository';
+import { billableTokens, DailyTokenBudget } from './token-budget';
+
+beforeEach(() => {
+  jest.spyOn(console, 'log').mockImplementation(() => undefined);
+});
 
 // Each test is an attack from the Phase 5 threat list. It should fail if
 // the defence it names is removed.
@@ -57,13 +62,36 @@ function scriptedClient(...results: (Anthropic.Message | Error)[]) {
   return { createMessage };
 }
 
+// Stands in for the AiUsage table.
+function memoryUsage(): UsageStore & { rows: AiUsageRecord[] } {
+  const rows: AiUsageRecord[] = [];
+  return {
+    rows,
+    record: async (row) => {
+      rows.push(row);
+    },
+    billableTokensSince: async (userId) =>
+      rows
+        .filter((row) => row.userId === userId)
+        .reduce((sum, row) => sum + billableTokens(row), 0),
+  };
+}
+
 function service(
   client: ModelClient,
-  budget = new InMemoryTokenBudget(100_000),
-  tools = new CoachToolHandlers(readOnlyServices()),
+  usage = memoryUsage(),
+  dailyLimit = 100_000,
 ) {
-  const context = { build: async () => '<habit_data>\n</habit_data>' };
-  return new CoachService(client, tools, context, budget, config);
+  return new CoachService(
+    {
+      client,
+      tools: new CoachToolHandlers(readOnlyServices()),
+      context: { build: async () => '<habit_data>\n</habit_data>' },
+      budget: new DailyTokenBudget(usage, dailyLimit),
+      usage,
+    },
+    config,
+  );
 }
 
 // Services with write methods that must never be called.
@@ -129,16 +157,23 @@ describe('Threat: leaked API key', () => {
 
 describe('Threat: abuse and cost', () => {
   it('a user over the daily budget gets 429 and the model is never called', async () => {
-    const budget = new InMemoryTokenBudget(1000);
-    budget.record('user-a', {
+    const usage = memoryUsage();
+    await usage.record({
+      userId: 'user-a',
+      model: 'test-model',
+      promptVersion: 'test',
       inputTokens: 1000,
       outputTokens: 0,
       cacheReadTokens: 0,
       cacheWriteTokens: 0,
+      latencyMs: 1,
+      toolCalls: 0,
+      status: 'ok',
+      errorStatus: null,
     });
     const client = scriptedClient(text('Hello'));
 
-    const error = await service(client, budget)
+    const error = await service(client, usage, 1000)
       .reply(input)
       .catch((caught: unknown) => caught);
 
@@ -148,7 +183,7 @@ describe('Threat: abuse and cost', () => {
 
   it('tokens spent by a request that later fails still count', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    const budget = new InMemoryTokenBudget(140);
+    const usage = memoryUsage();
     const client = scriptedClient(
       message(
         [{ type: 'tool_use', id: 't1', name: TOOL_NAMES.getHabits, input: {} }],
@@ -157,11 +192,17 @@ describe('Threat: abuse and cost', () => {
       new Anthropic.InternalServerError(500, undefined, 'down', new Headers()),
     );
 
-    await service(client, budget)
+    await service(client, usage, 140)
       .reply(input)
       .catch(() => undefined);
 
-    expect(() => budget.assertAvailable('user-a')).toThrow(AppError);
+    // The first round spent 150 tokens before the provider failed.
+    expect(usage.rows[0]).toEqual(
+      expect.objectContaining({ status: 'error', inputTokens: 100 }),
+    );
+    await expect(
+      new DailyTokenBudget(usage, 140).assertAvailable('user-a'),
+    ).rejects.toThrow(AppError);
   });
 });
 

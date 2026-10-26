@@ -10,7 +10,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { addDays } from '@repo/core';
 import request from 'supertest';
 
+import { AiUsageRepository } from '../ai/usage.repository';
 import { app } from '../app';
+import { prisma } from '../config/database';
 import { env } from '../config/env';
 import { tokenFromSetCookie } from '../utils/session-cookie';
 import { disconnectDatabase, resetDatabase } from './db';
@@ -62,6 +64,8 @@ function toolResultsSent() {
 beforeEach(async () => {
   await resetDatabase();
   mockCreateMessage.mockReset();
+  // The service logs one line per request; keep test output quiet.
+  jest.spyOn(console, 'log').mockImplementation(() => undefined);
 });
 
 afterAll(async () => {
@@ -242,6 +246,96 @@ describe('coach chat', () => {
     expect(coach.status).toBe(502);
     expect(coach.body.message).not.toContain('cluster');
     expect(habits.status).toBe(200);
+  });
+
+  it('saves one usage row per request, without message content', async () => {
+    const { token } = await registerUser();
+    mockCreateMessage.mockResolvedValueOnce(textReply('Read tonight.'));
+
+    await chat(token, 'How do I read more?');
+
+    const rows = await prisma.aiUsage.findMany();
+    expect(rows).toEqual([
+      expect.objectContaining({
+        model: env.ANTHROPIC_MODEL,
+        inputTokens: 10,
+        outputTokens: 6,
+        toolCalls: 0,
+        status: 'ok',
+        errorStatus: null,
+      }),
+    ]);
+    expect(JSON.stringify(rows)).not.toContain('read more');
+  });
+
+  it('saves a row for a failed request too', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { token } = await registerUser();
+    mockCreateMessage.mockRejectedValueOnce(
+      new Anthropic.APIConnectionTimeoutError(),
+    );
+
+    await chat(token, 'Hi');
+
+    const [row] = await prisma.aiUsage.findMany();
+    expect(row).toEqual(
+      expect.objectContaining({ status: 'error', errorStatus: 504 }),
+    );
+  });
+
+  it('blocks a user whose saved usage today reaches the daily budget', async () => {
+    const { token } = await registerUser();
+    const user = await prisma.user.findFirstOrThrow();
+    await prisma.aiUsage.create({
+      data: {
+        userId: user.id,
+        model: 'test-model',
+        promptVersion: 'test',
+        outputTokens: env.AI_DAILY_TOKEN_BUDGET,
+        latencyMs: 1,
+        status: 'ok',
+      },
+    });
+
+    const response = await chat(token, 'Hi');
+
+    expect(response.status).toBe(429);
+    expect(mockCreateMessage).not.toHaveBeenCalled();
+  });
+
+  it('sums only billable tokens from today for the budget', async () => {
+    await registerUser();
+    const user = await prisma.user.findFirstOrThrow();
+    const row = {
+      userId: user.id,
+      model: 'test-model',
+      promptVersion: 'test',
+      latencyMs: 1,
+      status: 'ok' as const,
+    };
+    const startOfToday = new Date(
+      new Date().toISOString().slice(0, 10) + 'T00:00:00Z',
+    );
+    await prisma.aiUsage.createMany({
+      data: [
+        {
+          ...row,
+          inputTokens: 5,
+          outputTokens: 50,
+          cacheWriteTokens: 300,
+          cacheReadTokens: 9000,
+        },
+        {
+          ...row,
+          outputTokens: 1000,
+          createdAt: new Date(startOfToday.getTime() - 60_000),
+        },
+      ],
+    });
+
+    await expect(
+      new AiUsageRepository().billableTokensSince(user.id, startOfToday),
+    ).resolves.toBe(355);
   });
 
   it('rejects a forged system message with a clear error', async () => {

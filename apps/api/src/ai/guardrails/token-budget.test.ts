@@ -1,14 +1,15 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 
 import { AppError } from '../../middleware/error.middleware';
-import { billableTokens, InMemoryTokenBudget } from './token-budget';
+import { billableTokens, DailyTokenBudget } from './token-budget';
 
-const usage = (tokens: number) => ({
-  inputTokens: 0,
-  outputTokens: tokens,
-  cacheReadTokens: 0,
-  cacheWriteTokens: 0,
-});
+function store(used: number) {
+  return {
+    billableTokensSince: jest.fn(async (_userId: string, _since: Date) => used),
+  };
+}
+
+const now = () => new Date('2026-10-26T15:30:00Z');
 
 describe('billableTokens', () => {
   it('counts input, cache writes and output, but not cache reads', () => {
@@ -23,43 +24,33 @@ describe('billableTokens', () => {
   });
 });
 
-describe('InMemoryTokenBudget', () => {
-  it('blocks a user who used up the daily budget, with a 429', () => {
-    const budget = new InMemoryTokenBudget(1000);
-    budget.record('user-a', usage(1000));
+describe('DailyTokenBudget', () => {
+  it('blocks a user who used up the daily budget, with a 429', async () => {
+    const budget = new DailyTokenBudget(store(1000), 1000, now);
 
-    let error: unknown;
-    try {
-      budget.assertAvailable('user-a');
-    } catch (caught) {
-      error = caught;
-    }
+    const error = await budget
+      .assertAvailable('user-a')
+      .catch((caught: unknown) => caught);
 
     expect(error).toBeInstanceOf(AppError);
     expect((error as AppError).statusCode).toBe(429);
   });
 
-  it('keeps each user separate', () => {
-    const budget = new InMemoryTokenBudget(1000);
-    budget.record('user-a', usage(5000));
+  it('allows requests under the budget', async () => {
+    const budget = new DailyTokenBudget(store(999), 1000, now);
 
-    expect(() => budget.assertAvailable('user-b')).not.toThrow();
+    await expect(budget.assertAvailable('user-a')).resolves.toBeUndefined();
   });
 
-  it('allows requests under the budget', () => {
-    const budget = new InMemoryTokenBudget(1000);
-    budget.record('user-a', usage(999));
+  it('counts the user’s usage since midnight UTC', async () => {
+    const usage = store(0);
+    const budget = new DailyTokenBudget(usage, 1000, now);
 
-    expect(() => budget.assertAvailable('user-a')).not.toThrow();
-  });
+    await budget.assertAvailable('user-a');
 
-  it('resets on a new UTC day', () => {
-    let now = new Date('2026-10-26T23:59:00Z');
-    const budget = new InMemoryTokenBudget(1000, () => now);
-    budget.record('user-a', usage(1000));
-
-    now = new Date('2026-10-27T00:01:00Z');
-
-    expect(() => budget.assertAvailable('user-a')).not.toThrow();
+    expect(usage.billableTokensSince).toHaveBeenCalledWith(
+      'user-a',
+      new Date('2026-10-26T00:00:00Z'),
+    );
   });
 });

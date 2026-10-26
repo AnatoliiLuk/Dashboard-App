@@ -4,8 +4,9 @@ import type { NextFunction, Request, Response } from 'express';
 import { anthropicClient } from '../ai/client';
 import { CoachService } from '../ai/coach.service';
 import { CoachContextBuilder } from '../ai/context.builder';
-import { InMemoryTokenBudget } from '../ai/guardrails/token-budget';
+import { DailyTokenBudget } from '../ai/guardrails/token-budget';
 import { CoachToolHandlers } from '../ai/tools/handlers';
+import { AiUsageRepository } from '../ai/usage.repository';
 import { env } from '../config/env';
 import { CompletionsService } from '../services/completions.service';
 import { GoalsService } from '../services/goals.service';
@@ -17,13 +18,17 @@ const dataServices = {
   completions: new CompletionsService(),
   goals: new GoalsService(),
 };
+const usage = new AiUsageRepository();
 
 export class CoachController {
   private service = new CoachService(
-    anthropicClient,
-    new CoachToolHandlers(dataServices),
-    new CoachContextBuilder(dataServices),
-    new InMemoryTokenBudget(env.AI_DAILY_TOKEN_BUDGET),
+    {
+      client: anthropicClient,
+      tools: new CoachToolHandlers(dataServices),
+      context: new CoachContextBuilder(dataServices),
+      budget: new DailyTokenBudget(usage, env.AI_DAILY_TOKEN_BUDGET),
+      usage,
+    },
     {
       enabled: env.AI_ENABLED,
       model: env.ANTHROPIC_MODEL,
@@ -40,17 +45,6 @@ export class CoachController {
         userId: req.user!.id,
         today: today ?? serverToday(),
       });
-      // Metadata only: never log message content.
-      console.log(
-        'coach reply',
-        JSON.stringify({
-          promptVersion: reply.promptVersion,
-          stopReason: reply.stopReason,
-          toolCalls: reply.toolCalls,
-          guardFlags: reply.guardFlags,
-          ...reply.usage,
-        }),
-      );
       res.json({
         reply: reply.text,
         truncated: reply.truncated,
