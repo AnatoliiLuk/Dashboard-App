@@ -47,3 +47,17 @@ export type ToggleCompletionResponse = {
   completed: boolean;
   completion: ApiCompletion | null;
 };
+
+/** A habit the coach suggests. Nothing is saved until the person accepts. */
+export type ApiHabitProposal = {
+  name: string;
+  color: HabitColor;
+  reason: string;
+};
+
+export type ApiCoachReply = {
+  reply: string;
+  /** The reply hit the length limit and was cut off. */
+  truncated: boolean;
+  proposal: ApiHabitProposal | null;
+};

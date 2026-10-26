@@ -28,6 +28,7 @@ export const en = {
     calendar: 'Calendar',
     logHabits: 'Log habits',
     myGoals: 'My goals',
+    coach: 'Coach',
     signIn: 'Sign in',
     signOut: 'Sign out',
   },
@@ -151,6 +152,39 @@ export const en = {
     timelineDone_other:
       'Complete. Logged habits on {{logged}} of {{count}} days.',
     loading: 'Loading goals…',
+  },
+  coach: {
+    description:
+      'Ask about your habits, streaks and goals, or get a tip for building a routine.',
+    aiNotice:
+      'Answers are written by AI and can be wrong. Check numbers against your log.',
+    examplesTitle: 'Try asking',
+    examples: {
+      focus: 'Which habit should I focus on this week?',
+      goals: 'How are my goals going?',
+      restart: 'I keep skipping workouts. What can I try?',
+    },
+    conversation: 'Conversation with the coach',
+    you: 'You',
+    coach: 'Coach',
+    inputLabel: 'Message the coach',
+    send: 'Send',
+    thinking: 'The coach is thinking…',
+    truncated: 'This answer was cut short.',
+    errors: {
+      failed: "The coach couldn't answer. Try again.",
+      rateLimited:
+        "You've sent a lot of messages. Wait a minute, or come back tomorrow if you've reached today's limit.",
+      disabled: 'The AI coach is turned off right now.',
+    },
+    proposal: {
+      label: 'Suggested habit',
+      add: 'Add habit',
+      adding: 'Adding…',
+      added: 'Added to your habits.',
+      dismiss: 'Dismiss',
+      failed: "Couldn't add the habit. Try again.",
+    },
   },
   streak: {
     fullWeek: 'A full week in a row.',

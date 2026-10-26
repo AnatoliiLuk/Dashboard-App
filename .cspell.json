@@ -25,6 +25,14 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/CoachChat/CoachChat.test.tsx",
+      "language": "en,uk"
+    },
+    {
+      "filename": "apps/web/lib/hooks/useCoach.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "packages/core/src/utils/date.test.ts",
       "language": "en,uk"
     },
@@ -75,6 +83,9 @@
     "evals",
     "groundedness",
     "commitlint",
-    "toolu"
+    "toolu",
+    "коуч",
+    "коуча",
+    "коучем"
   ]
 }

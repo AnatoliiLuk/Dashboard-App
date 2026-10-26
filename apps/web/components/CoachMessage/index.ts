@@ -1,0 +1,1 @@
+export { CoachMessage } from './CoachMessage';
