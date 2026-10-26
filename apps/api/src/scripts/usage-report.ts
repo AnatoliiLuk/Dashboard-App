@@ -1,26 +1,7 @@
 // Tokens, latency and estimated cost per prompt version and model.
 // Run: npm run usage:report -w @habit-tracker/api -- [days]   (default 30)
+import { estimateCost } from '../ai/pricing';
 import { prisma } from '../config/database';
-
-// USD per million tokens. Check current prices before trusting the totals.
-const PRICES: Record<
-  string,
-  { input: number; output: number; cacheRead: number; cacheWrite: number }
-> = {
-  'claude-opus-5-5': { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
-  'claude-sonnet-5-5': {
-    input: 2,
-    output: 10,
-    cacheRead: 0.2,
-    cacheWrite: 2.5,
-  },
-  'claude-haiku-5-5': {
-    input: 0.1,
-    output: 0.5,
-    cacheRead: 0.01,
-    cacheWrite: 0.125,
-  },
-};
 
 interface Row {
   promptVersion: string;
@@ -62,7 +43,7 @@ async function main() {
   console.log(`AI coach usage for the last ${days} days\n`);
   console.table(
     rows.map((row) => {
-      const cost = estimateCost(row);
+      const cost = estimateCost(row.model, row);
       return {
         prompt: row.promptVersion,
         model: row.model,
@@ -79,21 +60,6 @@ async function main() {
         '$/req': cost === null ? '' : (cost / row.requests).toFixed(5),
       };
     }),
-  );
-}
-
-function estimateCost(row: Row): number | null {
-  const price = PRICES[row.model];
-  if (!price) {
-    return null;
-  }
-
-  return (
-    (row.inputTokens * price.input +
-      row.outputTokens * price.output +
-      row.cacheReadTokens * price.cacheRead +
-      row.cacheWriteTokens * price.cacheWrite) /
-    1_000_000
   );
 }
 

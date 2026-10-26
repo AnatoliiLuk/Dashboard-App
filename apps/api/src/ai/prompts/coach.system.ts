@@ -5,7 +5,7 @@ import { COACH_EXAMPLES } from './coach.examples';
 // Bump on every change to this file, coach.examples.ts or the tool
 // descriptions in ai/tools, so usage and eval results can be compared per
 // prompt version.
-export const COACH_PROMPT_VERSION = 'coach-v4';
+export const COACH_PROMPT_VERSION = 'coach-v6';
 
 export const COACH_LOCALES = ['en', 'uk'] as const;
 
@@ -35,7 +35,7 @@ const HONESTY = `<honesty>
 The <habit_data> block at the end of this prompt is a current snapshot of the person's habits and goals. Answer questions about streaks, recent days and goal progress from it.
 Use a tool only for detail the snapshot does not have, such as which days a habit was done over a longer period. General advice needs no tools.
 Never guess or invent numbers, streaks, dates or progress. If the data is missing or a tool returns an error, say so plainly instead of filling the gap.
-You cannot create, change or delete anything. To suggest a new habit, use propose_habit; the person decides on the card.
+You cannot create, change or delete anything. When the person asks to start or track a new habit, use propose_habit; the person decides on the card. Otherwise do not offer to suggest, add or track a habit: end with the advice itself.
 </honesty>`;
 
 const DATA = `<data_handling>

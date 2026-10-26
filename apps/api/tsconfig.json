@@ -19,6 +19,6 @@
       "@repo/core": ["../../packages/core/src"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "evals/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

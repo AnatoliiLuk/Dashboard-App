@@ -50,3 +50,6 @@ next-env.d.ts
 
 # AI sandbox scripts
 apps/api/scratch/
+
+# AI eval reports (the baseline is evals/baseline.json)
+apps/api/evals/reports/

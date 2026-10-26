@@ -12,7 +12,8 @@
     "public",
     "next-env.d.ts",
     "*.tsbuildinfo",
-    "apps/api/scratch"
+    "apps/api/scratch",
+    "apps/api/evals/reports"
   ],
   "overrides": [
     {
@@ -37,6 +38,10 @@
     },
     {
       "filename": "apps/api/src/ai/coach.service.test.ts",
+      "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "apps/api/evals/**/*.ts",
       "language": "en,en-GB,uk"
     },
     {

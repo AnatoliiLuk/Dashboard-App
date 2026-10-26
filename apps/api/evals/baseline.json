@@ -1,0 +1,69 @@
+{
+  "createdAt": "2026-10-26T10:12:02.747Z",
+  "model": "claude-opus-5-5",
+  "promptVersion": "coach-v6",
+  "judgeModel": "claude-opus-5-5",
+  "judgePromptVersion": "judge-v2",
+  "repeat": 2,
+  "cases": 41,
+  "passRate": 1,
+  "byCategory": {
+    "accuracy": {
+      "runs": 14,
+      "passed": 14,
+      "passRate": 1
+    },
+    "tool_use": {
+      "runs": 16,
+      "passed": 16,
+      "passRate": 1
+    },
+    "language": {
+      "runs": 12,
+      "passed": 12,
+      "passRate": 1
+    },
+    "scope": {
+      "runs": 10,
+      "passed": 10,
+      "passRate": 1
+    },
+    "injection": {
+      "runs": 12,
+      "passed": 12,
+      "passRate": 1
+    },
+    "format": {
+      "runs": 8,
+      "passed": 8,
+      "passRate": 1
+    },
+    "edge": {
+      "runs": 10,
+      "passed": 10,
+      "passRate": 1
+    }
+  },
+  "bySplit": {
+    "dev": {
+      "runs": 68,
+      "passed": 68,
+      "passRate": 1
+    },
+    "holdout": {
+      "runs": 14,
+      "passed": 14,
+      "passRate": 1
+    }
+  },
+  "judge": {
+    "runs": 28,
+    "passed": 28,
+    "errors": 0,
+    "averages": {
+      "helpfulness": 4.9,
+      "groundedness": 4.9,
+      "tone": 4.9
+    }
+  }
+}

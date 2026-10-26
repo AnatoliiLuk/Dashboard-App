@@ -117,6 +117,29 @@ Notes:
 - The model resisted every attack without help from the guards. The guards are the second layer. Unit tests check them with replies that do leak.
 - Limitation: the leak check compares replies with the English rules. A Ukrainian translation of the rules would not be caught.
 
+### coach-v5 and coach-v6: the first eval cycle (2026-10-26)
+
+From here on the inputs are the eval set in `apps/api/evals/dataset/coach.cases.jsonl`, not the scratch scripts. Each run is 41 cases × 2 on claude-opus-5-5, with judge-v2 on the same model. Six cases are held out: they are only reported and were not used to choose changes.
+
+**The first live run passed 38 of 38.** Every finding above was already handled by v4, so the set measured nothing. Reading the replies showed a problem the checks missed: tips still ended with an offer to add a habit, the issue noted under v4. We added a `no_habit_offer` check (English and Ukrainian), two new tip cases (one held out), and an accuracy case for "Did I go for a run today?".
+
+The judge also needed two fixes, saved as judge-v2. It returned 0 for every score once, because the schema did not limit the range. It also took a point off a plan for using a numbered list, which the coach prompt allows.
+
+| Prompt   | Change                                                                                                      | Pass rate    | Replies with a habit offer |
+| -------- | ----------------------------------------------------------------------------------------------------------- | ------------ | -------------------------- |
+| coach-v4 | baseline                                                                                                    | 74/82 (90%)  | 8 of 14                    |
+| coach-v5 | `propose_habit` description: "asks to start or track a new habit" instead of "or agrees to your suggestion" | 77/82 (94%)  | 5 of 14                    |
+| coach-v6 | v5, plus the honesty section says when to use `propose_habit` and to end with the advice otherwise          | 82/82 (100%) | 0 of 14                    |
+
+Notes:
+
+- The v5 tool description alone was not enough. "Or agrees to your suggestion" invited offers, but removing it did not tell the model to stop. The fix that worked was an explicit rule in the prompt, which v2 already called for.
+- The held-out Ukrainian tip went from failing (v4, v5) to passing (v6). So the rule carries over to a language and a request it was not tuned on.
+- `tool-propose-new` still shows a card in v6. Asked "how do I build a habit of flossing?", v4 and v5 proposed a card on every run, and v6 gives the advice only. Both are acceptable, but this is the one behaviour change v6 made outside the failing cases.
+- Cost and speed did not change: about 190 output tokens and 3.5 s per reply. A full run of 41 × 2 cost about $0.80, including the judge.
+- Judge sample check: we read every score below 5. Most deductions are fair, such as "3 more days" stated where 4 are needed to beat the record. Two are borderline sentence counts, which is why the judge only fails a score below 3.
+- Not fixed yet: in v4, `fmt-guilt` once said the person ran "today" when it was yesterday. The snapshot only has 7-day counts. `acc-ran-today` now measures this. It passed in every run of v4, v5 and v6, because the coach called `get_habit_history` to check, so the slip was rare.
+
 ## Lessons
 
 - The model copies patterns from few-shot examples, even a closing question. Every line of an example is an instruction.

@@ -68,7 +68,7 @@ export const COACH_TOOLS: Anthropic.Tool[] = [
     name: TOOL_NAMES.proposeHabit,
     description:
       'Shows the person a card suggesting a new habit, which they can accept or dismiss. It does not create the habit. ' +
-      'Use it only when the person wants to start a new habit or agrees to your suggestion, and only for a habit they do not already have. ' +
+      'Use it only when the person asks to start or track a new habit, and only for a habit they do not already have. ' +
       'Propose at most one habit per reply. After calling it, tell them in one sentence that they can add it from the card.',
     input_schema: {
       type: 'object',
