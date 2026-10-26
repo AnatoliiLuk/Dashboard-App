@@ -1,5 +1,3 @@
-import type Anthropic from '@anthropic-ai/sdk';
-
 import {
   summarizeGoals,
   summarizeHabits,
@@ -7,9 +5,6 @@ import {
   type GoalSummary,
   type HabitSummary,
 } from './coach.data';
-
-export const HISTORY_MAX_MESSAGES = 10;
-export const HISTORY_MAX_CHARS = 1000;
 
 export interface CoachContextSource {
   build(userId: string, today: string): Promise<string>;
@@ -95,33 +90,4 @@ function archivedLabel(count: number): string {
 // keeps a name from closing the <habit_data> tag or looking like markup.
 function quote(name: string): string {
   return JSON.stringify(name.replace(/[<>]/g, ''));
-}
-
-// Keep the conversation small and predictable: the last few messages,
-// starting with a user turn, and long older messages shortened.
-export function capHistory(
-  messages: Anthropic.MessageParam[],
-): Anthropic.MessageParam[] {
-  let kept = messages.slice(-HISTORY_MAX_MESSAGES);
-  while (kept.length > 1 && kept[0].role !== 'user') {
-    kept = kept.slice(1);
-  }
-
-  return kept.map((message, index) =>
-    index === kept.length - 1 ? message : shorten(message),
-  );
-}
-
-function shorten(message: Anthropic.MessageParam): Anthropic.MessageParam {
-  if (
-    typeof message.content !== 'string' ||
-    message.content.length <= HISTORY_MAX_CHARS
-  ) {
-    return message;
-  }
-
-  return {
-    ...message,
-    content: `${message.content.slice(0, HISTORY_MAX_CHARS)}…`,
-  };
 }

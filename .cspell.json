@@ -42,6 +42,14 @@
     {
       "filename": "docs/ai-coach/PROMPT_NOTES.md",
       "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "apps/api/src/ai/guardrails/output.guard.ts",
+      "language": "en,en-GB,uk"
+    },
+    {
+      "filename": "apps/api/src/ai/guardrails/output.guard.test.ts",
+      "language": "en,en-GB,uk"
     }
   ],
   "words": [

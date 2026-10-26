@@ -4,7 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
 import { CoachService, type CoachConfig } from './coach.service';
-import { HISTORY_MAX_MESSAGES } from './context.builder';
+import { HISTORY_MAX_MESSAGES } from './guardrails/input.guard';
 import { buildCoachSystem, COACH_PROMPT_VERSION } from './prompts/coach.system';
 import { COACH_TOOLS } from './tools';
 import type { CoachToolRunner } from './tools/handlers';
@@ -85,6 +85,10 @@ function fakeContext() {
   return { build: jest.fn(async () => HABIT_DATA) };
 }
 
+function fakeBudget() {
+  return { assertAvailable: jest.fn(), record: jest.fn() };
+}
+
 async function replyError(service: CoachService): Promise<AppError> {
   const error = await service.reply(input).catch((caught: unknown) => caught);
   expect(error).toBeInstanceOf(AppError);
@@ -98,6 +102,7 @@ describe('CoachService', () => {
       client,
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -108,6 +113,7 @@ describe('CoachService', () => {
       truncated: false,
       proposal: null,
       toolCalls: 0,
+      guardFlags: [],
       usage: {
         inputTokens: 12,
         outputTokens: 7,
@@ -133,6 +139,7 @@ describe('CoachService', () => {
       fakeClient(message()),
       fakeTools(),
       context,
+      fakeBudget(),
       config,
     );
 
@@ -147,6 +154,7 @@ describe('CoachService', () => {
       client,
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -175,6 +183,7 @@ describe('CoachService', () => {
       ),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -198,6 +207,7 @@ describe('CoachService', () => {
       client,
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -220,7 +230,13 @@ describe('CoachService', () => {
       }),
     );
     const tools = fakeTools();
-    const service = new CoachService(client, tools, fakeContext(), config);
+    const service = new CoachService(
+      client,
+      tools,
+      fakeContext(),
+      fakeBudget(),
+      config,
+    );
 
     const reply = await service.reply(input);
 
@@ -264,6 +280,7 @@ describe('CoachService', () => {
       client,
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -288,6 +305,7 @@ describe('CoachService', () => {
       fakeClient(toolUse('toolu_1', 'propose_habit', proposal), message()),
       fakeTools({ proposal }),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -304,7 +322,13 @@ describe('CoachService', () => {
       ),
     );
     const tools = fakeTools();
-    const service = new CoachService(client, tools, fakeContext(), config);
+    const service = new CoachService(
+      client,
+      tools,
+      fakeContext(),
+      fakeBudget(),
+      config,
+    );
 
     const error = await replyError(service);
 
@@ -318,6 +342,7 @@ describe('CoachService', () => {
       fakeClient(message({ stop_reason: 'max_tokens' })),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -335,6 +360,7 @@ describe('CoachService', () => {
       ),
       fakeTools({ proposal }),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -350,6 +376,7 @@ describe('CoachService', () => {
       fakeClient(message({ stop_reason: 'refusal', content: [] })),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -363,6 +390,7 @@ describe('CoachService', () => {
       fakeClient(message({ content: [] })),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -381,6 +409,7 @@ describe('CoachService', () => {
       fakeClient(providerError),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -401,6 +430,7 @@ describe('CoachService', () => {
       fakeClient(rateLimit),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -412,6 +442,7 @@ describe('CoachService', () => {
       fakeClient(new Anthropic.APIConnectionTimeoutError()),
       fakeTools(),
       fakeContext(),
+      fakeBudget(),
       config,
     );
 
@@ -420,10 +451,16 @@ describe('CoachService', () => {
 
   it('returns 503 without calling the model when AI is disabled', async () => {
     const client = fakeClient(message());
-    const service = new CoachService(client, fakeTools(), fakeContext(), {
-      ...config,
-      enabled: false,
-    });
+    const service = new CoachService(
+      client,
+      fakeTools(),
+      fakeContext(),
+      fakeBudget(),
+      {
+        ...config,
+        enabled: false,
+      },
+    );
 
     expect((await replyError(service)).statusCode).toBe(503);
     expect(client.createMessage).not.toHaveBeenCalled();

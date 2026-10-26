@@ -4,6 +4,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { anthropicClient } from '../ai/client';
 import { CoachService } from '../ai/coach.service';
 import { CoachContextBuilder } from '../ai/context.builder';
+import { InMemoryTokenBudget } from '../ai/guardrails/token-budget';
 import { CoachToolHandlers } from '../ai/tools/handlers';
 import { env } from '../config/env';
 import { CompletionsService } from '../services/completions.service';
@@ -22,6 +23,7 @@ export class CoachController {
     anthropicClient,
     new CoachToolHandlers(dataServices),
     new CoachContextBuilder(dataServices),
+    new InMemoryTokenBudget(env.AI_DAILY_TOKEN_BUDGET),
     {
       enabled: env.AI_ENABLED,
       model: env.ANTHROPIC_MODEL,
@@ -45,6 +47,7 @@ export class CoachController {
           promptVersion: reply.promptVersion,
           stopReason: reply.stopReason,
           toolCalls: reply.toolCalls,
+          guardFlags: reply.guardFlags,
           ...reply.usage,
         }),
       );

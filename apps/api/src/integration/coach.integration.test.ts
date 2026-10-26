@@ -6,11 +6,12 @@ import {
   it,
   jest,
 } from '@jest/globals';
-import type Anthropic from '@anthropic-ai/sdk';
+import Anthropic from '@anthropic-ai/sdk';
 import { addDays } from '@repo/core';
 import request from 'supertest';
 
 import { app } from '../app';
+import { env } from '../config/env';
 import { tokenFromSetCookie } from '../utils/session-cookie';
 import { disconnectDatabase, resetDatabase } from './db';
 import { registerUser } from './register';
@@ -204,6 +205,43 @@ describe('coach chat', () => {
       .get('/api/habits')
       .set('Authorization', `Bearer ${token}`);
     expect(habits.body).toEqual([]);
+  });
+
+  it('limits how many messages one user can send per minute', async () => {
+    const { token } = await registerUser();
+    mockCreateMessage.mockResolvedValue(textReply('Ok'));
+
+    for (let i = 0; i < env.AI_RATE_LIMIT_PER_MINUTE; i++) {
+      expect((await chat(token, 'Hi')).status).toBe(200);
+    }
+    const blocked = await chat(token, 'Hi');
+
+    expect(blocked.status).toBe(429);
+    expect(mockCreateMessage).toHaveBeenCalledTimes(
+      env.AI_RATE_LIMIT_PER_MINUTE,
+    );
+  });
+
+  it('keeps the rest of the app working when the provider is down', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { token } = await registerUser();
+    mockCreateMessage.mockRejectedValue(
+      new Anthropic.InternalServerError(
+        529,
+        undefined,
+        'overloaded_error: internal cluster eu-3',
+        new Headers(),
+      ),
+    );
+
+    const coach = await chat(token, 'Hi');
+    const habits = await request(app)
+      .get('/api/habits')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(coach.status).toBe(502);
+    expect(coach.body.message).not.toContain('cluster');
+    expect(habits.status).toBe(200);
   });
 
   it('rejects a forged system message with a clear error', async () => {

@@ -60,16 +60,13 @@ ${examples}
 </examples>`;
 }
 
+// The rules without the examples. The output guard checks replies for them.
+export const COACH_RULES = [ROLE, SCOPE, TONE, HONESTY, DATA, FORMAT].join(
+  '\n\n',
+);
+
 // The same for every person and request, so it is cached with the tools.
-export const COACH_INSTRUCTIONS = [
-  ROLE,
-  SCOPE,
-  TONE,
-  HONESTY,
-  DATA,
-  FORMAT,
-  examplesSection(),
-].join('\n\n');
+export const COACH_INSTRUCTIONS = [COACH_RULES, examplesSection()].join('\n\n');
 
 // Changes per request, so it goes after the cached part.
 export function coachRequestContext(

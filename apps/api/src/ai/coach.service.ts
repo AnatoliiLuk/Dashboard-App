@@ -2,7 +2,14 @@ import Anthropic from '@anthropic-ai/sdk';
 
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
-import { capHistory, type CoachContextSource } from './context.builder';
+import type { CoachContextSource } from './context.builder';
+import { guardInput } from './guardrails/input.guard';
+import {
+  guardProposal,
+  guardReply,
+  type OutputGuardFlag,
+} from './guardrails/output.guard';
+import type { TokenBudget, TokenUsage } from './guardrails/token-budget';
 import { COACH_TOOLS } from './tools';
 import type { CoachToolRunner } from './tools/handlers';
 import type { HabitProposal } from './tools/schemas';
@@ -40,46 +47,52 @@ export interface CoachReply {
   truncated: boolean;
   proposal: HabitProposal | null;
   toolCalls: number;
+  guardFlags: OutputGuardFlag[];
   usage: CoachUsage;
 }
 
-export interface CoachUsage {
-  // Uncached input only. Cached input is counted in the two cache fields.
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  cacheWriteTokens: number;
-}
+// inputTokens is uncached input only. Cached input is in the cache fields.
+export type CoachUsage = TokenUsage;
 
 export class CoachService {
   constructor(
     private client: ModelClient,
     private tools: CoachToolRunner,
     private context: CoachContextSource,
+    private budget: TokenBudget,
     private config: CoachConfig,
   ) {}
 
-  async reply({
-    messages,
-    locale,
-    userId,
-    today,
-  }: CoachReplyInput): Promise<CoachReply> {
+  async reply(input: CoachReplyInput): Promise<CoachReply> {
     if (!this.config.enabled) {
       throw new AppError(503, 'The AI coach is turned off');
     }
 
-    const habitData = await this.context.build(userId, today);
-    const system = buildCoachSystem(locale, today, habitData);
-    // The API is stateless: each round sends the whole conversation,
-    // including earlier tool calls and their results.
-    const conversation = capHistory(messages);
+    this.budget.assertAvailable(input.userId);
     const usage: CoachUsage = {
       inputTokens: 0,
       outputTokens: 0,
       cacheReadTokens: 0,
       cacheWriteTokens: 0,
     };
+
+    try {
+      return await this.run(input, usage);
+    } finally {
+      // Failed requests still cost tokens, so they count too.
+      this.budget.record(input.userId, usage);
+    }
+  }
+
+  private async run(
+    { messages, locale, userId, today }: CoachReplyInput,
+    usage: CoachUsage,
+  ): Promise<CoachReply> {
+    const habitData = await this.context.build(userId, today);
+    const system = buildCoachSystem(locale, today, habitData);
+    // The API is stateless: each round sends the whole conversation,
+    // including earlier tool calls and their results.
+    const conversation = guardInput(messages);
     let proposal: HabitProposal | null = null;
     let toolCalls = 0;
 
@@ -146,6 +159,7 @@ export class CoachService {
         truncated: false,
         // Do not show a proposal next to a refusal.
         proposal: null,
+        guardFlags: [],
       };
     }
 
@@ -159,9 +173,15 @@ export class CoachService {
       throw new AppError(502, 'The AI coach returned an empty reply');
     }
 
+    const guarded = guardReply(text, locale);
+    const leaked = guarded.flags.includes('prompt_leak');
+
     return {
       ...run,
-      text,
+      text: guarded.text,
+      // Nothing from a reply that quoted the prompt reaches the person.
+      proposal: leaked ? null : guardProposal(run.proposal),
+      guardFlags: guarded.flags,
       promptVersion: COACH_PROMPT_VERSION,
       stopReason: response.stop_reason,
       truncated: response.stop_reason === 'max_tokens',
