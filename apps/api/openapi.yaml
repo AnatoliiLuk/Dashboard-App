@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Habits+ API
   version: 0.1.0
-  description: Accounts, habits, and daily completions. Register and login set an httpOnly session cookie. Protected routes accept that cookie or a Bearer token.
+  description: Accounts, habits, daily completions, and the AI coach. Register and login set an httpOnly session cookie. Protected routes accept that cookie or a Bearer token.
 servers:
   - url: http://localhost:4000
 tags:
@@ -10,6 +10,7 @@ tags:
   - name: Auth
   - name: Habits
   - name: Completions
+  - name: Coach
 paths:
   /health:
     get:
@@ -306,6 +307,62 @@ paths:
           $ref: '#/components/responses/Error'
         '404':
           $ref: '#/components/responses/Error'
+  /api/coach/chat:
+    post:
+      tags: [Coach]
+      summary: Ask the AI coach
+      description: >-
+        Sends the conversation so far and returns the coach's next reply. The
+        API is stateless: the client keeps the history and sends it each time.
+        The coach can read the person's habits and goals but never changes
+        them; a suggested habit comes back as a proposal that the client
+        creates through POST /api/habits after the person accepts it.
+        Limited per user per minute (AI_RATE_LIMIT_PER_MINUTE) and per UTC day
+        (AI_DAILY_TOKEN_BUDGET).
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoachChatBody'
+      responses:
+        '200':
+          description: The coach's reply
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachReply'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '429':
+          description: Too many messages this minute, the daily token budget is used up, or the AI provider is rate limiting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: The AI provider failed, or the coach could not finish an answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: The coach is turned off (AI_ENABLED=false)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '504':
+          description: The AI provider took too long to answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -476,3 +533,66 @@ components:
           nullable: true
           allOf:
             - $ref: '#/components/schemas/Completion'
+    CoachMessage:
+      type: object
+      required: [role, content]
+      additionalProperties: false
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+    CoachChatBody:
+      type: object
+      required: [messages]
+      additionalProperties: false
+      properties:
+        messages:
+          type: array
+          description: The first and last messages must be from the user. Only the last 10 are sent to the model.
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/CoachMessage'
+        locale:
+          type: string
+          enum: [en, uk]
+          default: en
+        today:
+          type: string
+          description: The person's local date, so streaks match the UI. Must be within one day of the server's UTC date. Defaults to the server date.
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: '2026-10-26'
+    HabitProposal:
+      type: object
+      required: [name, color, reason]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        color:
+          $ref: '#/components/schemas/HabitColor'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+    CoachReply:
+      type: object
+      required: [reply, truncated, proposal]
+      properties:
+        reply:
+          type: string
+          description: Plain text. Render it as text, not HTML.
+        truncated:
+          type: boolean
+          description: True when the reply hit the output token limit and was cut off
+        proposal:
+          type: object
+          nullable: true
+          description: A habit the coach suggests. Nothing is saved until the client creates it.
+          allOf:
+            - $ref: '#/components/schemas/HabitProposal'

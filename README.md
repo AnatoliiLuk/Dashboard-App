@@ -45,12 +45,20 @@ npm run dev:api
 - Auth: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
 - Habits: `GET|POST /api/habits`, `GET|PATCH|DELETE /api/habits/:id`
 - Completions: `GET|POST /api/completions`, `POST /api/completions/toggle`, `DELETE /api/completions/:id`
+- Goals: `GET|POST /api/goals`, `PATCH|DELETE /api/goals/:id`
+- AI coach: `POST /api/coach/chat`
 
 Protected routes accept the httpOnly session cookie from login, or `Authorization: Bearer <token>`.
 
 After `npm run db:seed`, sign in as `demo@habits.plus` with password `password`.
 
 Shared typed client: `@repo/api-client` (`packages/api-client`).
+
+## AI coach
+
+The coach page at `/coach` answers questions about your habits and goals in English or Ukrainian. It uses the Anthropic API from the server only. Put your key in `ANTHROPIC_API_KEY` in the gitignored `.env`, or set `AI_ENABLED=false` to run the app without it.
+
+How it works, the threat model, evals and the runbook (usage, key rotation, kill switch, outages) are in [`docs/AI_COACH.md`](docs/AI_COACH.md).
 
 ## Tests
 
@@ -63,11 +71,14 @@ API integration tests use the `habit_tracker_test` database. End-to-end tests us
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests. Four jobs run in parallel: lint, typecheck, Jest, and Playwright.
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests. Four jobs run in parallel: lint, typecheck, Jest, and Playwright. Jest includes the offline AI coach evals, so CI needs no API key.
+
+`.github/workflows/eval.yml` runs the live AI coach evals only when started by hand (Actions → AI coach evals → Run workflow). It needs the `ANTHROPIC_API_KEY` repository secret. It never runs on a schedule or on pull requests, because each run costs money.
 
 ## Docs
 
 - Web app: `apps/web/README.md`
 - API: `apps/api/README.md`
 - API contract: `apps/api/openapi.yaml`
+- AI coach: `docs/AI_COACH.md`
 - Mobile app: `apps/mobile/README.md` (not started)
