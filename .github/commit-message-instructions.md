@@ -14,6 +14,22 @@ Format: type(scope): description
 - prefer a short scope (e.g. docs, calendar, habits) over repeating it in the description
 - add ! before the colon only for a breaking change
 
+Choosing the scope:
+
+- the scope names the module the change lives in, taken from its folder, not a word from the diff
+- reuse an existing scope; do not invent a new one for a single feature or table
+- existing scopes: ai, coach, guardrails, tools, habits, goals, auth, i18n, styles, theme, api
+- anything under apps/api/src/ai/ (including usage tracking, prompts, Prisma tables for AI) is ai
+- use a narrower scope (coach, guardrails, tools) only when every changed file is inside that area
+- use plural nouns: habits, not habit
+- when a diff spans several files of one feature, describe the feature, not the single file that changed most
+
+Bad (invents a scope, describes one file):
+feat(usage): implement daily token budget tracking
+
+Better:
+feat(ai): persist AI usage and add usage report
+
 Good:
 feat: show Habits+ in the browser tab
 chore: stop tracking local docs
