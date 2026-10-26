@@ -8,12 +8,16 @@ The coach is a chat page at `/coach` in the web app. A signed-in person asks abo
 
 The coach only reads data. It cannot create, change or delete anything.
 
+Each person has one ongoing conversation, saved on the server so it survives a reload. It is deleted when the person clicks New chat, when they delete their account, or after `AI_CONVERSATION_RETENTION_DAYS` (30) with no new message.
+
 ## Architecture
 
 ```mermaid
 flowchart LR
   web[Web /coach page] -->|"POST /api/coach/chat"| route[auth, rate limit, zod validator]
-  route --> service[CoachService]
+  route --> conversation[ConversationService]
+  conversation <--> history[(coach_conversations + coach_messages)]
+  conversation --> service[CoachService]
   service --> budget[Daily token budget]
   service --> context[Context builder: habit_data snapshot]
   service --> guardIn[Input guard]
@@ -29,15 +33,29 @@ flowchart LR
 
 One request goes through these steps:
 
-1. The route checks the session, the per-user rate limit and the request body (`validators/coach.validator.ts`).
-2. `CoachService.reply` (`apps/api/src/ai/coach.service.ts`) stops with 503 if `AI_ENABLED=false`, then checks the daily token budget.
-3. The context builder makes a small `<habit_data>` summary: active habits, streaks, 7-day counts and goal progress.
-4. The service calls the model with the versioned system prompt, the four tools and the last 10 messages. The system prompt and tools are cached.
-5. If the model asks for a tool, the service runs it with the `userId` from the session and sends the result back. It allows at most 5 rounds.
-6. The output guard removes markup, caps the length, blocks replies that quote the prompt, and checks the habit proposal again.
-7. The service writes one `ai_usage` row and one `ai_request` log line, for failed requests too.
+1. The route checks the session, the per-user rate limit and the request body (`validators/coach.validator.ts`). The body holds only the new message.
+2. `ConversationService` (`apps/api/src/ai/conversation.service.ts`) deletes the person's conversation if it is past retention, then loads the last 20 saved messages.
+3. `CoachService.reply` (`apps/api/src/ai/coach.service.ts`) stops with 503 if `AI_ENABLED=false`, then checks the daily token budget.
+4. The context builder makes a small `<habit_data>` summary: active habits, streaks, 7-day counts and goal progress.
+5. The service calls the model with the versioned system prompt, the four tools and the last 10 messages. The system prompt and tools are cached.
+6. If the model asks for a tool, the service runs it with the `userId` from the session and sends the result back. It allows at most 5 rounds.
+7. The output guard removes markup, caps the length, blocks replies that quote the prompt, and checks the habit proposal again.
+8. The service writes one `ai_usage` row and one `ai_request` log line, for failed requests too.
+9. On success, `ConversationService` saves the question and the reply together. A failed request saves nothing, so the browser keeps the question and can send it again.
 
-The API is stateless. The browser keeps the conversation and sends it with each request. Nothing the person types is stored on the server.
+`CoachService` itself stays stateless: it gets the history as an argument. Only plain text is saved, as the person saw it: the reply, the `truncated` flag and the habit proposal. Tool calls and tool results are not saved.
+
+### Conversation storage and privacy
+
+| What                        | How                                                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| One conversation per person | `coach_conversations` has a unique `userId`. Every query uses the `userId` from the session, so no route takes a conversation id.         |
+| Delete on request           | New chat calls `DELETE /api/coach/conversation`. The conversation and its messages are deleted at once, not marked as deleted.            |
+| Delete with the account     | Both tables cascade from `users`.                                                                                                         |
+| Retention                   | A conversation with no new message for `AI_CONVERSATION_RETENTION_DAYS` is deleted on the person's next request, and by the purge script. |
+| Never in logs or `ai_usage` | Message text is only in `coach_messages`. Log lines and usage rows keep metadata only.                                                    |
+| Not rate limited            | Reading and deleting the conversation do not count against `AI_RATE_LIMIT_PER_MINUTE`, so a person can always delete it.                  |
+| Cleared on sign-out         | The web app removes the cached conversation on sign-out, so the next person on the same browser does not see it.                          |
 
 ### Files
 
@@ -45,6 +63,8 @@ The API is stateless. The browser keeps the conversation and sends it with each 
 | --------------------------------------------------- | ------------------------------------------------------------------ |
 | `apps/api/src/ai/client.ts`                         | The only place the Anthropic SDK is used. Timeout 30 s, 2 retries. |
 | `apps/api/src/ai/coach.service.ts`                  | Kill switch, budget, tool loop, usage tracking, error mapping.     |
+| `apps/api/src/ai/conversation.service.ts`           | Loads the saved history, saves each exchange, applies retention.   |
+| `apps/api/src/ai/conversation.repository.ts`        | Reads and writes the conversation tables.                          |
 | `apps/api/src/ai/prompts/coach.system.ts`           | System prompt and `COACH_PROMPT_VERSION`.                          |
 | `apps/api/src/ai/prompts/coach.examples.ts`         | Few-shot examples.                                                 |
 | `apps/api/src/ai/context.builder.ts`                | The `<habit_data>` snapshot.                                       |
@@ -53,6 +73,7 @@ The API is stateless. The browser keeps the conversation and sends it with each 
 | `apps/api/src/ai/usage.repository.ts`               | Reads and writes the `ai_usage` table.                             |
 | `apps/api/src/ai/pricing.ts`                        | Price per model, for cost estimates.                               |
 | `apps/api/src/scripts/usage-report.ts`              | Usage and cost report.                                             |
+| `apps/api/src/scripts/purge-conversations.ts`       | Deletes conversations past retention. Run it daily.                |
 | `apps/api/evals/`                                   | Eval set, graders, runner, baseline.                               |
 | `apps/web/app/coach/`, `apps/web/components/Coach*` | The chat page.                                                     |
 | `.github/workflows/eval.yml`                        | Live evals, started by hand.                                       |
@@ -70,14 +91,15 @@ The API is stateless. The browser keeps the conversation and sends it with each 
 
 All settings are environment variables, read once when the API starts. After you change one, restart the API.
 
-| Variable                   | Default           | Meaning                                                                                           |
-| -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
-| `ANTHROPIC_API_KEY`        | none              | Required unless `AI_ENABLED=false` or `NODE_ENV=test`. Server only.                               |
-| `ANTHROPIC_MODEL`          | `claude-opus-5-5` | Model id. Add a new model to `pricing.ts` too, or cost shows as unknown.                          |
-| `AI_MAX_OUTPUT_TOKENS`     | `2048`            | Output limit per model call. A reply that hits it is returned with `truncated: true`.             |
-| `AI_RATE_LIMIT_PER_MINUTE` | `10`              | Coach requests per person per minute. Kept in memory, so each API instance counts separately.     |
-| `AI_DAILY_TOKEN_BUDGET`    | `100000`          | Tokens per person per UTC day: uncached input, cache writes and output. Cache reads do not count. |
-| `AI_ENABLED`               | `true`            | Kill switch. `false` makes the endpoint return 503 without calling the model.                     |
+| Variable                         | Default           | Meaning                                                                                           |
+| -------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY`              | none              | Required unless `AI_ENABLED=false` or `NODE_ENV=test`. Server only.                               |
+| `ANTHROPIC_MODEL`                | `claude-opus-5-5` | Model id. Add a new model to `pricing.ts` too, or cost shows as unknown.                          |
+| `AI_MAX_OUTPUT_TOKENS`           | `2048`            | Output limit per model call. A reply that hits it is returned with `truncated: true`.             |
+| `AI_RATE_LIMIT_PER_MINUTE`       | `10`              | Coach requests per person per minute. Kept in memory, so each API instance counts separately.     |
+| `AI_DAILY_TOKEN_BUDGET`          | `100000`          | Tokens per person per UTC day: uncached input, cache writes and output. Cache reads do not count. |
+| `AI_ENABLED`                     | `true`            | Kill switch. `false` makes the endpoint return 503 without calling the model.                     |
+| `AI_CONVERSATION_RETENTION_DAYS` | `30`              | Days a conversation is kept after its last message.                                               |
 
 ## Threat model
 
@@ -87,14 +109,15 @@ Treat the model as an untrusted component. Each defence below is code, not an in
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Leaked API key            | The key is only in the API's environment. It is not in the web bundle, the repo or the logs. `.env` is gitignored.                                                                                                                                 |
 | Abuse and cost            | Per-user rate limit, per-user daily token budget from the `ai_usage` table, and a monthly spend limit in the Anthropic console.                                                                                                                    |
-| Oversized input           | At most 20 messages of 2,000 characters each. Only the last 10 messages reach the model, and all but the newest are cut to 1,000 characters.                                                                                                       |
-| Forged conversation       | The validator accepts only `user` and `assistant` text. The client cannot send a system prompt, tool calls or tool results.                                                                                                                        |
+| Oversized input           | One message of at most 2,000 characters per request. Only the last 10 saved messages reach the model, and all but the newest are cut to 1,000 characters.                                                                                          |
+| Forged conversation       | The client sends only the new message. The history comes from the database, so the client cannot send or rewrite earlier turns, a system prompt, tool calls or tool results.                                                                       |
 | Prompt injection          | Habit and goal names come from people. They are placed in a `<habit_data>` block that the prompt marks as data. The input guard defuses the prompt's own tag names in messages. Tools are read-only, so a hijacked model still cannot change data. |
 | Excessive agency          | The model cannot write. `propose_habit` returns a suggestion, and the person creates the habit through the normal `POST /api/habits`.                                                                                                              |
 | Data leaks between people | Tools take `userId` from the session, never from the model. The services check ownership, so another person's habit id returns "not found".                                                                                                        |
 | Unsafe output             | The reply is plain text, rendered as text. The output guard strips markup, caps the length and replaces a reply that quotes the system prompt. The proposal is checked with the same schema as creating a habit.                                   |
 | Provider outage           | Only the coach depends on the provider. Errors become a short 429, 502 or 504 message. Provider messages are logged, never sent to the client.                                                                                                     |
 | Personal data in logs     | Logs and `ai_usage` hold metadata only: user id, model, prompt version, tokens, latency, tool count and status. Never message text.                                                                                                                |
+| Stored conversations      | Message text is kept only in `coach_messages`, only for the owner, and is deleted on request, with the account, or after the retention period. See [Conversation storage and privacy](#conversation-storage-and-privacy).                          |
 
 ## Evals
 
@@ -213,6 +236,22 @@ GROUP BY "errorStatus";
 Each request also writes one JSON log line that starts with `{"event":"ai_request"`. It has the same fields as the row plus `guardFlags`. A `prompt_leak` flag means the output guard replaced a reply that quoted the prompt.
 
 What normal looks like with `coach-v6` on `claude-opus-5-5`: about 190 output tokens, 0 or 1 tool calls and 3 to 4 seconds per reply. The Anthropic console shows the real bill. The numbers here are estimates from `pricing.ts`, so check that file when prices change.
+
+### Purge old conversations
+
+```bash
+npm run coach:purge -w @habit-tracker/api
+```
+
+It deletes every conversation with no new message for `AI_CONVERSATION_RETENTION_DAYS` and prints one JSON line with the count. Run it once a day from the host's scheduler. Without it, an idle conversation is still deleted on the person's next visit, but it stays in the database until then.
+
+To delete one person's conversation by hand, for example after a support request:
+
+```sql
+DELETE FROM coach_conversations WHERE "userId" = '<user id>';
+```
+
+Messages go with it through the cascade.
 
 ### Turn the coach off
 

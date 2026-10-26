@@ -1,6 +1,6 @@
 import type { CoachChatDto } from '@repo/types';
 
-import type { ApiCoachReply } from '../types/api';
+import type { ApiCoachConversation, ApiCoachReply } from '../types/api';
 import type { ApiClientConfig } from '../utils/request';
 import { request } from '../utils/request';
 
@@ -14,6 +14,22 @@ export class CoachApi {
       url: '/coach/chat',
       data: dto,
       signal,
+    });
+  }
+
+  getConversation(): Promise<ApiCoachConversation> {
+    return request<ApiCoachConversation>({
+      ...this.config,
+      method: 'GET',
+      url: '/coach/conversation',
+    });
+  }
+
+  deleteConversation(): Promise<void> {
+    return request<void>({
+      ...this.config,
+      method: 'DELETE',
+      url: '/coach/conversation',
     });
   }
 }

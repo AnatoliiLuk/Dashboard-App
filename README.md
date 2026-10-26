@@ -46,7 +46,7 @@ npm run dev:api
 - Habits: `GET|POST /api/habits`, `GET|PATCH|DELETE /api/habits/:id`
 - Completions: `GET|POST /api/completions`, `POST /api/completions/toggle`, `DELETE /api/completions/:id`
 - Goals: `GET|POST /api/goals`, `PATCH|DELETE /api/goals/:id`
-- AI coach: `POST /api/coach/chat`
+- AI coach: `POST /api/coach/chat`, `GET|DELETE /api/coach/conversation`
 
 Protected routes accept the httpOnly session cookie from login, or `Authorization: Bearer <token>`.
 

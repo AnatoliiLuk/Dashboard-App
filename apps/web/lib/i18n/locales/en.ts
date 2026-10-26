@@ -171,11 +171,25 @@ export const en = {
     send: 'Send',
     thinking: 'The coach is thinking…',
     truncated: 'This answer was cut short.',
+    loading: 'Loading your conversation…',
+    storageNotice_one:
+      'Your chat is saved so you can come back to it. It is deleted {{count}} day after your last message, or when you start a new chat.',
+    storageNotice_few:
+      'Your chat is saved so you can come back to it. It is deleted {{count}} days after your last message, or when you start a new chat.',
+    storageNotice_many:
+      'Your chat is saved so you can come back to it. It is deleted {{count}} days after your last message, or when you start a new chat.',
+    storageNotice_other:
+      'Your chat is saved so you can come back to it. It is deleted {{count}} days after your last message, or when you start a new chat.',
+    startOver: 'New chat',
+    startOverConfirm: 'Delete this conversation and start a new one?',
+    deleting: 'Deleting…',
     errors: {
       failed: "The coach couldn't answer. Try again.",
       rateLimited:
         "You've sent a lot of messages. Wait a minute, or come back tomorrow if you've reached today's limit.",
       disabled: 'The AI coach is turned off right now.',
+      loadFailed: "Couldn't load your conversation.",
+      deleteFailed: "Couldn't delete the conversation. Try again.",
     },
     proposal: {
       label: 'Suggested habit',

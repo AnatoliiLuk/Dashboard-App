@@ -1,95 +1,166 @@
 'use client';
 
-import { ApiError, type ApiHabitProposal } from '@repo/api-client';
+import {
+  ApiError,
+  type ApiCoachConversation,
+  type ApiCoachMessage,
+  type ApiHabitProposal,
+} from '@repo/api-client';
 import { today } from '@repo/core';
-import type { CoachMessageDto } from '@repo/types';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 
 import { api } from '@/lib/api/client';
+import { coachKeys } from '@/lib/api/query-keys';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { displayLocale, useTranslation } from '@/lib/i18n';
 
-// The API accepts at most 20 messages and keeps the last 10 for the model.
-const MAX_HISTORY = 20;
-
 export type CoachEntry =
-  | { id: number; role: 'user'; content: string }
+  | { id: string; role: 'user'; content: string }
   | {
-      id: number;
+      id: string;
       role: 'assistant';
       content: string;
       truncated: boolean;
       proposal: ApiHabitProposal | null;
     };
 
-export type CoachErrorKind = 'rateLimited' | 'disabled' | 'failed';
+export type CoachErrorKind =
+  'rateLimited' | 'disabled' | 'failed' | 'loadFailed' | 'deleteFailed';
 
 /**
- * One conversation with the coach. It lives in memory only: the API is
- * stateless, so every request sends the recent history again.
+ * The person's one ongoing conversation with the coach. The server keeps
+ * it, so it survives a reload. Only the question waiting for an answer
+ * lives here, so a failed question can be sent again.
  */
 export function useCoach() {
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
   const { i18n } = useTranslation();
   const locale = displayLocale(i18n.resolvedLanguage ?? i18n.language);
-  const [entries, setEntries] = useState<CoachEntry[]>([]);
+  const [pending, setPending] = useState<string | null>(null);
   const nextId = useRef(0);
 
-  const chatMutation = useMutation({
-    mutationFn: (history: CoachEntry[]) =>
-      api.coach.chat({ messages: toMessages(history), locale, today: today() }),
+  const conversationQuery = useQuery({
+    queryKey: coachKeys.conversation,
+    queryFn: () => api.coach.getConversation(),
+    enabled: isAuthenticated,
   });
 
-  async function ask(history: CoachEntry[]) {
-    try {
-      const { reply, truncated, proposal } =
-        await chatMutation.mutateAsync(history);
-      setEntries((current) => [
-        ...current,
-        {
-          id: nextId.current++,
+  const chatMutation = useMutation({
+    mutationFn: (message: string) =>
+      api.coach.chat({ message, locale, today: today() }),
+    onSuccess: ({ reply, truncated, proposal }, message) => {
+      // The server saved both turns. Add them here without a refetch.
+      appendMessages([
+        localMessage({ role: 'user', content: message }),
+        localMessage({
           role: 'assistant',
           content: reply,
           truncated,
           proposal,
-        },
+        }),
       ]);
-    } catch {
-      // Shown through `error`; the question stays so it can be retried.
-    }
+      setPending(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.coach.deleteConversation(),
+    onSuccess: () => {
+      queryClient.setQueryData<ApiCoachConversation>(
+        coachKeys.conversation,
+        (current) => current && { ...current, messages: [] },
+      );
+      setPending(null);
+      chatMutation.reset();
+    },
+  });
+
+  function localMessage(
+    message: Omit<ApiCoachMessage, 'id' | 'truncated' | 'proposal'> &
+      Partial<ApiCoachMessage>,
+  ): ApiCoachMessage {
+    return {
+      id: `local-${nextId.current++}`,
+      truncated: false,
+      proposal: null,
+      ...message,
+    };
   }
+
+  function appendMessages(messages: ApiCoachMessage[]) {
+    queryClient.setQueryData<ApiCoachConversation>(
+      coachKeys.conversation,
+      (current) =>
+        current && { ...current, messages: [...current.messages, ...messages] },
+    );
+  }
+
+  const isReady = conversationQuery.isSuccess;
+  const isBusy = chatMutation.isPending || deleteMutation.isPending;
 
   function send(text: string) {
     const content = text.trim();
-    if (!content || chatMutation.isPending) return;
+    if (!content || !isReady || isBusy || pending !== null) return;
 
-    const history: CoachEntry[] = [
-      ...entries,
-      { id: nextId.current++, role: 'user', content },
-    ];
-    setEntries(history);
-    void ask(history);
+    setPending(content);
+    chatMutation.mutate(content);
   }
 
   function retry() {
-    if (chatMutation.isPending || entries.at(-1)?.role !== 'user') return;
-    void ask(entries);
+    if (conversationQuery.isError) {
+      void conversationQuery.refetch();
+      return;
+    }
+    if (deleteMutation.isError) {
+      void startOver();
+      return;
+    }
+    if (isBusy || pending === null) return;
+    chatMutation.mutate(pending);
   }
+
+  // Deletes the saved conversation on the server and starts over.
+  async function startOver() {
+    if (isBusy) return;
+    try {
+      await deleteMutation.mutateAsync();
+    } catch {
+      // Shown through `error`.
+    }
+  }
+
+  const saved = conversationQuery.data?.messages ?? [];
+  const entries: CoachEntry[] = saved.map(toEntry);
+  if (pending !== null) {
+    entries.push({ id: 'pending', role: 'user', content: pending });
+  }
+
+  let error: CoachErrorKind | null = null;
+  if (conversationQuery.isError) error = 'loadFailed';
+  else if (deleteMutation.isError) error = 'deleteFailed';
+  else if (chatMutation.error) error = errorKind(chatMutation.error);
 
   return {
     entries,
     send,
     retry,
+    startOver,
+    // A disabled query is pending too; only count it while signed in.
+    isLoading: conversationQuery.isPending && isAuthenticated,
     isSending: chatMutation.isPending,
-    error: chatMutation.error ? errorKind(chatMutation.error) : null,
+    isDeleting: deleteMutation.isPending,
+    retentionDays: conversationQuery.data?.retentionDays ?? null,
+    error,
   };
 }
 
-// The API wants plain text that starts with a user message.
-function toMessages(entries: CoachEntry[]): CoachMessageDto[] {
-  const recent = entries.slice(-MAX_HISTORY);
-  const start = recent.findIndex((entry) => entry.role === 'user');
-
-  return recent.slice(start).map(({ role, content }) => ({ role, content }));
+function toEntry(message: ApiCoachMessage): CoachEntry {
+  const { id, role, content, truncated, proposal } = message;
+  return role === 'user'
+    ? { id, role, content }
+    : { id, role, content, truncated, proposal };
 }
 
 function errorKind(error: Error): CoachErrorKind {

@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-// The AI layer is stubbed in the browser, so the test needs no API key and
-// always gets the same reply. Everything else, including creating the
-// accepted habit, goes through the real API.
+// The chat call is stubbed in the browser, so the test needs no API key and
+// always gets the same reply. Everything else, including loading the saved
+// conversation and creating the accepted habit, goes through the real API.
 test('asks the coach and adds the habit it proposes', async ({ page }) => {
   const email = `e2e-${crypto.randomUUID()}@example.com`;
   const sent: unknown[] = [];
@@ -43,9 +43,7 @@ test('asks the coach and adds the habit it proposes', async ({ page }) => {
   await expect(log.getByText(/Start with two minutes/)).toBeVisible();
   expect(sent).toEqual([
     expect.objectContaining({
-      messages: [
-        { role: 'user', content: 'I want to start meditating every morning.' },
-      ],
+      message: 'I want to start meditating every morning.',
       locale: 'en',
     }),
   ]);

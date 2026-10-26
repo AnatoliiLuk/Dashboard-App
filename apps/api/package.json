@@ -9,6 +9,7 @@
     "test": "jest && jest --config jest.integration.config.cjs",
     "typecheck": "tsc --noEmit",
     "usage:report": "tsx src/scripts/usage-report.ts",
+    "coach:purge": "tsx src/scripts/purge-conversations.ts",
     "eval": "tsx evals/run.ts"
   },
   "dependencies": {

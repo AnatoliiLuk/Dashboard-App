@@ -66,3 +66,12 @@ export const composerStyle = ({ spacingPx, breakpoints }: Theme) => ({
 export const sendStyle = () => ({
   flexShrink: 0,
 });
+
+export const startOverStyle = ({ vars, spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: spacingPx[8],
+  mb: spacingPx[16],
+  color: vars.palette.text.secondary,
+});

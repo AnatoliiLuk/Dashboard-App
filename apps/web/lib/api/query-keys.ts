@@ -14,3 +14,7 @@ export const completionKeys = {
 export const goalKeys = {
   all: ['goals'] as const,
 };
+
+export const coachKeys = {
+  conversation: ['coach', 'conversation'] as const,
+};

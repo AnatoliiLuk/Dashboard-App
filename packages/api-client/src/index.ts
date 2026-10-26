@@ -13,5 +13,7 @@ export type {
   ApiGoal,
   ToggleCompletionResponse,
   ApiCoachReply,
+  ApiCoachMessage,
+  ApiCoachConversation,
   ApiHabitProposal,
 } from './types/api';

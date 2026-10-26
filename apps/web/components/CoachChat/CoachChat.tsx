@@ -25,22 +25,29 @@ import {
   logStyle,
   noticeStyle,
   sendStyle,
+  startOverStyle,
   thinkingStyle,
 } from './CoachChat.style';
 
 function CoachChat({
   entries,
+  isLoading,
   isSending,
+  isDeleting,
+  retentionDays,
   error,
   onSend,
   onRetry,
+  onStartOver,
   onAcceptProposal,
 }: CoachChatProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
+  const [confirmStartOver, setConfirmStartOver] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const disabled = error === 'disabled';
-  const canSend = !isSending && !disabled && draft.trim().length > 0;
+  const busy = isLoading || isSending || isDeleting;
+  const canSend = !busy && !disabled && draft.trim().length > 0;
 
   // Keep the newest message and the thinking line in view.
   useEffect(() => {
@@ -78,8 +85,60 @@ function CoachChat({
         <CircleInfoIcon />
         {t('coach.aiNotice')}
       </Typography>
+      {retentionDays !== null ? (
+        <Typography variant="body2" sx={noticeStyle}>
+          <CircleInfoIcon />
+          {t('coach.storageNotice', { count: retentionDays })}
+        </Typography>
+      ) : null}
 
-      {entries.length === 0 ? (
+      {entries.length > 0 ? (
+        <Box sx={startOverStyle}>
+          {confirmStartOver ? (
+            <>
+              <Typography variant="body2">
+                {t('coach.startOverConfirm')}
+              </Typography>
+              <Button
+                type="button"
+                variant="outlined"
+                color="error"
+                disabled={busy}
+                onClick={() => {
+                  setConfirmStartOver(false);
+                  onStartOver();
+                }}
+              >
+                {t('common.deleteForever')}
+              </Button>
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={() => setConfirmStartOver(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outlined"
+              disabled={busy}
+              onClick={() => setConfirmStartOver(true)}
+            >
+              {isDeleting ? t('coach.deleting') : t('coach.startOver')}
+            </Button>
+          )}
+        </Box>
+      ) : null}
+
+      {isLoading ? (
+        <Typography variant="body2" sx={thinkingStyle}>
+          {t('coach.loading')}
+        </Typography>
+      ) : null}
+
+      {!isLoading && entries.length === 0 ? (
         <Box sx={examplesStyle}>
           <Typography variant="body2" sx={examplesTitleStyle}>
             {t('coach.examplesTitle')}
@@ -89,7 +148,7 @@ function CoachChat({
               key={key}
               type="button"
               variant="outlined"
-              disabled={isSending || disabled}
+              disabled={busy || disabled}
               sx={exampleButtonStyle}
               onClick={() => onSend(t(`coach.examples.${key}`))}
             >
@@ -97,7 +156,9 @@ function CoachChat({
             </Button>
           ))}
         </Box>
-      ) : (
+      ) : null}
+
+      {entries.length > 0 ? (
         <Box
           component="ol"
           role="log"
@@ -118,7 +179,7 @@ function CoachChat({
             </Typography>
           ) : null}
         </Box>
-      )}
+      ) : null}
 
       {error ? (
         <Box role="alert" sx={errorStyle}>
@@ -127,7 +188,7 @@ function CoachChat({
             <Button
               type="button"
               variant="outlined"
-              disabled={isSending}
+              disabled={busy}
               onClick={onRetry}
             >
               {t('common.tryAgain')}

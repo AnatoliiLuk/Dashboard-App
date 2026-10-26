@@ -9,9 +9,9 @@ import type { CoachChatProps } from './CoachChat.interface';
 import { renderWithProviders } from '../../test/render';
 
 const conversation: CoachEntry[] = [
-  { id: 1, role: 'user', content: 'How is my reading going?' },
+  { id: '1', role: 'user', content: 'How is my reading going?' },
   {
-    id: 2,
+    id: '2',
     role: 'assistant',
     content: 'Seven days in a row.',
     truncated: false,
@@ -26,12 +26,16 @@ function renderChat(
   const handlers = {
     onSend: jest.fn(),
     onRetry: jest.fn(),
+    onStartOver: jest.fn(),
     onAcceptProposal: jest.fn(async () => undefined),
   };
   renderWithProviders(
     <CoachChat
       entries={[]}
+      isLoading={false}
       isSending={false}
+      isDeleting={false}
+      retentionDays={30}
       error={null}
       {...handlers}
       {...props}
@@ -129,6 +133,48 @@ describe('CoachChat', () => {
     expect(
       screen.getByRole('textbox', { name: 'Message the coach' }),
     ).toBeDisabled();
+  });
+
+  it('says how long the chat is kept', () => {
+    renderChat();
+
+    expect(
+      screen.getByText(/It is deleted 30 days after your last message/),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a loading line instead of the examples while loading', () => {
+    renderChat({ isLoading: true });
+
+    expect(screen.getByText('Loading your conversation…')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'How are my goals going?' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('asks before deleting the conversation for a new chat', async () => {
+    const user = userEvent.setup();
+    const { onStartOver } = renderChat({ entries: conversation });
+
+    await user.click(screen.getByRole('button', { name: 'New chat' }));
+    expect(
+      screen.getByText('Delete this conversation and start a new one?'),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(onStartOver).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'New chat' }));
+    await user.click(screen.getByRole('button', { name: 'Delete forever' }));
+
+    expect(onStartOver).toHaveBeenCalledTimes(1);
+  });
+
+  it('hides New chat when there is nothing to delete', () => {
+    renderChat();
+
+    expect(
+      screen.queryByRole('button', { name: 'New chat' }),
+    ).not.toBeInTheDocument();
   });
 
   it('speaks Ukrainian', () => {

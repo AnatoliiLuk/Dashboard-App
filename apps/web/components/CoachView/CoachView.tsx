@@ -19,7 +19,17 @@ export function CoachView() {
 }
 
 function CoachContent() {
-  const { entries, send, retry, isSending, error } = useCoach();
+  const {
+    entries,
+    send,
+    retry,
+    startOver,
+    isLoading,
+    isSending,
+    isDeleting,
+    retentionDays,
+    error,
+  } = useCoach();
   const { createHabit } = useHabits();
 
   // Accepting a proposal uses the normal create-habit flow, so the new
@@ -31,10 +41,14 @@ function CoachContent() {
   return (
     <CoachChat
       entries={entries}
+      isLoading={isLoading}
       isSending={isSending}
+      isDeleting={isDeleting}
+      retentionDays={retentionDays}
       error={error}
       onSend={send}
       onRetry={retry}
+      onStartOver={() => void startOver()}
       onAcceptProposal={acceptProposal}
     />
   );

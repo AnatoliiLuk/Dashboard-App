@@ -34,6 +34,12 @@ const envSchema = z.object({
   AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
   // Per user per day: uncached input + cache writes + output tokens.
   AI_DAILY_TOKEN_BUDGET: z.coerce.number().int().positive().default(100_000),
+  // A coach conversation with no new message for this long is deleted.
+  AI_CONVERSATION_RETENTION_DAYS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(30),
   // z.coerce.boolean() would turn the string "false" into true.
   AI_ENABLED: z
     .enum(['true', 'false'])

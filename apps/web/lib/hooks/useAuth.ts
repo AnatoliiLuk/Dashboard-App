@@ -8,6 +8,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { api } from '@/lib/api/client';
 import {
   authKeys,
+  coachKeys,
   completionKeys,
   goalKeys,
   habitKeys,
@@ -75,6 +76,8 @@ export function useAuth() {
     queryClient.removeQueries({ queryKey: habitKeys.all });
     queryClient.removeQueries({ queryKey: completionKeys.all });
     queryClient.removeQueries({ queryKey: goalKeys.all });
+    // The coach chat is personal; never show it to the next person.
+    queryClient.removeQueries({ queryKey: coachKeys.conversation });
   }, [queryClient, signedIn]);
 
   const loginMutation = useMutation({

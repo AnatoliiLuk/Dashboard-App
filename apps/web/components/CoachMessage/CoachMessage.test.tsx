@@ -9,12 +9,12 @@ describe('CoachMessage', () => {
     renderWithProviders(
       <ul>
         <CoachMessage
-          entry={{ id: 1, role: 'user', content: 'How is my streak?' }}
+          entry={{ id: '1', role: 'user', content: 'How is my streak?' }}
           onAcceptProposal={jest.fn(async () => undefined)}
         />
         <CoachMessage
           entry={{
-            id: 2,
+            id: '2',
             role: 'assistant',
             content: 'Seven days in a row.',
             truncated: false,
@@ -38,7 +38,7 @@ describe('CoachMessage', () => {
       <ul>
         <CoachMessage
           entry={{
-            id: 1,
+            id: '1',
             role: 'assistant',
             content: 'Try a short walk.',
             truncated: true,

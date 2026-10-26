@@ -27,9 +27,9 @@ const RESERVED_TAG_PATTERN = new RegExp(
   'gi',
 );
 
-// Runs after the zod validator, which already allows only user and
-// assistant text within length limits. Both roles come from the client,
-// so both are guarded.
+// Runs on the stored history plus the new message. The validator already
+// checked the new message's length. Stored user text was typed by the
+// person and stored assistant text quotes it, so both roles are guarded.
 export function guardInput(
   messages: Anthropic.MessageParam[],
 ): Anthropic.MessageParam[] {

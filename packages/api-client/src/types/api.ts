@@ -61,3 +61,19 @@ export type ApiCoachReply = {
   truncated: boolean;
   proposal: ApiHabitProposal | null;
 };
+
+/** One saved message. Assistant messages keep their note and proposal. */
+export type ApiCoachMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  truncated: boolean;
+  proposal: ApiHabitProposal | null;
+};
+
+/** The person's one ongoing conversation, oldest message first. */
+export type ApiCoachConversation = {
+  messages: ApiCoachMessage[];
+  /** Days without a new message before the server deletes it. */
+  retentionDays: number;
+};
