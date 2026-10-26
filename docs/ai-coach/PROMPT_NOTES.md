@@ -68,8 +68,38 @@ Notes:
 - The coach mentioned the injection-named habit by name. It did not follow it. Phase 5 should still test this case.
 - In a Ukrainian reply, the coach left the English habit name "Running" as it is. That is correct: names are user data.
 
+### coach-v4 (2026-10-23): context and caching
+
+**Changes:**
+
+- Each request now carries a `<habit_data>` summary: habits with current and best streak and 7-day counts, and goals with progress.
+- The honesty section and the tool descriptions say to answer from that summary and to use tools only for detail it doesn't have.
+- The system prompt is now two blocks. The first holds the stable instructions and has a cache marker. The second holds the per-request part: language, today and the habit data.
+- Top-level automatic caching covers the conversation.
+- History is capped at 10 messages.
+
+**How we tested:** the same fixed data and questions as v3, run in order on claude-opus-5-5 (`apps/api/scratch/phase4-context.ts`).
+
+| Question                                         | Tools in v3                           | Tools in v4             | Cache read / write |
+| ------------------------------------------------ | ------------------------------------- | ----------------------- | ------------------ |
+| How long is my streak for Reading?               | `get_habits`                          | none                    | 0 / 2,564 (first)  |
+| How did running go this month?                   | `get_habits`, `get_habit_history(23)` | `get_habit_history(23)` | 4,710 / 627        |
+| How am I doing on my October goal?               | `get_goals`                           | none                    | 2,150 / 414        |
+| Яка моя найкраща серія з бігу?                   | `get_habits`                          | none                    | 2,150 / 419        |
+| Any tip for sleeping better?                     | none                                  | none                    | 2,150 / 414        |
+| I want to start meditating. Can you set that up? | `get_habits`, `propose_habit`         | `propose_habit`         | 4,718 / 592        |
+| What habits do I have?                           | `get_habits`                          | none                    | 2,150 / 410        |
+
+Notes:
+
+- All numbers are still correct. 5 of 7 answers need no tool call, and the rest need one.
+- The tools and the stable instructions take 2,150 tokens. Every request after the first reads them from the cache. Uncached input is now only 4 to 6 tokens. About 410 to 630 tokens are written to the cache on each request: the per-request block plus the conversation.
+- Estimated cost per message on Opus 5.5: about $0.004 for an answer from the summary (was about $0.023) and about $0.010 with one tool round (was about $0.038). Output tokens are now most of the cost.
+- The sleep tip ended with "I can suggest one of these as a habit to track". The habit offers we removed in v2 are coming back a little. Add an eval case for this in Phase 7.
+
 ## Lessons
 
 - The model copies patterns from few-shot examples, even a closing question. Every line of an example is an instruction.
 - Telling the model that the UI shows plain text was enough to stop the Markdown.
+- Putting a small data summary in the prompt removed most tool calls. That made answers faster and cheaper than fetching the same data with tools.
 - Each tool description should say when to use the tool and what it returns. With those descriptions, the coach skipped tools for general advice and chained `get_habits` into `get_habit_history` by itself.

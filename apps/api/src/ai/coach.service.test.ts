@@ -4,10 +4,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
 import { CoachService, type CoachConfig } from './coach.service';
-import {
-  buildCoachSystemPrompt,
-  COACH_PROMPT_VERSION,
-} from './prompts/coach.system';
+import { HISTORY_MAX_MESSAGES } from './context.builder';
+import { buildCoachSystem, COACH_PROMPT_VERSION } from './prompts/coach.system';
 import { COACH_TOOLS } from './tools';
 import type { CoachToolRunner } from './tools/handlers';
 
@@ -80,6 +78,13 @@ function fakeTools(
   return { run };
 }
 
+const HABIT_DATA =
+  '<habit_data>\nActive habits: 0\nActive goals: 0\n</habit_data>';
+
+function fakeContext() {
+  return { build: jest.fn(async () => HABIT_DATA) };
+}
+
 async function replyError(service: CoachService): Promise<AppError> {
   const error = await service.reply(input).catch((caught: unknown) => caught);
   expect(error).toBeInstanceOf(AppError);
@@ -89,7 +94,12 @@ async function replyError(service: CoachService): Promise<AppError> {
 describe('CoachService', () => {
   it('returns the text and usage and sends the configured request', async () => {
     const client = fakeClient(message());
-    const service = new CoachService(client, fakeTools(), config);
+    const service = new CoachService(
+      client,
+      fakeTools(),
+      fakeContext(),
+      config,
+    );
 
     await expect(service.reply(input)).resolves.toEqual({
       text: 'Read ten pages a day.',
@@ -98,17 +108,105 @@ describe('CoachService', () => {
       truncated: false,
       proposal: null,
       toolCalls: 0,
-      usage: { inputTokens: 12, outputTokens: 7 },
+      usage: {
+        inputTokens: 12,
+        outputTokens: 7,
+        cacheReadTokens: 0,
+        cacheWriteTokens: 0,
+      },
     });
     expect(client.createMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'test-model',
         max_tokens: 512,
-        system: buildCoachSystemPrompt('en', '2026-10-23'),
+        system: buildCoachSystem('en', '2026-10-23', HABIT_DATA),
         tools: COACH_TOOLS,
         messages: input.messages,
+        cache_control: { type: 'ephemeral' },
       }),
     );
+  });
+
+  it('builds the context for the session user and today', async () => {
+    const context = fakeContext();
+    const service = new CoachService(
+      fakeClient(message()),
+      fakeTools(),
+      context,
+      config,
+    );
+
+    await service.reply(input);
+
+    expect(context.build).toHaveBeenCalledWith('user-a', '2026-10-23');
+  });
+
+  it('marks the stable instructions for caching and keeps the data after them', async () => {
+    const client = fakeClient(message());
+    const service = new CoachService(
+      client,
+      fakeTools(),
+      fakeContext(),
+      config,
+    );
+
+    await service.reply(input);
+
+    const [stable, perRequest] = client.createMessage.mock.calls[0][0]
+      .system as Anthropic.TextBlockParam[];
+    expect(stable.cache_control).toEqual({ type: 'ephemeral' });
+    expect(stable.text).not.toContain('2026-10-23');
+    expect(perRequest.cache_control).toBeUndefined();
+    expect(perRequest.text).toContain(HABIT_DATA);
+  });
+
+  it('sums cache reads and writes across rounds', async () => {
+    const usage = (read: number, write: number) =>
+      ({
+        input_tokens: 10,
+        output_tokens: 5,
+        cache_read_input_tokens: read,
+        cache_creation_input_tokens: write,
+      }) as Anthropic.Usage;
+    const service = new CoachService(
+      fakeClient(
+        { ...toolUse('toolu_1', 'get_habits'), usage: usage(2000, 300) },
+        { ...message(), usage: usage(2300, 50) },
+      ),
+      fakeTools(),
+      fakeContext(),
+      config,
+    );
+
+    const reply = await service.reply(input);
+
+    expect(reply.usage).toEqual({
+      inputTokens: 20,
+      outputTokens: 10,
+      cacheReadTokens: 4300,
+      cacheWriteTokens: 350,
+    });
+  });
+
+  it('sends only the most recent messages', async () => {
+    const long = Array.from({ length: 15 }, (_, i) => ({
+      role: i % 2 === 0 ? ('user' as const) : ('assistant' as const),
+      content: `message ${i}`,
+    }));
+    const client = fakeClient(message());
+    const service = new CoachService(
+      client,
+      fakeTools(),
+      fakeContext(),
+      config,
+    );
+
+    await service.reply({ ...input, messages: long });
+
+    const sent = client.createMessage.mock.calls[0][0].messages;
+    expect(sent.length).toBeLessThanOrEqual(HISTORY_MAX_MESSAGES);
+    expect(sent[0].role).toBe('user');
+    expect(sent.at(-1)).toEqual(long.at(-1));
   });
 
   it('runs a requested tool and sends its result back before answering', async () => {
@@ -122,13 +220,15 @@ describe('CoachService', () => {
       }),
     );
     const tools = fakeTools();
-    const service = new CoachService(client, tools, config);
+    const service = new CoachService(client, tools, fakeContext(), config);
 
     const reply = await service.reply(input);
 
     expect(reply.text).toBe('Your streak is 4 days.');
     expect(reply.toolCalls).toBe(1);
-    expect(reply.usage).toEqual({ inputTokens: 24, outputTokens: 14 });
+    expect(reply.usage).toEqual(
+      expect.objectContaining({ inputTokens: 24, outputTokens: 14 }),
+    );
     expect(tools.run).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'toolu_1', name: 'get_habits' }),
       { userId: 'user-a', today: '2026-10-23' },
@@ -160,7 +260,12 @@ describe('CoachService', () => {
       ] as Anthropic.ContentBlock[],
     });
     const client = fakeClient(parallel, message());
-    const service = new CoachService(client, fakeTools(), config);
+    const service = new CoachService(
+      client,
+      fakeTools(),
+      fakeContext(),
+      config,
+    );
 
     const reply = await service.reply(input);
 
@@ -182,6 +287,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(toolUse('toolu_1', 'propose_habit', proposal), message()),
       fakeTools({ proposal }),
+      fakeContext(),
       config,
     );
 
@@ -198,7 +304,7 @@ describe('CoachService', () => {
       ),
     );
     const tools = fakeTools();
-    const service = new CoachService(client, tools, config);
+    const service = new CoachService(client, tools, fakeContext(), config);
 
     const error = await replyError(service);
 
@@ -211,6 +317,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(message({ stop_reason: 'max_tokens' })),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -227,6 +334,7 @@ describe('CoachService', () => {
         message({ stop_reason: 'refusal', content: [] }),
       ),
       fakeTools({ proposal }),
+      fakeContext(),
       config,
     );
 
@@ -241,6 +349,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(message({ stop_reason: 'refusal', content: [] })),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -253,6 +362,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(message({ content: [] })),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -270,6 +380,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(providerError),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -289,6 +400,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(rateLimit),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -299,6 +411,7 @@ describe('CoachService', () => {
     const service = new CoachService(
       fakeClient(new Anthropic.APIConnectionTimeoutError()),
       fakeTools(),
+      fakeContext(),
       config,
     );
 
@@ -307,7 +420,7 @@ describe('CoachService', () => {
 
   it('returns 503 without calling the model when AI is disabled', async () => {
     const client = fakeClient(message());
-    const service = new CoachService(client, fakeTools(), {
+    const service = new CoachService(client, fakeTools(), fakeContext(), {
       ...config,
       enabled: false,
     });

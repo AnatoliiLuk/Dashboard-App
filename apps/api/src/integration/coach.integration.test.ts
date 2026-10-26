@@ -135,6 +135,12 @@ describe('coach chat', () => {
     const response = await chat(token, 'How long is my streak for Reading?');
 
     expect(response.status).toBe(200);
+    // The per-request system block carries the data, without personal details.
+    const [, perRequest] = mockCreateMessage.mock.calls[0][0]
+      .system as Anthropic.TextBlockParam[];
+    expect(perRequest.text).toContain('"Reading"');
+    expect(perRequest.text).not.toContain('ada@example.com');
+
     const [result] = toolResultsSent();
     expect(result.is_error).toBeUndefined();
     const [habit] = JSON.parse(result.content as string).habits;

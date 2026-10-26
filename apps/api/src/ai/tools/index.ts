@@ -17,7 +17,7 @@ export const COACH_TOOLS: Anthropic.Tool[] = [
     name: TOOL_NAMES.getHabits,
     description:
       "Lists the person's active habits. For each habit it returns the id, name, color, the date it was created, the current streak, the best streak, and whether it was done on each of the last 7 days. " +
-      'Use it whenever you need any fact or number about their habits or streaks, and to find a habit id before calling get_habit_history. ' +
+      'The <habit_data> snapshot already has these streaks and 7-day counts, so call this only when you need the exact days of the last week. ' +
       'Archived habits are not listed; only their count is returned.',
     input_schema: {
       type: 'object',
@@ -32,14 +32,14 @@ export const COACH_TOOLS: Anthropic.Tool[] = [
     description:
       'Returns the dates on which one habit was completed during the last N days, ending today. ' +
       'Use it for questions about a longer period or specific days, such as "how did Reading go this month?". ' +
-      `Call get_habits first to get the habit id. days must be between 1 and ${HISTORY_MAX_DAYS}. ` +
+      `Take the habit id from <habit_data>. days must be between 1 and ${HISTORY_MAX_DAYS}. ` +
       'Returns "Habit not found" for an unknown id.',
     input_schema: {
       type: 'object',
       properties: {
         habitId: {
           type: 'string',
-          description: 'The habit id from get_habits.',
+          description: 'The habit id from <habit_data> or get_habits.',
         },
         days: {
           type: 'integer',
@@ -55,7 +55,7 @@ export const COACH_TOOLS: Anthropic.Tool[] = [
     name: TOOL_NAMES.getGoals,
     description:
       "Lists the person's active goals. For each goal it returns the name, dates, linked habits, which day of the goal it is, days left, and progress so far: completions logged, completions possible, and the completion rate in percent. " +
-      'Use it for any question about goals or goal progress.',
+      'The <habit_data> snapshot already has this progress, so call this only if you need it again later in a long conversation.',
     input_schema: {
       type: 'object',
       properties: {},

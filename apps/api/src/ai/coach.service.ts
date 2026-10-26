@@ -2,11 +2,12 @@ import Anthropic from '@anthropic-ai/sdk';
 
 import { AppError } from '../middleware/error.middleware';
 import type { ModelClient } from './client';
+import { capHistory, type CoachContextSource } from './context.builder';
 import { COACH_TOOLS } from './tools';
 import type { CoachToolRunner } from './tools/handlers';
 import type { HabitProposal } from './tools/schemas';
 import {
-  buildCoachSystemPrompt,
+  buildCoachSystem,
   COACH_PROMPT_VERSION,
   type CoachLocale,
 } from './prompts/coach.system';
@@ -39,16 +40,22 @@ export interface CoachReply {
   truncated: boolean;
   proposal: HabitProposal | null;
   toolCalls: number;
-  usage: {
-    inputTokens: number;
-    outputTokens: number;
-  };
+  usage: CoachUsage;
+}
+
+export interface CoachUsage {
+  // Uncached input only. Cached input is counted in the two cache fields.
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
 }
 
 export class CoachService {
   constructor(
     private client: ModelClient,
     private tools: CoachToolRunner,
+    private context: CoachContextSource,
     private config: CoachConfig,
   ) {}
 
@@ -62,11 +69,17 @@ export class CoachService {
       throw new AppError(503, 'The AI coach is turned off');
     }
 
-    const system = buildCoachSystemPrompt(locale, today);
+    const habitData = await this.context.build(userId, today);
+    const system = buildCoachSystem(locale, today, habitData);
     // The API is stateless: each round sends the whole conversation,
     // including earlier tool calls and their results.
-    const conversation: Anthropic.MessageParam[] = [...messages];
-    const usage = { inputTokens: 0, outputTokens: 0 };
+    const conversation = capHistory(messages);
+    const usage: CoachUsage = {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+    };
     let proposal: HabitProposal | null = null;
     let toolCalls = 0;
 
@@ -78,10 +91,12 @@ export class CoachService {
         output_config: { effort: 'low' },
         system,
         tools: COACH_TOOLS,
-        messages: conversation,
+        messages: [...conversation],
+        // Also caches the conversation so far, so the next tool round
+        // and the next turn reuse it.
+        cache_control: { type: 'ephemeral' },
       });
-      usage.inputTokens += response.usage.input_tokens;
-      usage.outputTokens += response.usage.output_tokens;
+      addUsage(usage, response.usage);
 
       const toolUses = response.content.filter(
         (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use',
@@ -162,6 +177,13 @@ export class CoachService {
       throw toAppError(error);
     }
   }
+}
+
+function addUsage(total: CoachUsage, usage: Anthropic.Usage): void {
+  total.inputTokens += usage.input_tokens;
+  total.outputTokens += usage.output_tokens;
+  total.cacheReadTokens += usage.cache_read_input_tokens ?? 0;
+  total.cacheWriteTokens += usage.cache_creation_input_tokens ?? 0;
 }
 
 // Never pass provider messages to the client: they can leak internals.
