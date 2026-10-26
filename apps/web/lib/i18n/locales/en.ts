@@ -28,7 +28,7 @@ export const en = {
     calendar: 'Calendar',
     logHabits: 'Log habits',
     myGoals: 'My goals',
-    coach: 'Coach',
+    coach: 'AI Coach',
     signIn: 'Sign in',
     signOut: 'Sign out',
   },

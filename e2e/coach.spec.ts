@@ -32,7 +32,7 @@ test('asks the coach and adds the habit it proposes', async ({ page }) => {
     page.getByRole('region', { name: 'Habit calendar' }),
   ).toBeVisible();
 
-  await page.getByRole('link', { name: 'Coach' }).click();
+  await page.getByRole('link', { name: 'AI Coach' }).click();
   await page.waitForURL('**/coach');
   await page
     .getByRole('textbox', { name: 'Message the coach' })

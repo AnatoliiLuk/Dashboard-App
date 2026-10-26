@@ -34,7 +34,7 @@ export const uk: Copy<typeof en> = {
     calendar: 'Календар',
     logHabits: 'Журнал звичок',
     myGoals: 'Мої цілі',
-    coach: 'Коуч',
+    coach: 'ШІ-коуч',
     signIn: 'Увійти',
     signOut: 'Вийти',
   },
