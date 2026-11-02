@@ -1,6 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { changePasswordSchema, updateProfileSchema } from './users.validator';
+import {
+  changePasswordSchema,
+  deleteAccountSchema,
+  updateProfileSchema,
+} from './users.validator';
 
 describe('updateProfileSchema', () => {
   it('accepts a name on its own and trims it', () => {
@@ -78,5 +82,16 @@ describe('changePasswordSchema', () => {
       changePasswordSchema.safeParse({ newPassword: 'brand-new-secret' })
         .success,
     ).toBe(false);
+  });
+});
+
+describe('deleteAccountSchema', () => {
+  it('accepts a password', () => {
+    expect(deleteAccountSchema.safeParse({ password: 'x' }).success).toBe(true);
+  });
+
+  it('rejects a missing or empty password', () => {
+    expect(deleteAccountSchema.safeParse({}).success).toBe(false);
+    expect(deleteAccountSchema.safeParse({ password: '' }).success).toBe(false);
   });
 });

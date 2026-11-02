@@ -26,6 +26,7 @@ export type UsersStore = Pick<
   | 'findIdByEmail'
   | 'updateProfile'
   | 'updatePassword'
+  | 'deleteUser'
 >;
 
 export class UsersRepository {
@@ -75,5 +76,14 @@ export class UsersRepository {
     });
 
     return user.tokenVersion;
+  }
+
+  /**
+   * One DELETE statement, so it is atomic: Postgres removes every row that
+   * cascades from the user in the same transaction (ADR 0001). `deleteMany`
+   * keeps a double submit from failing when the row is already gone.
+   */
+  async deleteUser(id: string): Promise<void> {
+    await prisma.user.deleteMany({ where: { id } });
   }
 }

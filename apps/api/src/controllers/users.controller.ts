@@ -4,9 +4,14 @@ import { env } from '../config/env';
 import { UsersRepository } from '../repositories/users.repository';
 import { UsersService } from '../services/users.service';
 import { generateToken } from '../utils/jwt.util';
-import { SESSION_COOKIE, sessionCookieOptions } from '../utils/session-cookie';
+import {
+  SESSION_COOKIE,
+  clearCookieOptions,
+  sessionCookieOptions,
+} from '../utils/session-cookie';
 import type {
   ChangePasswordBody,
+  DeleteAccountBody,
   UpdateProfileBody,
 } from '../validators/users.validator';
 
@@ -43,6 +48,24 @@ export class UsersController {
         sessionCookieOptions(env.JWT_EXPIRES_IN, env.NODE_ENV === 'production'),
       );
       res.json({ token });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.service.deleteAccount(
+        req.user!.id,
+        req.body as DeleteAccountBody,
+      );
+
+      // Other sessions fail auth because the user row is gone (ADR 0002).
+      res.clearCookie(
+        SESSION_COOKIE,
+        clearCookieOptions(env.NODE_ENV === 'production'),
+      );
+      res.status(204).send();
     } catch (error) {
       next(error);
     }

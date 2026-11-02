@@ -8,6 +8,7 @@ import type {
 import { comparePassword, hashPassword } from '../utils/password.util';
 import type {
   ChangePasswordBody,
+  DeleteAccountBody,
   UpdateProfileBody,
 } from '../validators/users.validator';
 
@@ -103,5 +104,24 @@ export class UsersService {
 
     const passwordHash = await hashPassword(input.newPassword);
     return this.store.updatePassword(userId, passwordHash);
+  }
+
+  /** Deletes the user and all their data. There is no undo (ADR 0001). */
+  async deleteAccount(userId: string, input: DeleteAccountBody): Promise<void> {
+    const account = await this.store.findAccount(userId);
+    if (!account) {
+      throw new AppError(401, 'User not found');
+    }
+
+    // Wrong password is 400, never 401: clients sign out on any 401.
+    if (!(await comparePassword(input.password, account.passwordHash))) {
+      throw new AppError(
+        400,
+        'Current password is incorrect',
+        'CURRENT_PASSWORD_INCORRECT',
+      );
+    }
+
+    await this.store.deleteUser(userId);
   }
 }

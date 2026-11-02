@@ -6,11 +6,13 @@ import { userRateLimit } from '../middleware/rate-limit.middleware';
 import { validateRequest } from '../middleware/validation.middleware';
 import {
   changePasswordSchema,
+  deleteAccountSchema,
   updateProfileSchema,
 } from '../validators/users.validator';
 
 const FAILED_UPDATES_PER_MINUTE = 5;
 const PASSWORD_CHANGES_PER_MINUTE = 5;
+const DELETIONS_PER_MINUTE = 5;
 
 const router = Router();
 const controller = new UsersController();
@@ -37,6 +39,16 @@ router.post(
   }),
   validateRequest(changePasswordSchema),
   controller.changePassword,
+);
+
+// Every attempt counts: each one verifies the password.
+router.delete(
+  '/me',
+  userRateLimit(DELETIONS_PER_MINUTE, {
+    message: 'Too many attempts. Wait a minute and try again',
+  }),
+  validateRequest(deleteAccountSchema),
+  controller.deleteMe,
 );
 
 export default router;
