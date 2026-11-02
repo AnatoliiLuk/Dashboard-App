@@ -6,7 +6,8 @@ import { ApiError } from '@repo/api-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { actionsStyle, sectionStyle } from './SecuritySection.style';
+import { actionsStyle, contentStyle } from './SecuritySection.style';
+import { AccountSection } from '@/components/AccountSection';
 import { registerField } from '@/lib/forms/registerField';
 import {
   securityFormSchema,
@@ -66,63 +67,65 @@ export function SecuritySection() {
   }
 
   return (
-    <Box
-      component="form"
-      noValidate
-      sx={sectionStyle}
-      onSubmit={handleSubmit(submit)}
+    <AccountSection
+      title={t('account.security.title')}
+      description={t('account.security.description')}
     >
-      <Typography variant="h6" component="h2">
-        {t('account.security.title')}
-      </Typography>
-      <TextField
-        label={t('account.security.currentPassword')}
-        type="password"
-        autoComplete="current-password"
-        error={Boolean(errors.currentPassword)}
-        helperText={errors.currentPassword?.message}
-        fullWidth
-        size="small"
-        {...registerField(register('currentPassword'))}
-      />
-      <TextField
-        label={t('account.security.newPassword')}
-        type="password"
-        autoComplete="new-password"
-        error={Boolean(errors.newPassword)}
-        helperText={
-          errors.newPassword?.message ?? t('account.security.newPasswordHint')
-        }
-        fullWidth
-        size="small"
-        {...registerField(register('newPassword'))}
-      />
-      <TextField
-        label={t('account.security.confirmPassword')}
-        type="password"
-        autoComplete="new-password"
-        error={Boolean(errors.confirmPassword)}
-        helperText={errors.confirmPassword?.message}
-        fullWidth
-        size="small"
-        {...registerField(register('confirmPassword'))}
-      />
-      {errors.root ? (
-        <Alert severity="error">{errors.root.message}</Alert>
-      ) : null}
-      <Box sx={actionsStyle}>
-        <Button type="submit" variant="contained" disabled={change.isPending}>
-          {change.isPending
-            ? t('account.security.submitting')
-            : t('account.security.submit')}
-        </Button>
-        {/* Hidden again as soon as the user types, so it never sits next to unsaved input (#17). */}
-        {changed && !isDirty ? (
-          <Typography role="status" variant="body2">
-            {t('account.security.changed')}
-          </Typography>
+      <Box
+        component="form"
+        noValidate
+        sx={contentStyle}
+        onSubmit={handleSubmit(submit)}
+      >
+        <TextField
+          label={t('account.security.currentPassword')}
+          type="password"
+          autoComplete="current-password"
+          error={Boolean(errors.currentPassword)}
+          helperText={errors.currentPassword?.message}
+          fullWidth
+          size="small"
+          {...registerField(register('currentPassword'))}
+        />
+        <TextField
+          label={t('account.security.newPassword')}
+          type="password"
+          autoComplete="new-password"
+          error={Boolean(errors.newPassword)}
+          helperText={
+            errors.newPassword?.message ?? t('account.security.newPasswordHint')
+          }
+          fullWidth
+          size="small"
+          {...registerField(register('newPassword'))}
+        />
+        <TextField
+          label={t('account.security.confirmPassword')}
+          type="password"
+          autoComplete="new-password"
+          error={Boolean(errors.confirmPassword)}
+          helperText={errors.confirmPassword?.message}
+          fullWidth
+          size="small"
+          {...registerField(register('confirmPassword'))}
+        />
+        {errors.root ? (
+          <Alert severity="error">{errors.root.message}</Alert>
         ) : null}
+        <Box sx={actionsStyle}>
+          <Button type="submit" variant="contained" disabled={change.isPending}>
+            {change.isPending
+              ? t('account.security.submitting')
+              : t('account.security.submit')}
+          </Button>
+          {/* Hidden again as soon as the user types, so it never sits next to unsaved input (#17). */}
+          {changed && !isDirty ? (
+            <Typography role="status" variant="body2">
+              {t('account.security.changed')}
+            </Typography>
+          ) : null}
+        </Box>
       </Box>
-    </Box>
+    </AccountSection>
   );
 }

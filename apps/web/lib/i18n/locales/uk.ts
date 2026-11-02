@@ -58,6 +58,7 @@ export const uk: Copy<typeof en> = {
     description: 'Ваш профіль, пароль і використання ШІ-коуча.',
     profile: {
       title: 'Профіль',
+      description: "Ваше ім'я та електронна пошта для входу.",
       memberSince: 'З нами з {{date}}',
       currentPassword: 'Поточний пароль',
       currentPasswordHint: 'Потрібен, щоб змінити електронну пошту.',
@@ -70,6 +71,7 @@ export const uk: Copy<typeof en> = {
     },
     security: {
       title: 'Пароль',
+      description: 'Після зміни ви вийдете на інших пристроях.',
       currentPassword: 'Поточний пароль',
       newPassword: 'Новий пароль',
       confirmPassword: 'Повторіть новий пароль',
@@ -82,6 +84,7 @@ export const uk: Copy<typeof en> = {
     },
     coach: {
       title: 'ШІ-коуч',
+      description: 'Використання за сьогодні та збережена розмова.',
       loading: 'Завантаження використання…',
       loadFailed: 'Не вдалося завантажити використання ШІ-коуча.',
       disabled: 'ШІ-коуч зараз вимкнено.',

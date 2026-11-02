@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Divider } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { sectionsStyle } from './AccountView.style';
 import { AppShell } from '@/components/AppShell';
@@ -31,11 +31,8 @@ function AccountContent() {
       <PageIntro description={t('account.description')} />
       <Box sx={sectionsStyle}>
         <ProfileSection />
-        <Divider />
         <SecuritySection />
-        <Divider />
         <CoachSection />
-        <Divider />
         <DangerZoneSection />
       </Box>
     </>

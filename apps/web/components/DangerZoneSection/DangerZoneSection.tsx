@@ -17,11 +17,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import {
-  descriptionStyle,
-  dialogContentStyle,
-  sectionStyle,
-} from './DangerZoneSection.style';
+import { contentStyle, dialogContentStyle } from './DangerZoneSection.style';
+import { AccountSection } from '@/components/AccountSection';
 import { registerField } from '@/lib/forms/registerField';
 import {
   deleteAccountFormSchema,
@@ -35,23 +32,23 @@ export function DangerZoneSection() {
   const [open, setOpen] = useState(false);
 
   return (
-    <Box component="section" sx={sectionStyle}>
-      <Typography variant="h6" component="h2">
-        {t('account.danger.title')}
-      </Typography>
-      <Typography variant="body2" sx={descriptionStyle}>
-        {t('account.danger.description')}
-      </Typography>
-      <Button
-        type="button"
-        variant="outlined"
-        color="error"
-        onClick={() => setOpen(true)}
-      >
-        {t('account.danger.delete')}
-      </Button>
-      {open ? <DeleteAccountDialog onClose={() => setOpen(false)} /> : null}
-    </Box>
+    <AccountSection
+      title={t('account.danger.title')}
+      description={t('account.danger.description')}
+      tone="danger"
+    >
+      <Box sx={contentStyle}>
+        <Button
+          type="button"
+          variant="outlined"
+          color="error"
+          onClick={() => setOpen(true)}
+        >
+          {t('account.danger.delete')}
+        </Button>
+        {open ? <DeleteAccountDialog onClose={() => setOpen(false)} /> : null}
+      </Box>
+    </AccountSection>
   );
 }
 
