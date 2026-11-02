@@ -1,25 +1,38 @@
 'use client';
 
 import { Box, Button, Typography } from '@mui/material';
+import type { ReactNode } from 'react';
 
-import { actionStyle, descriptionStyle, introStyle } from './PageIntro.style';
+import { actionStyle, headerStyle, titleStyle } from './PageHeader.style';
 
-type PageIntroProps = {
-  description: string;
+type PageHeaderProps = {
+  title: string;
   actionLabel?: string;
+  actionIcon?: ReactNode;
+  actionDisabled?: boolean;
   onAction?: () => void;
 };
 
-export function PageIntro({
-  description,
+export function PageHeader({
+  title,
   actionLabel,
+  actionIcon,
+  actionDisabled,
   onAction,
-}: PageIntroProps) {
+}: PageHeaderProps) {
   return (
-    <Box sx={introStyle}>
-      <Typography sx={descriptionStyle}>{description}</Typography>
+    <Box sx={headerStyle}>
+      <Typography component="h1" sx={titleStyle}>
+        {title}
+      </Typography>
       {actionLabel && onAction ? (
-        <Button variant="contained" sx={actionStyle} onClick={onAction}>
+        <Button
+          variant="contained"
+          startIcon={actionIcon}
+          disabled={actionDisabled}
+          sx={actionStyle}
+          onClick={onAction}
+        >
           {actionLabel}
         </Button>
       ) : null}

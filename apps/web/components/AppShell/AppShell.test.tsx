@@ -40,17 +40,14 @@ describe('AppShell', () => {
     expect(main).toHaveTextContent('Page body');
   });
 
-  it('links the brand home instead of making it the page heading', () => {
-    mockPathname = '/goals';
+  it('links the brand home and leaves the page heading to the page', () => {
     renderShell();
 
     expect(screen.getByRole('link', { name: 'Habits+' })).toHaveAttribute(
       'href',
       '/',
     );
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'My goals',
-    );
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });
 
   it('lets keyboard users skip to the page content', () => {

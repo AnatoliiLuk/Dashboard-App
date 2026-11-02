@@ -109,8 +109,6 @@ export const contentStyle = () => ({
   mx: 'auto',
 });
 
-export const pageTitleStyle = () => visuallyHidden;
-
 // Used by AuthLayout, which keeps the original single-row bar.
 export const barStyle = ({ vars, spacingPx, border }: Theme) => ({
   display: 'flex',

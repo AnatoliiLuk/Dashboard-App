@@ -1,1 +1,1 @@
-export { PageIntro } from './PageIntro';
+export { PageHeader } from './PageHeader';

@@ -1,14 +1,16 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-export const noticeStyle = ({ vars, spacingPx }: Theme) => ({
+export const noticeStyle = ({ vars, spacingPx, typography }: Theme) => ({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   gap: spacingPx[8],
-  mb: spacingPx[24],
+  mt: spacingPx[12],
   color: vars.palette.text.secondary,
+  fontSize: typography.pxToRem(12),
   '& svg': {
     flexShrink: 0,
+    mt: spacingPx[2],
   },
 });
 
