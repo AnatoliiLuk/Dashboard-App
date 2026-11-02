@@ -32,6 +32,7 @@ describe('userRateLimit', () => {
     expect(blocked.body).toEqual({
       status: 'error',
       message: 'Too many messages. Wait a minute and try again',
+      code: 'RATE_LIMITED',
     });
   });
 
