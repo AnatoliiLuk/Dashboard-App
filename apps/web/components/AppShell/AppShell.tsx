@@ -1,11 +1,11 @@
 'use client';
 
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Button, IconButton, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, type ReactNode } from 'react';
 
-import { SignOutIcon } from '@/components/icons';
+import { SignOutIcon, UserIcon } from '@/components/icons';
 import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -15,6 +15,8 @@ import { mainStyle, pageStyle } from '@/app/page.style';
 
 import { menu } from './AppShell.constants';
 import {
+  accountButtonActiveStyle,
+  accountButtonStyle,
   barEndStyle,
   barStartStyle,
   barStyle,
@@ -67,18 +69,30 @@ export function AppShell({ children }: AppShellProps) {
       </Button>
     );
   } else if (isAuthenticated) {
+    const onAccount = pathname === '/account';
     authAction = (
-      <Button
-        variant="outlined"
-        startIcon={<SignOutIcon width={16} height={16} />}
-        sx={signOutStyle}
-        onClick={() => {
-          logout();
-          router.replace('/login');
-        }}
-      >
-        {t('shell.signOut')}
-      </Button>
+      <>
+        <IconButton
+          component={NextLink}
+          href="/account"
+          aria-label={t('shell.account')}
+          aria-current={onAccount ? 'page' : undefined}
+          sx={[accountButtonStyle, onAccount ? accountButtonActiveStyle : null]}
+        >
+          <UserIcon width={16} height={16} />
+        </IconButton>
+        <Button
+          variant="outlined"
+          startIcon={<SignOutIcon width={16} height={16} />}
+          sx={signOutStyle}
+          onClick={() => {
+            logout();
+            router.replace('/login');
+          }}
+        >
+          {t('shell.signOut')}
+        </Button>
+      </>
     );
   } else {
     authAction = (

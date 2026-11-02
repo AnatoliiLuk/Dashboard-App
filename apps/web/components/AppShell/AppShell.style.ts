@@ -41,6 +41,30 @@ export const signOutStyle = ({ pxToRem }: Theme) => ({
   minHeight: pxToRem(50),
 });
 
+export const accountButtonStyle = ({
+  vars,
+  pxToRem,
+  border,
+  borderRadius,
+}: Theme) => ({
+  width: pxToRem(50),
+  height: pxToRem(50),
+  border: border[1],
+  borderColor: vars.palette.divider,
+  borderRadius: borderRadius.pill,
+  backgroundColor: vars.palette.background.paper,
+  color: vars.palette.text.primary,
+});
+
+export const accountButtonActiveStyle = ({ vars }: Theme) => ({
+  borderColor: vars.palette.text.primary,
+  backgroundColor: vars.palette.text.primary,
+  color: vars.palette.background.paper,
+  '&:hover': {
+    backgroundColor: vars.palette.text.primary,
+  },
+});
+
 export const menuStyle = ({
   vars,
   spacingPx,

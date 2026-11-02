@@ -29,6 +29,7 @@ export const en = {
     logHabits: 'Log habits',
     myGoals: 'My goals',
     coach: 'AI Coach',
+    account: 'Account',
     signIn: 'Sign in',
     signOut: 'Sign out',
   },
@@ -48,6 +49,7 @@ export const en = {
     hasAccount: 'Already have an account?',
   },
   account: {
+    description: 'Your profile, password and AI coach usage.',
     profile: {
       title: 'Profile',
       memberSince: 'Member since {{date}}',

@@ -7,3 +7,4 @@ export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { SignOutIcon } from './SignOutIcon';
 export { SunIcon } from './SunIcon';
+export { UserIcon } from './UserIcon';

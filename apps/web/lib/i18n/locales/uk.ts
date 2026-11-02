@@ -35,6 +35,7 @@ export const uk: Copy<typeof en> = {
     logHabits: 'Журнал звичок',
     myGoals: 'Мої цілі',
     coach: 'ШІ-коуч',
+    account: 'Обліковий запис',
     signIn: 'Увійти',
     signOut: 'Вийти',
   },
@@ -54,6 +55,7 @@ export const uk: Copy<typeof en> = {
     hasAccount: 'Уже маєте обліковий запис?',
   },
   account: {
+    description: 'Ваш профіль, пароль і використання ШІ-коуча.',
     profile: {
       title: 'Профіль',
       memberSince: 'З нами з {{date}}',
