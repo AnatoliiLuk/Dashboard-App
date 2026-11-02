@@ -5,6 +5,7 @@ import {
   addMonths,
   compareDates,
   formatDateRange,
+  formatDateTime,
   formatDisplay,
   monthTitle,
   startOfMonth,
@@ -61,6 +62,22 @@ describe('today', () => {
     jest.setSystemTime(new Date(2026, 9, 6, 23, 30, 0));
 
     expect(today()).toBe('2026-10-06');
+  });
+});
+
+describe('formatDateTime', () => {
+  it('shows an instant in the local time zone, in the locale', () => {
+    const instant = '2026-10-27T00:00:00.000Z';
+    const expected = (tag: string) =>
+      new Intl.DateTimeFormat(tag, {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(instant));
+
+    expect(formatDateTime(instant, 'en')).toBe(expected('en-GB'));
+    expect(formatDateTime(instant, 'uk')).toBe(expected('uk-UA'));
   });
 });
 

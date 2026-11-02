@@ -78,6 +78,16 @@ export function weekTitle(iso: string, locale: string): string {
   return `${startText} – ${endText}`;
 }
 
+/** An instant (ISO 8601 date-time) as a date and time in the local time zone. */
+export function formatDateTime(instant: string, locale: string): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(instant));
+}
+
 export function compareDates(left: string, right: string): number {
   if (left === right) {
     return 0;
