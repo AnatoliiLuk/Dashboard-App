@@ -1,10 +1,14 @@
+import type { ApiErrorCode } from '@repo/types';
 import type { NextFunction, Request, Response } from 'express';
 
 export class AppError extends Error {
+  public readonly isOperational = true;
+
   constructor(
     public statusCode: number,
     message: string,
-    public isOperational = true,
+    /** Sent to clients so they can react without matching on `message`. */
+    public code?: ApiErrorCode,
   ) {
     super(message);
     this.name = 'AppError';
@@ -22,6 +26,7 @@ export function errorMiddleware(
     res.status(error.statusCode).json({
       status: 'error',
       message: error.message,
+      ...(error.code ? { code: error.code } : {}),
     });
     return;
   }

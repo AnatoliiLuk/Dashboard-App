@@ -21,10 +21,6 @@ import { useUpdateProfile } from '@/lib/hooks/useAccount';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { displayLocale, useTranslation } from '@/lib/i18n';
 
-// The API's message for a wrong password; it is a 400 so the client stays
-// signed in, which means the status alone cannot tell it apart.
-const WRONG_PASSWORD = 'Current password is incorrect';
-
 export function ProfileSection() {
   const { user } = useAuth();
 
@@ -72,18 +68,22 @@ function ProfileForm({ user }: ProfileFormProps) {
       reset({ name: values.name, email: values.email, currentPassword: '' });
       setSaved(true);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
+      // Map on the API's error code, never on its English message (#15, #16).
+      const code = err instanceof ApiError ? err.code : undefined;
+      if (code === 'EMAIL_IN_USE') {
         setError('email', { message: t('account.profile.emailInUse') });
-      } else if (err instanceof ApiError && err.status === 429) {
-        setError('root', { message: t('account.profile.tooManyAttempts') });
-      } else if (err instanceof ApiError && err.message === WRONG_PASSWORD) {
+      } else if (code === 'CURRENT_PASSWORD_INCORRECT') {
         setError('currentPassword', {
           message: t('account.profile.passwordIncorrect'),
         });
-      } else {
-        setError('root', {
-          message: err instanceof ApiError ? err.message : t('common.error'),
+      } else if (code === 'CURRENT_PASSWORD_REQUIRED') {
+        setError('currentPassword', {
+          message: t('validation.currentPassword'),
         });
+      } else if (code === 'RATE_LIMITED') {
+        setError('root', { message: t('account.profile.tooManyAttempts') });
+      } else {
+        setError('root', { message: t('common.error') });
       }
     }
   }

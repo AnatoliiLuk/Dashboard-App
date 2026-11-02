@@ -6,6 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { SecuritySection } from './SecuritySection';
 import { renderWithProviders } from '../../test/render';
 
+// A reworded message proves the form maps on the code, not on the text.
+function apiError(status: number, code?: string) {
+  const message = 'Reworded server text.';
+  return new ApiError(status, message, { status: 'error', message, code });
+}
+
 const mockChange = jest.fn<(dto: object) => Promise<unknown>>();
 
 jest.mock('@/lib/hooks/useAccount', () => ({
@@ -104,9 +110,7 @@ describe('SecuritySection', () => {
   });
 
   it('shows a wrong current password on that field', async () => {
-    mockChange.mockRejectedValue(
-      new ApiError(400, 'Current password is incorrect'),
-    );
+    mockChange.mockRejectedValue(apiError(400, 'CURRENT_PASSWORD_INCORRECT'));
     const user = userEvent.setup();
     renderWithProviders(<SecuritySection />);
 
@@ -119,7 +123,7 @@ describe('SecuritySection', () => {
   });
 
   it('never shows a raw server message, even in Ukrainian', async () => {
-    mockChange.mockRejectedValue(new ApiError(500, 'Internal server error'));
+    mockChange.mockRejectedValue(apiError(500));
     const user = userEvent.setup();
     renderWithProviders(<SecuritySection />, { locale: 'uk' });
 
@@ -137,7 +141,7 @@ describe('SecuritySection', () => {
   });
 
   it('explains a rate limit', async () => {
-    mockChange.mockRejectedValue(new ApiError(429, 'Too many attempts'));
+    mockChange.mockRejectedValue(apiError(429, 'RATE_LIMITED'));
     const user = userEvent.setup();
     renderWithProviders(<SecuritySection />);
 

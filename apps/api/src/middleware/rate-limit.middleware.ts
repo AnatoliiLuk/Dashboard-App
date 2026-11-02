@@ -24,7 +24,7 @@ export function userRateLimit(
     skipSuccessfulRequests: options.onlyFailures ?? false,
     keyGenerator: (req) => req.user!.id,
     handler: (_req, _res, next) => {
-      next(new AppError(429, message));
+      next(new AppError(429, message, 'RATE_LIMITED'));
     },
   });
 }

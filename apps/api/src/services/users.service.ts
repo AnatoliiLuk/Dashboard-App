@@ -33,16 +33,24 @@ export class UsersService {
     if (input.email !== undefined && input.email !== profile.email) {
       // Wrong password is 400, never 401: clients sign out on any 401.
       if (!input.currentPassword) {
-        throw new AppError(400, 'Current password is required');
+        throw new AppError(
+          400,
+          'Current password is required',
+          'CURRENT_PASSWORD_REQUIRED',
+        );
       }
       if (!(await comparePassword(input.currentPassword, passwordHash))) {
-        throw new AppError(400, 'Current password is incorrect');
+        throw new AppError(
+          400,
+          'Current password is incorrect',
+          'CURRENT_PASSWORD_INCORRECT',
+        );
       }
 
       // Checked only after the password, so this can't probe for accounts.
       const owner = await this.store.findIdByEmail(input.email);
       if (owner && owner !== userId) {
-        throw new AppError(409, 'Email already in use');
+        throw new AppError(409, 'Email already in use', 'EMAIL_IN_USE');
       }
 
       changes.email = input.email;
@@ -60,7 +68,7 @@ export class UsersService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new AppError(409, 'Email already in use');
+        throw new AppError(409, 'Email already in use', 'EMAIL_IN_USE');
       }
 
       throw error;
@@ -79,10 +87,18 @@ export class UsersService {
 
     // Wrong password is 400, never 401: clients sign out on any 401.
     if (!(await comparePassword(input.currentPassword, account.passwordHash))) {
-      throw new AppError(400, 'Current password is incorrect');
+      throw new AppError(
+        400,
+        'Current password is incorrect',
+        'CURRENT_PASSWORD_INCORRECT',
+      );
     }
     if (await comparePassword(input.newPassword, account.passwordHash)) {
-      throw new AppError(400, 'New password must differ from the current one');
+      throw new AppError(
+        400,
+        'New password must differ from the current one',
+        'PASSWORD_UNCHANGED',
+      );
     }
 
     const passwordHash = await hashPassword(input.newPassword);

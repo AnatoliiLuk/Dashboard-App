@@ -70,6 +70,7 @@ describe('PATCH /api/users/me', () => {
 
     expect(updated.status).toBe(400);
     expect(updated.body.message).toBe('Current password is required');
+    expect(updated.body.code).toBe('CURRENT_PASSWORD_REQUIRED');
   });
 
   it('rejects a wrong current password with 400, not 401, and keeps the email', async () => {
@@ -82,6 +83,7 @@ describe('PATCH /api/users/me', () => {
 
     expect(updated.status).toBe(400);
     expect(updated.body.message).toBe('Current password is incorrect');
+    expect(updated.body.code).toBe('CURRENT_PASSWORD_INCORRECT');
 
     const me = await request(app)
       .get('/api/auth/me')
@@ -113,6 +115,7 @@ describe('PATCH /api/users/me', () => {
 
     expect(updated.status).toBe(409);
     expect(updated.body.message).toBe('Email already in use');
+    expect(updated.body.code).toBe('EMAIL_IN_USE');
   });
 
   it('only changes the signed-in account', async () => {
@@ -147,6 +150,7 @@ describe('PATCH /api/users/me', () => {
       currentPassword: password,
     });
     expect(blocked.status).toBe(429);
+    expect(blocked.body.code).toBe('RATE_LIMITED');
   });
 
   it('does not count successful name edits towards the limit', async () => {
@@ -227,6 +231,7 @@ describe('POST /api/users/me/password', () => {
 
     expect(changed.status).toBe(400);
     expect(changed.body.message).toBe('Current password is incorrect');
+    expect(changed.body.code).toBe('CURRENT_PASSWORD_INCORRECT');
     expect((await listHabits(token)).status).toBe(200);
   });
 
@@ -242,6 +247,7 @@ describe('POST /api/users/me/password', () => {
     expect(changed.body.message).toBe(
       'New password must differ from the current one',
     );
+    expect(changed.body.code).toBe('PASSWORD_UNCHANGED');
   });
 
   it('rejects a new password shorter than 8 or longer than 128 characters', async () => {
@@ -272,7 +278,9 @@ describe('POST /api/users/me/password', () => {
       expect((await attempt()).status).toBe(400);
     }
 
-    expect((await attempt()).status).toBe(429);
+    const blocked = await attempt();
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.code).toBe('RATE_LIMITED');
   });
 
   it('rejects a request without a token', async () => {

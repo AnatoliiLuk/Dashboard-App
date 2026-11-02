@@ -1,3 +1,5 @@
+import type { ApiErrorCode } from '@repo/types';
+
 export type ApiClientConfig = {
   /** e.g. http://localhost:4000/api */
   baseURL: string;
@@ -15,6 +17,16 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = 'ApiError';
+  }
+
+  /** The API's machine-readable error code, when the response has one. */
+  get code(): ApiErrorCode | undefined {
+    const body = this.body;
+    if (typeof body === 'object' && body !== null && 'code' in body) {
+      const { code } = body as { code: unknown };
+      return typeof code === 'string' ? (code as ApiErrorCode) : undefined;
+    }
+    return undefined;
   }
 }
 

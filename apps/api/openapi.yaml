@@ -572,6 +572,16 @@ components:
           example: error
         message:
           type: string
+          description: English, for logs and developers. May change; clients must not match on it.
+        code:
+          type: string
+          description: Stable machine-readable error code. Present only on errors that clients handle specifically.
+          enum:
+            - CURRENT_PASSWORD_REQUIRED
+            - CURRENT_PASSWORD_INCORRECT
+            - PASSWORD_UNCHANGED
+            - EMAIL_IN_USE
+            - RATE_LIMITED
     RegisterBody:
       type: object
       required: [email, password, name]

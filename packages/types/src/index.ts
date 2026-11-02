@@ -17,3 +17,4 @@ export type {
 
 export type { HabitColor } from './enums/habit-color.enum';
 export type { GoalColor } from './enums/goal-color.enum';
+export type { ApiErrorCode } from './enums/api-error-code.enum';
