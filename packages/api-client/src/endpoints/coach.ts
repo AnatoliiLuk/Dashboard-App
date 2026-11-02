@@ -1,4 +1,4 @@
-import type { CoachChatDto } from '@repo/types';
+import type { CoachChatDto, CoachUsage } from '@repo/types';
 
 import type { ApiCoachConversation, ApiCoachReply } from '../types/api';
 import type { ApiClientConfig } from '../utils/request';
@@ -22,6 +22,14 @@ export class CoachApi {
       ...this.config,
       method: 'GET',
       url: '/coach/conversation',
+    });
+  }
+
+  getUsage(): Promise<CoachUsage> {
+    return request<CoachUsage>({
+      ...this.config,
+      method: 'GET',
+      url: '/coach/usage',
     });
   }
 

@@ -13,6 +13,11 @@ export type AuthResponse = {
   user: ApiUser;
 };
 
+/** The new session token, also set as the cookie, for Bearer clients. */
+export type ChangePasswordResponse = {
+  token: string;
+};
+
 export type ApiCompletion = {
   id: string;
   habitId: string;
