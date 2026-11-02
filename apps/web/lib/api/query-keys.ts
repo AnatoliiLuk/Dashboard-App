@@ -17,4 +17,5 @@ export const goalKeys = {
 
 export const coachKeys = {
   conversation: ['coach', 'conversation'] as const,
+  usage: ['coach', 'usage'] as const,
 };

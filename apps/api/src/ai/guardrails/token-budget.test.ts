@@ -42,6 +42,16 @@ describe('DailyTokenBudget', () => {
     await expect(budget.assertAvailable('user-a')).resolves.toBeUndefined();
   });
 
+  it('reports today’s usage, the limit and the next midnight UTC', async () => {
+    const budget = new DailyTokenBudget(store(250), 1000, now);
+
+    await expect(budget.today('user-a')).resolves.toEqual({
+      usedTokens: 250,
+      dailyLimit: 1000,
+      resetsAt: new Date('2026-10-27T00:00:00Z'),
+    });
+  });
+
   it('counts the user’s usage since midnight UTC', async () => {
     const usage = store(0);
     const budget = new DailyTokenBudget(usage, 1000, now);

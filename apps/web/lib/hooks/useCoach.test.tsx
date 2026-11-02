@@ -32,7 +32,7 @@ jest.mock('@/lib/hooks/useAuth', () => ({
 }));
 
 // Imported after the mocks so the hook uses the fakes.
-import { useCoach } from './useCoach';
+import { useClearConversation, useCoach } from './useCoach';
 
 function reply(text: string): ApiCoachReply {
   return { reply: text, truncated: false, proposal: null };
@@ -45,6 +45,10 @@ function conversation(
 }
 
 function renderCoach(locale: Locale = 'en') {
+  return renderInProviders(() => useCoach(), locale);
+}
+
+function renderInProviders<T>(hook: () => T, locale: Locale = 'en') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -55,7 +59,7 @@ function renderCoach(locale: Locale = 'en') {
     instance.use(initReactI18next);
   });
 
-  return renderHook(() => useCoach(), {
+  return renderHook(hook, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <QueryClientProvider client={queryClient}>
         <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
@@ -222,5 +226,21 @@ describe('useCoach', () => {
 
     await waitFor(() => expect(result.current.error).toBe('deleteFailed'));
     expect(result.current.entries).toHaveLength(2);
+  });
+});
+
+describe('useClearConversation', () => {
+  it('deletes the conversation and loads the chat again', async () => {
+    deleteConversation.mockResolvedValueOnce(undefined);
+    const { result } = renderInProviders(() => ({
+      coach: useCoach(),
+      clear: useClearConversation(),
+    }));
+    await waitFor(() => expect(result.current.coach.isLoading).toBe(false));
+
+    await act(() => result.current.clear.mutateAsync());
+
+    expect(deleteConversation).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(getConversation).toHaveBeenCalledTimes(2));
   });
 });

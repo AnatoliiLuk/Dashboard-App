@@ -12,14 +12,15 @@ const controller = new CoachController();
 
 router.use(authMiddleware);
 
-// Only the model call is rate limited. Reading or deleting the
-// conversation costs nothing and should always work.
+// Only the model call is rate limited. Reading usage, or reading or
+// deleting the conversation, costs nothing and should always work.
 router.post(
   '/chat',
   userRateLimit(env.AI_RATE_LIMIT_PER_MINUTE),
   validateRequest(coachChatSchema),
   controller.chat,
 );
+router.get('/usage', controller.getUsage);
 router.get('/conversation', controller.getConversation);
 router.delete('/conversation', controller.deleteConversation);
 

@@ -1,4 +1,5 @@
 import { today as serverToday } from '@repo/core';
+import type { CoachUsage } from '@repo/types';
 import type { NextFunction, Request, Response } from 'express';
 
 import { anthropicClient } from '../ai/client';
@@ -21,6 +22,7 @@ const dataServices = {
   goals: new GoalsService(),
 };
 const usage = new AiUsageRepository();
+const budget = new DailyTokenBudget(usage, env.AI_DAILY_TOKEN_BUDGET);
 
 export class CoachController {
   private conversations = new ConversationService(
@@ -30,7 +32,7 @@ export class CoachController {
         client: anthropicClient,
         tools: new CoachToolHandlers(dataServices),
         context: new CoachContextBuilder(dataServices),
-        budget: new DailyTokenBudget(usage, env.AI_DAILY_TOKEN_BUDGET),
+        budget,
         usage,
       },
       {
@@ -76,6 +78,21 @@ export class CoachController {
         ),
         retentionDays: env.AI_CONVERSATION_RETENTION_DAYS,
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUsage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const today = await budget.today(req.user!.id);
+      const body: CoachUsage = {
+        enabled: env.AI_ENABLED,
+        usedTokens: today.usedTokens,
+        dailyLimit: today.dailyLimit,
+        resetsAt: today.resetsAt.toISOString(),
+      };
+      res.json(body);
     } catch (error) {
       next(error);
     }

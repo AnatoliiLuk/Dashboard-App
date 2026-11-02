@@ -78,6 +78,7 @@ export function useAuth() {
     queryClient.removeQueries({ queryKey: goalKeys.all });
     // The coach chat is personal; never show it to the next person.
     queryClient.removeQueries({ queryKey: coachKeys.conversation });
+    queryClient.removeQueries({ queryKey: coachKeys.usage });
   }, [queryClient, signedIn]);
 
   const loginMutation = useMutation({

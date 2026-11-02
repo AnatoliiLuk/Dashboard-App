@@ -156,6 +156,28 @@ export function useCoach() {
   };
 }
 
+/** Today's coach token use, for the account page. */
+export function useCoachUsage() {
+  const { isAuthenticated } = useAuth();
+
+  return useQuery({
+    queryKey: coachKeys.usage,
+    queryFn: () => api.coach.getUsage(),
+    enabled: isAuthenticated,
+  });
+}
+
+/** Deletes the saved conversation from outside the chat page. */
+export function useClearConversation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => api.coach.deleteConversation(),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: coachKeys.conversation }),
+  });
+}
+
 function toEntry(message: ApiCoachMessage): CoachEntry {
   const { id, role, content, truncated, proposal } = message;
   return role === 'user'
