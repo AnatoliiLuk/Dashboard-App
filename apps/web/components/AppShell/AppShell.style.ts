@@ -20,12 +20,15 @@ export const barStartStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
   flexWrap: 'wrap',
+  minWidth: 0,
+  maxWidth: '100%',
   gap: spacingPx[16],
 });
 
 export const barEndStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
   gap: spacingPx[12],
 });
 
@@ -47,6 +50,10 @@ export const menuStyle = ({
   display: 'flex' as const,
   alignItems: 'stretch' as const,
   boxSizing: 'border-box' as const,
+  // On a phone the links scroll inside the pill instead of off the page.
+  maxWidth: '100%',
+  overflowX: 'auto' as const,
+  scrollbarWidth: 'none' as const,
   gap: spacingPx[2],
   p: spacingPx[2],
   border: border[1],
@@ -65,6 +72,8 @@ export const menuItemStyle = ({
   display: 'inline-flex' as const,
   alignItems: 'center' as const,
   boxSizing: 'border-box' as const,
+  flexShrink: 0,
+  whiteSpace: 'nowrap' as const,
   minWidth: spacingPx[44],
   minHeight: spacingPx[44],
   height: '100%',

@@ -3,7 +3,7 @@
 import { Box, Button, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 import { SignOutIcon } from '@/components/icons';
 import { LocaleSwitch } from '@/components/LocaleSwitch';
@@ -35,6 +35,22 @@ export function AppShell({ children }: AppShellProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const { isAuthReady, isAuthenticated, logout } = useAuth();
+  const navRef = useRef<HTMLElement>(null);
+
+  // On a phone the menu scrolls sideways; keep the current page's link in view.
+  useEffect(() => {
+    const nav = navRef.current;
+    const link = nav?.querySelector('[aria-current="page"]');
+    if (!nav || !link) return;
+
+    const navBox = nav.getBoundingClientRect();
+    const linkBox = link.getBoundingClientRect();
+    if (linkBox.right > navBox.right) {
+      nav.scrollLeft += linkBox.right - navBox.right;
+    } else if (linkBox.left < navBox.left) {
+      nav.scrollLeft -= navBox.left - linkBox.left;
+    }
+  }, [pathname]);
 
   let authAction: ReactNode;
   if (!isAuthReady) {
@@ -81,7 +97,12 @@ export function AppShell({ children }: AppShellProps) {
               <Typography variant="h1" component="h1" sx={brandStyle}>
                 {t('shell.brand')}
               </Typography>
-              <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
+              <Box
+                component="nav"
+                ref={navRef}
+                sx={menuStyle}
+                aria-label={t('shell.menu')}
+              >
                 {menu.map(({ href, label }) => {
                   const current = pathname === href;
                   return (
