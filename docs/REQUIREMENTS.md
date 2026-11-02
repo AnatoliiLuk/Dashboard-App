@@ -19,6 +19,15 @@ An account is required. Habits and completions are stored in Postgres and loaded
 - English and Ukrainian UI. The first visit follows the browser language. A choice in the language switch is stored in a cookie and overrides that.
 - Light and dark theme follow the system, with a manual toggle.
 
+## Since version 1
+
+- Goals: a named goal with a color and a date range that groups habits. Goals and habits can be archived.
+- AI coach: a read-only chat about your own habits, with one saved conversation, a per-user daily token budget, and English and Ukrainian replies. See `AI_COACH.md`.
+
+## Next: account page
+
+`/account` lets a person edit their name and email, change their password, see today's AI coach usage and clear the conversation, and delete their account. The full spec is `specs/account-page.md`; decisions are in `adr/`.
+
 ### Fit with the repo today
 
 - The web app lives in `apps/web` (Next.js, React, TypeScript, MUI).
@@ -35,4 +44,4 @@ An account is required. Habits and completions are stored in Postgres and loaded
 
 ## Related docs
 
-`../README.md` is how to install and run the app. The other files in this folder are earlier setup notes.
+`../README.md` is how to install and run the app. `specs/` holds feature specs and `adr/` architecture decisions. The other files in this folder are earlier setup notes.
