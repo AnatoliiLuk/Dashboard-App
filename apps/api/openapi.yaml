@@ -616,10 +616,13 @@ components:
       required: [user]
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/Profile'
     ProfileUpdateBody:
       type: object
       description: At least one of name or email.
+      anyOf:
+        - required: [name]
+        - required: [email]
       properties:
         name:
           type: string
@@ -633,6 +636,7 @@ components:
           description: Trimmed and lowercased before it is stored.
         currentPassword:
           type: string
+          minLength: 1
           description: Required when email changes.
     PasswordChangeBody:
       type: object

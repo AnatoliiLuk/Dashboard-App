@@ -1,5 +1,29 @@
 import { prisma } from '../config/database';
 
+export type ProfileRecord = {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+};
+
+export type AccountRecord = ProfileRecord & {
+  passwordHash: string;
+};
+
+const profileFields = {
+  id: true,
+  email: true,
+  name: true,
+  createdAt: true,
+} as const;
+
+/** What `UsersService` needs, so tests can pass a fake. */
+export type UsersStore = Pick<
+  UsersRepository,
+  'findTokenVersion' | 'findAccount' | 'findIdByEmail' | 'updateProfile'
+>;
+
 export class UsersRepository {
   async findTokenVersion(id: string): Promise<number | null> {
     const user = await prisma.user.findUnique({
@@ -8,5 +32,33 @@ export class UsersRepository {
     });
 
     return user?.tokenVersion ?? null;
+  }
+
+  async findAccount(id: string): Promise<AccountRecord | null> {
+    return prisma.user.findUnique({
+      where: { id },
+      select: { ...profileFields, passwordHash: true },
+    });
+  }
+
+  /** `email` must already be normalized (trimmed, lowercased). */
+  async findIdByEmail(email: string): Promise<string | null> {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    return user?.id ?? null;
+  }
+
+  async updateProfile(
+    id: string,
+    data: { name?: string; email?: string },
+  ): Promise<ProfileRecord> {
+    return prisma.user.update({
+      where: { id },
+      data,
+      select: profileFields,
+    });
   }
 }
