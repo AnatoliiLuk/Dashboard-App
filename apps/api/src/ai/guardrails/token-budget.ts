@@ -12,6 +12,12 @@ export interface TokenBudget {
   assertAvailable(userId: string): Promise<void>;
 }
 
+export interface DailyUsage {
+  usedTokens: number;
+  dailyLimit: number;
+  resetsAt: Date;
+}
+
 // Cache reads cost a twentieth of normal input, so they do not count.
 export function billableTokens(usage: TokenUsage): number {
   return usage.inputTokens + usage.cacheWriteTokens + usage.outputTokens;
@@ -26,13 +32,21 @@ export class DailyTokenBudget implements TokenBudget {
     private now: () => Date = () => new Date(),
   ) {}
 
-  async assertAvailable(userId: string): Promise<void> {
-    const used = await this.usage.billableTokensSince(
-      userId,
-      startOfUtcDay(this.now()),
-    );
+  async today(userId: string): Promise<DailyUsage> {
+    const dayStart = startOfUtcDay(this.now());
+    const usedTokens = await this.usage.billableTokensSince(userId, dayStart);
 
-    if (used >= this.dailyLimit) {
+    return {
+      usedTokens,
+      dailyLimit: this.dailyLimit,
+      resetsAt: new Date(dayStart.getTime() + 86_400_000),
+    };
+  }
+
+  async assertAvailable(userId: string): Promise<void> {
+    const { usedTokens } = await this.today(userId);
+
+    if (usedTokens >= this.dailyLimit) {
       throw new AppError(
         429,
         "You've reached today's limit for the AI coach. It resets at midnight UTC",
