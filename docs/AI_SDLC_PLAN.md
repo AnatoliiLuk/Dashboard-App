@@ -152,30 +152,7 @@ until it is right.
 
 ### 14. Scheduled agents
 
-- [ ] Nightly eval run with a summary
-- [ ] Weekly dependency update PR
 - [ ] Issue triage (labels, duplicates, reproduction steps)
 - [ ] Release notes from conventional commits
 
-### 15. Incident drill
-
-- [ ] Plant a realistic bug (e.g. email change allows `User@x.com` when `user@x.com` exists) and open an issue as a "user report"
-- [ ] Let the agent reproduce, find the root cause, add a regression test and fix it
-- [ ] Write a short postmortem in `docs/postmortems/`
-
-**Status:** [ ]
-
 ---
-
-## Retro Log
-
-Fill in after each phase.
-
-| Phase | Saved time on | Needed rework | Where I had to step in | Change to setup |
-| ----- | ------------- | ------------- | ---------------------- | --------------- |
-| 0     |               |               |                        |                 |
-| 1     |               |               |                        |                 |
-| 2     |               |               |                        |                 |
-| 3     |               |               |                        |                 |
-| 4     |               |               |                        |                 |
-| 5     |               |               |                        |                 |
