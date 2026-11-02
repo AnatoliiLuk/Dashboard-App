@@ -1,10 +1,15 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChangePasswordDto, UpdateProfileDto } from '@repo/types';
+import type {
+  ChangePasswordDto,
+  DeleteAccountDto,
+  UpdateProfileDto,
+} from '@repo/types';
 
 import { api } from '@/lib/api/client';
 import { authKeys } from '@/lib/api/query-keys';
+import { setSignedIn } from '@/lib/api/session';
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
@@ -28,6 +33,23 @@ export function useChangePassword() {
     // out, so stop them first. The response sets the new cookie.
     onMutate: async () => {
       await queryClient.cancelQueries();
+    },
+  });
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (dto: DeleteAccountDto) => api.users.deleteMe(dto),
+    // Requests still in flight would come back 401 once the user is gone.
+    onMutate: async () => {
+      await queryClient.cancelQueries();
+    },
+    // The server cleared the cookie. Signing out here drops every cached
+    // query, the same as the Sign out button.
+    onSuccess: () => {
+      setSignedIn(false);
     },
   });
 }

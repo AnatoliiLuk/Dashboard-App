@@ -41,6 +41,10 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/DangerZoneSection/DangerZoneSection.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "apps/web/components/CoachSection/CoachSection.test.tsx",
       "language": "en,uk"
     },
