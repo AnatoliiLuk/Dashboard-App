@@ -1,11 +1,10 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
-export const sectionStyle = ({ spacingPx }: Theme) => ({
+export const contentStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: spacingPx[16],
-  maxWidth: 480,
 });
 
 export const memberSinceStyle = ({ vars }: Theme) => ({

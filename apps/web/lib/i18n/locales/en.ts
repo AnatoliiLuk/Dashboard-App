@@ -52,6 +52,7 @@ export const en = {
     description: 'Your profile, password and AI coach usage.',
     profile: {
       title: 'Profile',
+      description: 'Your name and the email you sign in with.',
       memberSince: 'Member since {{date}}',
       currentPassword: 'Current password',
       currentPasswordHint: 'Needed to change your email.',
@@ -63,6 +64,7 @@ export const en = {
     },
     security: {
       title: 'Password',
+      description: 'Changing it signs you out on your other devices.',
       currentPassword: 'Current password',
       newPassword: 'New password',
       confirmPassword: 'Confirm new password',
@@ -75,6 +77,7 @@ export const en = {
     },
     coach: {
       title: 'AI Coach',
+      description: "Today's usage and your saved conversation.",
       loading: 'Loading your usage…',
       loadFailed: "Couldn't load your AI coach usage.",
       disabled: 'The AI coach is turned off right now.',

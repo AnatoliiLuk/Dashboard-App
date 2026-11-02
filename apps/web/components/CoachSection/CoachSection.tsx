@@ -5,10 +5,11 @@ import { useState } from 'react';
 
 import {
   actionsStyle,
+  contentStyle,
   secondaryTextStyle,
-  sectionStyle,
   usageStyle,
 } from './CoachSection.style';
+import { AccountSection } from '@/components/AccountSection';
 import { formatDateTime } from '@/lib/habits/dates';
 import { useClearConversation, useCoachUsage } from '@/lib/hooks/useCoach';
 import { displayLocale, useTranslation } from '@/lib/i18n';
@@ -24,61 +25,62 @@ export function CoachSection() {
   }
 
   return (
-    <Box component="section" sx={sectionStyle}>
-      <Typography variant="h6" component="h2">
-        {t('account.coach.title')}
-      </Typography>
+    <AccountSection
+      title={t('account.coach.title')}
+      description={t('account.coach.description')}
+    >
+      <Box sx={contentStyle}>
+        <CoachUsageSummary />
 
-      <CoachUsageSummary />
-
-      {/* Works with the coach off too: the saved chat can always be deleted. */}
-      <Box sx={actionsStyle}>
-        {confirming ? (
-          <>
-            <Typography variant="body2">
-              {t('account.coach.clearConfirm')}
+        {/* Works with the coach off too: the saved chat can always be deleted. */}
+        <Box sx={actionsStyle}>
+          {confirming ? (
+            <>
+              <Typography variant="body2">
+                {t('account.coach.clearConfirm')}
+              </Typography>
+              <Button
+                type="button"
+                variant="outlined"
+                color="error"
+                onClick={confirmClear}
+              >
+                {t('common.deleteForever')}
+              </Button>
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={() => setConfirming(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outlined"
+              disabled={clear.isPending}
+              onClick={() => {
+                clear.reset();
+                setConfirming(true);
+              }}
+            >
+              {clear.isPending
+                ? t('account.coach.clearing')
+                : t('account.coach.clear')}
+            </Button>
+          )}
+          {clear.isSuccess && !confirming ? (
+            <Typography role="status" variant="body2">
+              {t('account.coach.cleared')}
             </Typography>
-            <Button
-              type="button"
-              variant="outlined"
-              color="error"
-              onClick={confirmClear}
-            >
-              {t('common.deleteForever')}
-            </Button>
-            <Button
-              type="button"
-              variant="outlined"
-              onClick={() => setConfirming(false)}
-            >
-              {t('common.cancel')}
-            </Button>
-          </>
-        ) : (
-          <Button
-            type="button"
-            variant="outlined"
-            disabled={clear.isPending}
-            onClick={() => {
-              clear.reset();
-              setConfirming(true);
-            }}
-          >
-            {clear.isPending
-              ? t('account.coach.clearing')
-              : t('account.coach.clear')}
-          </Button>
-        )}
-        {clear.isSuccess && !confirming ? (
-          <Typography role="status" variant="body2">
-            {t('account.coach.cleared')}
-          </Typography>
+          ) : null}
+        </Box>
+        {clear.isError ? (
+          <Alert severity="error">{t('account.coach.clearFailed')}</Alert>
         ) : null}
       </Box>
-      {clear.isError ? (
-        <Alert severity="error">{t('account.coach.clearFailed')}</Alert>
-      ) : null}
-    </Box>
+    </AccountSection>
   );
 }
 
