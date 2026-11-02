@@ -5,9 +5,11 @@ export { HabitsApi } from './endpoints/habits';
 export { CompletionsApi } from './endpoints/completions';
 export { GoalsApi } from './endpoints/goals';
 export { CoachApi } from './endpoints/coach';
+export { UsersApi } from './endpoints/users';
 export type {
   ApiUser,
   AuthResponse,
+  ChangePasswordResponse,
   ApiHabit,
   ApiCompletion,
   ApiGoal,
