@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 
 import { AppError } from '../middleware/error.middleware';
 import type { UsersStore } from '../repositories/users.repository';
-import { hashPassword } from '../utils/password.util';
+import { comparePassword, hashPassword } from '../utils/password.util';
 import { UsersService } from './users.service';
 
 const createdAt = new Date('2026-10-01T09:00:00Z');
@@ -23,6 +23,9 @@ async function storeWith(overrides: Partial<UsersStore> = {}) {
       .fn<UsersStore['findIdByEmail']>()
       .mockResolvedValue(null),
     updateProfile: jest.fn<UsersStore['updateProfile']>(),
+    updatePassword: jest
+      .fn<UsersStore['updatePassword']>()
+      .mockResolvedValue(1),
     ...overrides,
   };
   return store;
@@ -85,5 +88,55 @@ describe('UsersService.updateProfile', () => {
       createdAt,
     });
     expect(store.updateProfile).not.toHaveBeenCalled();
+  });
+});
+
+describe('UsersService.changePassword', () => {
+  it('stores a hash of the new password and returns the new token version', async () => {
+    const store = await storeWith();
+    const service = new UsersService(store);
+
+    const version = await service.changePassword('user-a', {
+      currentPassword: 'long-enough',
+      newPassword: 'brand-new-secret',
+    });
+
+    expect(version).toBe(1);
+    const [id, hash] = (store.updatePassword as jest.Mock).mock.calls[0] as [
+      string,
+      string,
+    ];
+    expect(id).toBe('user-a');
+    expect(await comparePassword('brand-new-secret', hash)).toBe(true);
+  });
+
+  it('rejects a wrong current password without writing', async () => {
+    const store = await storeWith();
+    const service = new UsersService(store);
+
+    const result = service.changePassword('user-a', {
+      currentPassword: 'wrong-password',
+      newPassword: 'brand-new-secret',
+    });
+
+    await expect(result).rejects.toEqual(
+      new AppError(400, 'Current password is incorrect'),
+    );
+    expect(store.updatePassword).not.toHaveBeenCalled();
+  });
+
+  it('rejects a new password equal to the current one without writing', async () => {
+    const store = await storeWith();
+    const service = new UsersService(store);
+
+    const result = service.changePassword('user-a', {
+      currentPassword: 'long-enough',
+      newPassword: 'long-enough',
+    });
+
+    await expect(result).rejects.toEqual(
+      new AppError(400, 'New password must differ from the current one'),
+    );
+    expect(store.updatePassword).not.toHaveBeenCalled();
   });
 });

@@ -103,7 +103,28 @@ export function goalFormSchema(t: TFunction) {
 
 export type LoginFormValues = z.infer<ReturnType<typeof loginFormSchema>>;
 export type RegisterFormValues = z.infer<ReturnType<typeof registerFormSchema>>;
+export function securityFormSchema(t: TFunction) {
+  return z
+    .object({
+      currentPassword: z.string().min(1, t('validation.password')),
+      newPassword: z
+        .string()
+        .min(8, t('validation.passwordLength'))
+        .max(128, t('validation.passwordMax')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t('validation.passwordMatch'),
+      path: ['confirmPassword'],
+    })
+    .refine((data) => data.newPassword !== data.currentPassword, {
+      message: t('validation.passwordSame'),
+      path: ['newPassword'],
+    });
+}
+
 export type ProfileFormValues = z.infer<ReturnType<typeof profileFormSchema>>;
+export type SecurityFormValues = z.infer<ReturnType<typeof securityFormSchema>>;
 export type HabitFormValues = z.infer<ReturnType<typeof habitFormSchema>>;
 export type GoalFormValues = z.infer<ReturnType<typeof goalFormSchema>>;
 

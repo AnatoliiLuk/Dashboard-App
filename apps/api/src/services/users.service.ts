@@ -5,8 +5,11 @@ import type {
   ProfileRecord,
   UsersStore,
 } from '../repositories/users.repository';
-import { comparePassword } from '../utils/password.util';
-import type { UpdateProfileBody } from '../validators/users.validator';
+import { comparePassword, hashPassword } from '../utils/password.util';
+import type {
+  ChangePasswordBody,
+  UpdateProfileBody,
+} from '../validators/users.validator';
 
 export class UsersService {
   constructor(private store: UsersStore) {}
@@ -62,5 +65,27 @@ export class UsersService {
 
       throw error;
     }
+  }
+
+  /** Returns the new token version; the caller issues the new token. */
+  async changePassword(
+    userId: string,
+    input: ChangePasswordBody,
+  ): Promise<number> {
+    const account = await this.store.findAccount(userId);
+    if (!account) {
+      throw new AppError(401, 'User not found');
+    }
+
+    // Wrong password is 400, never 401: clients sign out on any 401.
+    if (!(await comparePassword(input.currentPassword, account.passwordHash))) {
+      throw new AppError(400, 'Current password is incorrect');
+    }
+    if (await comparePassword(input.newPassword, account.passwordHash)) {
+      throw new AppError(400, 'New password must differ from the current one');
+    }
+
+    const passwordHash = await hashPassword(input.newPassword);
+    return this.store.updatePassword(userId, passwordHash);
   }
 }

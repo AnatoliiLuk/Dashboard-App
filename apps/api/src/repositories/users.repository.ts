@@ -21,7 +21,11 @@ const profileFields = {
 /** What `UsersService` needs, so tests can pass a fake. */
 export type UsersStore = Pick<
   UsersRepository,
-  'findTokenVersion' | 'findAccount' | 'findIdByEmail' | 'updateProfile'
+  | 'findTokenVersion'
+  | 'findAccount'
+  | 'findIdByEmail'
+  | 'updateProfile'
+  | 'updatePassword'
 >;
 
 export class UsersRepository {
@@ -60,5 +64,16 @@ export class UsersRepository {
       data,
       select: profileFields,
     });
+  }
+
+  /** Sets the new hash and signs out every session (ADR 0002). Returns the new token version. */
+  async updatePassword(id: string, passwordHash: string): Promise<number> {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { passwordHash, tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
+
+    return user.tokenVersion;
   }
 }

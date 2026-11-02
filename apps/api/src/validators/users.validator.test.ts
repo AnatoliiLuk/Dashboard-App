@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { updateProfileSchema } from './users.validator';
+import { changePasswordSchema, updateProfileSchema } from './users.validator';
 
 describe('updateProfileSchema', () => {
   it('accepts a name on its own and trims it', () => {
@@ -38,6 +38,45 @@ describe('updateProfileSchema', () => {
   it('rejects an invalid email', () => {
     expect(
       updateProfileSchema.safeParse({ email: 'not-an-email' }).success,
+    ).toBe(false);
+  });
+});
+
+describe('changePasswordSchema', () => {
+  it('accepts a current password and a new one of 8 to 128 characters', () => {
+    expect(
+      changePasswordSchema.safeParse({
+        currentPassword: 'x',
+        newPassword: 'a'.repeat(8),
+      }).success,
+    ).toBe(true);
+    expect(
+      changePasswordSchema.safeParse({
+        currentPassword: 'x',
+        newPassword: 'a'.repeat(128),
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects a new password outside 8 to 128 characters', () => {
+    expect(
+      changePasswordSchema.safeParse({
+        currentPassword: 'x',
+        newPassword: 'a'.repeat(7),
+      }).success,
+    ).toBe(false);
+    expect(
+      changePasswordSchema.safeParse({
+        currentPassword: 'x',
+        newPassword: 'a'.repeat(129),
+      }).success,
+    ).toBe(false);
+  });
+
+  it('requires the current password', () => {
+    expect(
+      changePasswordSchema.safeParse({ newPassword: 'brand-new-secret' })
+        .success,
     ).toBe(false);
   });
 });

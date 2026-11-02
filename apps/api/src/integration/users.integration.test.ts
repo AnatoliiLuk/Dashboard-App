@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
 
 import { app } from '../app';
+import { tokenFromSetCookie } from '../utils/session-cookie';
 import { disconnectDatabase, resetDatabase } from './db';
 import { registerUser } from './register';
 
@@ -171,5 +172,114 @@ describe('PATCH /api/users/me', () => {
       .send({ name: 'Ada' });
 
     expect(updated.status).toBe(401);
+  });
+});
+
+function changePassword(token: string, body: object) {
+  return request(app)
+    .post('/api/users/me/password')
+    .set('Authorization', `Bearer ${token}`)
+    .send(body);
+}
+
+function listHabits(token: string) {
+  return request(app)
+    .get('/api/habits')
+    .set('Authorization', `Bearer ${token}`);
+}
+
+describe('POST /api/users/me/password', () => {
+  it('signs out other sessions and keeps this one with a new token', async () => {
+    const { token: oldToken, password, email } = await registerUser();
+
+    const changed = await changePassword(oldToken, {
+      currentPassword: password,
+      newPassword: 'brand-new-secret',
+    });
+
+    expect(changed.status).toBe(200);
+    expect(changed.body).toEqual({ token: expect.any(String) });
+    expect(tokenFromSetCookie(changed.headers['set-cookie'])).toBe(
+      changed.body.token,
+    );
+
+    expect((await listHabits(oldToken)).status).toBe(401);
+    expect((await listHabits(changed.body.token)).status).toBe(200);
+
+    const oldLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email, password });
+    expect(oldLogin.status).toBe(401);
+
+    const newLogin = await request(app)
+      .post('/api/auth/login')
+      .send({ email, password: 'brand-new-secret' });
+    expect(newLogin.status).toBe(200);
+  });
+
+  it('rejects a wrong current password with 400, not 401, and keeps the session', async () => {
+    const { token } = await registerUser();
+
+    const changed = await changePassword(token, {
+      currentPassword: 'wrong-password',
+      newPassword: 'brand-new-secret',
+    });
+
+    expect(changed.status).toBe(400);
+    expect(changed.body.message).toBe('Current password is incorrect');
+    expect((await listHabits(token)).status).toBe(200);
+  });
+
+  it('rejects a new password equal to the current one', async () => {
+    const { token, password } = await registerUser();
+
+    const changed = await changePassword(token, {
+      currentPassword: password,
+      newPassword: password,
+    });
+
+    expect(changed.status).toBe(400);
+    expect(changed.body.message).toBe(
+      'New password must differ from the current one',
+    );
+  });
+
+  it('rejects a new password shorter than 8 or longer than 128 characters', async () => {
+    const { token, password } = await registerUser();
+
+    const short = await changePassword(token, {
+      currentPassword: password,
+      newPassword: 'short',
+    });
+    const long = await changePassword(token, {
+      currentPassword: password,
+      newPassword: 'a'.repeat(129),
+    });
+
+    expect(short.status).toBe(400);
+    expect(long.status).toBe(400);
+  });
+
+  it('returns 429 after 5 attempts in a minute', async () => {
+    const { token } = await registerUser();
+    const attempt = () =>
+      changePassword(token, {
+        currentPassword: 'wrong-password',
+        newPassword: 'brand-new-secret',
+      });
+
+    for (let i = 0; i < 5; i += 1) {
+      expect((await attempt()).status).toBe(400);
+    }
+
+    expect((await attempt()).status).toBe(429);
+  });
+
+  it('rejects a request without a token', async () => {
+    const changed = await request(app)
+      .post('/api/users/me/password')
+      .send({ currentPassword: 'x', newPassword: 'brand-new-secret' });
+
+    expect(changed.status).toBe(401);
   });
 });

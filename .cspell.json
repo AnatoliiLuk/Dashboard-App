@@ -33,6 +33,10 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/SecuritySection/SecuritySection.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "apps/web/lib/hooks/useCoach.test.tsx",
       "language": "en,uk"
     },
