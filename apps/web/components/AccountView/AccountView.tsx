@@ -7,7 +7,7 @@ import { AppShell } from '@/components/AppShell';
 import { AuthGuard } from '@/components/AuthGuard';
 import { CoachSection } from '@/components/CoachSection';
 import { DangerZoneSection } from '@/components/DangerZoneSection';
-import { PageIntro } from '@/components/PageIntro';
+import { PageHeader } from '@/components/PageHeader';
 import { ProfileSection } from '@/components/ProfileSection';
 import { SecuritySection } from '@/components/SecuritySection';
 import { useTranslation } from '@/lib/i18n';
@@ -28,7 +28,7 @@ function AccountContent() {
 
   return (
     <>
-      <PageIntro description={t('account.description')} />
+      <PageHeader title={t('shell.account')} />
       <Box sx={sectionsStyle}>
         <ProfileSection />
         <SecuritySection />

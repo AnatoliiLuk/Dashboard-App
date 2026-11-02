@@ -32,15 +32,6 @@ export const menu = [
   },
 ] as const;
 
-// The page heading screen readers land on; the nav already shows it visually.
-export const pageTitle = {
-  '/': 'shell.calendar',
-  '/log': 'shell.logHabits',
-  '/goals': 'shell.myGoals',
-  '/coach': 'shell.coach',
-  '/account': 'shell.account',
-} as const;
-
 export const MAIN_ID = 'main';
 
 // `/` would match every route, so it only counts on its own.

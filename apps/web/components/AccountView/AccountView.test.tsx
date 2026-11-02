@@ -31,15 +31,17 @@ describe('AccountView', () => {
     renderWithProviders(<AccountView />);
 
     expect(
-      screen.getAllByRole('heading').map((heading) => heading.textContent),
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent),
     ).toEqual(['Profile', 'Security', 'AI Coach', 'Danger zone']);
   });
 
-  it('introduces the page in the UI language', () => {
+  it('names the page in the UI language', () => {
     renderWithProviders(<AccountView />, { locale: 'uk' });
 
     expect(
-      screen.getByText('Ваш профіль, пароль і використання ШІ-коуча.'),
+      screen.getByRole('heading', { level: 1, name: 'Обліковий запис' }),
     ).toBeInTheDocument();
   });
 });

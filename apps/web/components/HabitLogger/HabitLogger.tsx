@@ -5,7 +5,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { HabitCard } from '@/components/HabitCard';
 import { HabitForm } from '@/components/HabitForm';
-import { PageIntro } from '@/components/PageIntro';
+import { PlusIcon, SortIcon } from '@/components/icons';
+import { PageHeader } from '@/components/PageHeader';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import type { HabitFormValues } from '@/lib/forms/schemas';
 import { useTranslation } from '@/lib/i18n';
@@ -95,9 +96,10 @@ export function HabitLogger({
 
   return (
     <section>
-      <PageIntro
-        description={t('log.description')}
+      <PageHeader
+        title={t('shell.logHabits')}
         actionLabel={formOpen ? undefined : t('log.addHabit')}
+        actionIcon={<PlusIcon width={16} height={16} />}
         onAction={formOpen ? undefined : openNew}
       />
       {formOpen ? (
@@ -114,6 +116,7 @@ export function HabitLogger({
       {showToolbar ? (
         <SegmentedControl
           label={t('common.sortBy')}
+          icon={<SortIcon width={16} height={16} />}
           value={sort}
           options={HABIT_SORTS.map((option) => ({
             id: option,

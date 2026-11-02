@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -9,7 +9,7 @@ import { AccountMenu } from '@/components/AccountMenu';
 import { MobileNav } from '@/components/MobileNav';
 import { useTranslation } from '@/lib/i18n';
 
-import { isCurrentRoute, MAIN_ID, menu, pageTitle } from './AppShell.constants';
+import { isCurrentRoute, MAIN_ID, menu } from './AppShell.constants';
 import {
   brandStyle,
   contentStyle,
@@ -20,7 +20,6 @@ import {
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
-  pageTitleStyle,
   shellStyle,
   skipLinkStyle,
 } from './AppShell.style';
@@ -32,7 +31,6 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
-  const titleKey = pageTitle[pathname as keyof typeof pageTitle];
 
   return (
     <Box sx={shellStyle}>
@@ -67,14 +65,7 @@ export function AppShell({ children }: AppShellProps) {
         </Box>
       </Box>
       <Box component="main" id={MAIN_ID} tabIndex={-1} sx={mainStyle}>
-        <Box sx={contentStyle}>
-          {titleKey ? (
-            <Typography component="h1" sx={pageTitleStyle}>
-              {t(titleKey)}
-            </Typography>
-          ) : null}
-          {children}
-        </Box>
+        <Box sx={contentStyle}>{children}</Box>
       </Box>
       <MobileNav />
     </Box>

@@ -10,8 +10,8 @@ import {
 } from 'react';
 
 import { CoachMessage } from '@/components/CoachMessage';
-import { CircleInfoIcon } from '@/components/icons';
-import { PageIntro } from '@/components/PageIntro';
+import { CircleInfoIcon, PlusIcon } from '@/components/icons';
+import { PageHeader } from '@/components/PageHeader';
 import { useTranslation } from '@/lib/i18n';
 
 import { EXAMPLE_QUESTIONS, MAX_MESSAGE_LENGTH } from './CoachChat.constants';
@@ -49,6 +49,12 @@ function CoachChat({
   const busy = isLoading || isSending || isDeleting;
   const canSend = !busy && !disabled && draft.trim().length > 0;
 
+  // New chat sits in the page header; it hides while its confirmation shows.
+  let startOverLabel: string | undefined;
+  if (entries.length > 0 && !confirmStartOver) {
+    startOverLabel = isDeleting ? t('coach.deleting') : t('coach.startOver');
+  }
+
   // Keep the newest message and the thinking line in view.
   useEffect(() => {
     if (entries.length) {
@@ -80,55 +86,35 @@ function CoachChat({
 
   return (
     <>
-      <PageIntro description={t('coach.description')} />
-      <Typography variant="body2" sx={noticeStyle}>
-        <CircleInfoIcon />
-        {t('coach.aiNotice')}
-      </Typography>
-      {retentionDays !== null ? (
-        <Typography variant="body2" sx={noticeStyle}>
-          <CircleInfoIcon />
-          {t('coach.storageNotice', { count: retentionDays })}
-        </Typography>
-      ) : null}
-
-      {entries.length > 0 ? (
+      <PageHeader
+        title={t('shell.coach')}
+        actionLabel={startOverLabel}
+        actionIcon={<PlusIcon width={16} height={16} />}
+        actionDisabled={busy}
+        onAction={() => setConfirmStartOver(true)}
+      />
+      {confirmStartOver ? (
         <Box sx={startOverStyle}>
-          {confirmStartOver ? (
-            <>
-              <Typography variant="body2">
-                {t('coach.startOverConfirm')}
-              </Typography>
-              <Button
-                type="button"
-                variant="outlined"
-                color="error"
-                disabled={busy}
-                onClick={() => {
-                  setConfirmStartOver(false);
-                  onStartOver();
-                }}
-              >
-                {t('common.deleteForever')}
-              </Button>
-              <Button
-                type="button"
-                variant="outlined"
-                onClick={() => setConfirmStartOver(false)}
-              >
-                {t('common.cancel')}
-              </Button>
-            </>
-          ) : (
-            <Button
-              type="button"
-              variant="outlined"
-              disabled={busy}
-              onClick={() => setConfirmStartOver(true)}
-            >
-              {isDeleting ? t('coach.deleting') : t('coach.startOver')}
-            </Button>
-          )}
+          <Typography variant="body2">{t('coach.startOverConfirm')}</Typography>
+          <Button
+            type="button"
+            variant="outlined"
+            color="error"
+            disabled={busy}
+            onClick={() => {
+              setConfirmStartOver(false);
+              onStartOver();
+            }}
+          >
+            {t('common.deleteForever')}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => setConfirmStartOver(false)}
+          >
+            {t('common.cancel')}
+          </Button>
         </Box>
       ) : null}
 
@@ -219,6 +205,16 @@ function CoachChat({
           {t('coach.send')}
         </Button>
       </Box>
+      {/* One quiet line under the composer, where people read before sending. */}
+      <Typography variant="body2" sx={noticeStyle}>
+        <CircleInfoIcon />
+        <span>
+          {t('coach.aiNotice')}
+          {retentionDays !== null
+            ? ` ${t('coach.storageNotice', { count: retentionDays })}`
+            : null}
+        </span>
+      </Typography>
       <div ref={endRef} />
     </>
   );

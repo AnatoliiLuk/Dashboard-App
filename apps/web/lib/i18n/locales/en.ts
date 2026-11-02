@@ -55,7 +55,6 @@ export const en = {
     hasAccount: 'Already have an account?',
   },
   account: {
-    description: 'Your profile, password and AI coach usage.',
     profile: {
       title: 'Profile',
       description: 'Your name and the email you sign in with.',
@@ -133,7 +132,6 @@ export const en = {
   calendar: {
     label: 'Habit calendar',
     view: 'Calendar view',
-    description: 'Each day lists the habits you marked done.',
     month: 'Month',
     week: 'Week',
     today: 'Today: {{date}}',
@@ -153,7 +151,6 @@ export const en = {
     },
   },
   log: {
-    description: 'Add a habit and mark what you did today.',
     empty: 'Add a habit to start a streak.',
     addHabit: 'Add habit',
     editing: 'Editing {{name}}',
@@ -169,8 +166,6 @@ export const en = {
     archiveEmpty: 'No archived habits.',
   },
   goals: {
-    description:
-      'Name a stretch of days. The bar shows how much time has passed, and the chart shows how many linked habits you logged each day.',
     empty: 'Add a goal to track a stretch of days.',
     addGoal: 'Add goal',
     name: 'Goal',
@@ -222,8 +217,6 @@ export const en = {
     loading: 'Loading goals…',
   },
   coach: {
-    description:
-      'Ask about your habits, streaks and goals, or get a tip for building a routine.',
     aiNotice:
       'Answers are written by AI and can be wrong. Check numbers against your log.',
     examplesTitle: 'Try asking',

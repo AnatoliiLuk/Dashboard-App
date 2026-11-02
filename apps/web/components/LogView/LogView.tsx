@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AppShell } from '@/components/AppShell';
 import { HabitLogger } from '@/components/HabitLogger';
-import { PageIntro } from '@/components/PageIntro';
+import { PageHeader } from '@/components/PageHeader';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
 import { useTranslation } from '@/lib/i18n';
 
@@ -40,7 +40,7 @@ function LogContent() {
   if (isError) {
     content = (
       <>
-        <PageIntro description={t('log.description')} />
+        <PageHeader title={t('shell.logHabits')} />
         <Stack spacing={2} alignItems="flex-start">
           <Typography sx={loadingStyle}>{t('common.error')}</Typography>
           <Button variant="outlined" onClick={() => void refetch()}>
@@ -63,7 +63,7 @@ function LogContent() {
   } else {
     content = (
       <>
-        <PageIntro description={t('log.description')} />
+        <PageHeader title={t('shell.logHabits')} />
         <Typography sx={loadingStyle}>{t('common.loading')}</Typography>
       </>
     );

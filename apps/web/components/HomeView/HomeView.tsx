@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AppShell } from '@/components/AppShell';
 import { HabitCalendar } from '@/components/HabitCalendar';
-import { PageIntro } from '@/components/PageIntro';
+import { PageHeader } from '@/components/PageHeader';
 import { useHabitLog } from '@/lib/habits/useHabitLog';
 import { useTranslation } from '@/lib/i18n';
 
@@ -44,7 +44,7 @@ function HomeContent() {
 
   return (
     <>
-      <PageIntro description={t('calendar.description')} />
+      <PageHeader title={t('shell.calendar')} />
       {content}
     </>
   );
