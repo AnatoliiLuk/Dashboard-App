@@ -44,8 +44,11 @@ enum GoalColor {
 
 model User {
   id           String   @id @default(cuid())
+  /// Always stored trimmed and lowercased, so the unique index is case-insensitive.
   email        String   @unique
   passwordHash String
+  /// Signed into every JWT as `ver`. Incrementing it signs out every session (ADR 0002).
+  tokenVersion Int      @default(0)
   name         String
   role         UserRole @default(user)
   createdAt    DateTime @default(now())
