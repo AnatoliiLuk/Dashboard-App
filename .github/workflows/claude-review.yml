@@ -1,0 +1,68 @@
+name: Claude review
+
+# On-demand PR review: add the `claude-review` label to a PR to run one review.
+# Pushes and new PRs never trigger it. The label is removed afterwards, so
+# adding it again runs another review. Each run costs API money.
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Review PR
+    if: github.event.label.name == 'claude-review' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request as a senior engineer on this repo.
+
+            Read CLAUDE.md first and judge the change against its conventions.
+            If the PR touches the account page, also read docs/specs/account-page.md
+            and the ADRs in docs/adr/.
+
+            Focus, in this order:
+            1. Correctness bugs, with a concrete input that breaks
+            2. Security: auth, sessions, ownership checks, data exposure
+            3. Missing or weak tests for the behaviour that changed
+            4. Convention breaks from CLAUDE.md (layers, en + uk strings, openapi.yaml)
+
+            Rules:
+            - Report at most 10 findings, most severe first. Skip formatting and
+              naming nits; Prettier and ESLint handle those.
+            - Put each finding as an inline comment on the line, starting with
+              its severity: [high], [medium] or [low].
+            - Finish with one PR comment: a two-line summary, the findings
+              count by severity, and anything you could not check.
+            - Do not push commits or change files.
+          claude_args: >-
+            --model claude-sonnet-5-5
+            --max-turns 20
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+
+      - name: Remove the label so it can be added again
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --remove-label claude-review
