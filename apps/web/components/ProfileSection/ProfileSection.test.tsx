@@ -53,6 +53,19 @@ describe('ProfileSection', () => {
     expect(screen.getByText(/Member since/)).toHaveTextContent('2026');
   });
 
+  it('disables Save until something changes', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ProfileSection />);
+
+    expect(save()).toBeDisabled();
+    expect(screen.queryByText('Profile saved.')).not.toBeInTheDocument();
+
+    await user.type(nameField(), ' Lovelace');
+
+    expect(save()).toBeEnabled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
   it('changes the name without asking for the password', async () => {
     const user = userEvent.setup();
     renderWithProviders(<ProfileSection />);
@@ -64,6 +77,21 @@ describe('ProfileSection', () => {
 
     expect(mockUpdate).toHaveBeenCalledWith({ name: 'Ada Lovelace' });
     expect(await screen.findByText('Profile saved.')).toBeInTheDocument();
+  });
+
+  it('hides the saved status as soon as a field changes again', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ProfileSection />);
+
+    await user.type(nameField(), ' Lovelace');
+    await user.click(save());
+    expect(await screen.findByText('Profile saved.')).toBeInTheDocument();
+    expect(save()).toBeDisabled();
+
+    await user.type(nameField(), '!');
+
+    expect(screen.queryByText('Profile saved.')).not.toBeInTheDocument();
+    expect(save()).toBeEnabled();
   });
 
   it('asks for the current password once the email changes', async () => {
