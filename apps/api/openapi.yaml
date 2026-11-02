@@ -405,6 +405,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: Rejected with 401 when the user no longer exists or the password changed after the token was issued.
     cookieAuth:
       type: apiKey
       in: cookie
@@ -440,6 +441,8 @@ components:
         email:
           type: string
           format: email
+          maxLength: 254
+          description: Trimmed and lowercased before it is stored.
         password:
           type: string
           minLength: 8
@@ -453,6 +456,8 @@ components:
         email:
           type: string
           format: email
+          maxLength: 254
+          description: Case-insensitive; trimmed and lowercased before lookup.
         password:
           type: string
           minLength: 1

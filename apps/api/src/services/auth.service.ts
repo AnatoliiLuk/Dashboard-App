@@ -25,7 +25,7 @@ export class AuthService {
 
     const token = generateToken({
       id: user.id,
-      email: user.email,
+      ver: user.tokenVersion,
     });
 
     return {
@@ -55,7 +55,7 @@ export class AuthService {
 
     const token = generateToken({
       id: user.id,
-      email: user.email,
+      ver: user.tokenVersion,
     });
 
     return {
