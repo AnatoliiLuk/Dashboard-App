@@ -4,7 +4,8 @@ import { env } from '../config/env';
 
 export type TokenPayload = {
   id: string;
-  email: string;
+  /** `User.tokenVersion` when the token was issued (ADR 0002). */
+  ver: number;
 };
 
 export function generateToken(payload: TokenPayload): string {
@@ -16,5 +17,13 @@ export function generateToken(payload: TokenPayload): string {
 }
 
 export function verifyToken(token: string): TokenPayload {
-  return jwt.verify(token, env.JWT_SECRET) as TokenPayload;
+  const decoded = jwt.verify(token, env.JWT_SECRET) as Partial<TokenPayload>;
+
+  if (typeof decoded.id !== 'string') {
+    throw new jwt.JsonWebTokenError('Token has no user id');
+  }
+
+  // Tokens issued before token versions existed have no `ver`; treat them as
+  // version 0 so the deploy signs nobody out.
+  return { id: decoded.id, ver: decoded.ver ?? 0 };
 }
