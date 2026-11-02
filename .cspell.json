@@ -29,6 +29,10 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/ProfileSection/ProfileSection.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "apps/web/lib/hooks/useCoach.test.tsx",
       "language": "en,uk"
     },

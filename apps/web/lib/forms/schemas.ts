@@ -38,6 +38,33 @@ export function registerFormSchema(t: TFunction) {
   });
 }
 
+/** `currentEmail` decides whether the email changed, which needs the password. */
+export function profileFormSchema(t: TFunction, currentEmail: string) {
+  return z
+    .object({
+      name: z
+        .string()
+        .trim()
+        .min(1, t('validation.name'))
+        .max(100, t('validation.nameLength')),
+      email: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .min(1, t('validation.email'))
+        .max(254, t('validation.email'))
+        .email(t('validation.email')),
+      currentPassword: z.string(),
+    })
+    .refine(
+      (data) => data.email === currentEmail || data.currentPassword !== '',
+      {
+        message: t('validation.currentPassword'),
+        path: ['currentPassword'],
+      },
+    );
+}
+
 export function habitFormSchema(t: TFunction) {
   return z.object({
     name: z
@@ -76,6 +103,7 @@ export function goalFormSchema(t: TFunction) {
 
 export type LoginFormValues = z.infer<ReturnType<typeof loginFormSchema>>;
 export type RegisterFormValues = z.infer<ReturnType<typeof registerFormSchema>>;
+export type ProfileFormValues = z.infer<ReturnType<typeof profileFormSchema>>;
 export type HabitFormValues = z.infer<ReturnType<typeof habitFormSchema>>;
 export type GoalFormValues = z.infer<ReturnType<typeof goalFormSchema>>;
 
