@@ -158,6 +158,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '429':
+          description: >-
+            More than 5 failed attempts in a minute for this user. Successful
+            updates are not counted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags: [Users]
       summary: Delete the signed-in person's account
@@ -616,10 +624,13 @@ components:
       required: [user]
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/Profile'
     ProfileUpdateBody:
       type: object
       description: At least one of name or email.
+      anyOf:
+        - required: [name]
+        - required: [email]
       properties:
         name:
           type: string
@@ -633,6 +644,7 @@ components:
           description: Trimmed and lowercased before it is stored.
         currentPassword:
           type: string
+          minLength: 1
           description: Required when email changes.
     PasswordChangeBody:
       type: object

@@ -50,7 +50,7 @@ export class AuthController {
   private sendSession(
     res: Response,
     result: {
-      user: { id: string; email: string; name: string };
+      user: { id: string; email: string; name: string; createdAt: Date };
       token: string;
     },
     status: number,

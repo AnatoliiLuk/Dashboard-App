@@ -25,6 +25,8 @@ describe('auth', () => {
     expect(response.body.user).toMatchObject({
       email: 'ada@example.com',
       name: 'Ada',
+      // The web caches this as the profile, which shows the join date.
+      createdAt: expect.any(String),
     });
     expect(response.body.token).toBeUndefined();
     expect(tokenFromSetCookie(response.headers['set-cookie'])).toEqual(

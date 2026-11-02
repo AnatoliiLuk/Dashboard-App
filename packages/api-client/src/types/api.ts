@@ -6,7 +6,7 @@ export type ApiUser = {
   id: string;
   email: string;
   name: string;
-  createdAt?: string;
+  createdAt: string;
 };
 
 export type AuthResponse = {
