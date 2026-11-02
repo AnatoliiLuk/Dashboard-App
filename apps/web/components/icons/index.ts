@@ -1,10 +1,13 @@
 export { ArrowLeftIcon } from './ArrowLeftIcon';
 export { ArrowRightIcon } from './ArrowRightIcon';
+export { CalendarIcon } from './CalendarIcon';
 export { CircleCheckIcon } from './CircleCheckIcon';
 export { CircleExclamationIcon } from './CircleExclamationIcon';
 export { CircleInfoIcon } from './CircleInfoIcon';
 export { MonitorIcon } from './MonitorIcon';
 export { MoonIcon } from './MoonIcon';
 export { SignOutIcon } from './SignOutIcon';
+export { SparkleIcon } from './SparkleIcon';
 export { SunIcon } from './SunIcon';
+export { TargetIcon } from './TargetIcon';
 export { UserIcon } from './UserIcon';

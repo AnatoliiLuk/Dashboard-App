@@ -11,12 +11,10 @@ test('opens the account page from the menu and changes the name', async ({
   await page.getByLabel('Password').fill('long-enough');
   await page.getByRole('button', { name: 'Create account' }).click();
 
+  await page.getByRole('button', { name: 'Account menu' }).click();
   await page.getByRole('link', { name: 'Account' }).click();
   await page.waitForURL('**/account');
-  await expect(page.getByRole('link', { name: 'Account' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Account');
   await expect(
     page.getByRole('heading', { level: 2 }).allTextContents(),
   ).resolves.toEqual(['Profile', 'Password', 'AI Coach', 'Danger zone']);
@@ -44,6 +42,7 @@ test('deletes the account after confirming the password', async ({ page }) => {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill('long-enough');
   await page.getByRole('button', { name: 'Create account' }).click();
+  await page.getByRole('button', { name: 'Account menu' }).click();
   await page.getByRole('link', { name: 'Account' }).click();
   await page.waitForURL('**/account');
 
