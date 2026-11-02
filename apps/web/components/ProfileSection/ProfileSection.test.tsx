@@ -6,6 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { ProfileSection } from './ProfileSection';
 import { renderWithProviders } from '../../test/render';
 
+// A reworded message proves the form maps on the code, not on the text.
+function apiError(status: number, code?: string) {
+  const message = 'Reworded server text.';
+  return new ApiError(status, message, { status: 'error', message, code });
+}
+
 const mockUpdate = jest.fn<(dto: object) => Promise<unknown>>();
 let mockPending = false;
 
@@ -93,7 +99,7 @@ describe('ProfileSection', () => {
   });
 
   it('shows a taken email on the email field', async () => {
-    mockUpdate.mockRejectedValue(new ApiError(409, 'Email already in use'));
+    mockUpdate.mockRejectedValue(apiError(409, 'EMAIL_IN_USE'));
     const user = userEvent.setup();
     renderWithProviders(<ProfileSection />);
 
@@ -109,9 +115,7 @@ describe('ProfileSection', () => {
   });
 
   it('shows a wrong password on the password field', async () => {
-    mockUpdate.mockRejectedValue(
-      new ApiError(400, 'Current password is incorrect'),
-    );
+    mockUpdate.mockRejectedValue(apiError(400, 'CURRENT_PASSWORD_INCORRECT'));
     const user = userEvent.setup();
     renderWithProviders(<ProfileSection />);
 
@@ -127,9 +131,7 @@ describe('ProfileSection', () => {
   });
 
   it('explains a rate limit in the UI language', async () => {
-    mockUpdate.mockRejectedValue(
-      new ApiError(429, 'Too many attempts. Wait a minute and try again'),
-    );
+    mockUpdate.mockRejectedValue(apiError(429, 'RATE_LIMITED'));
     const user = userEvent.setup();
     renderWithProviders(<ProfileSection />, { locale: 'uk' });
 
@@ -150,5 +152,21 @@ describe('ProfileSection', () => {
     expect(
       screen.getByRole('heading', { name: 'Профіль' }),
     ).toBeInTheDocument();
+  });
+});
+
+describe('ProfileSection errors', () => {
+  it('never shows a raw server message, even in Ukrainian (#16)', async () => {
+    mockUpdate.mockRejectedValue(apiError(500));
+    const user = userEvent.setup();
+    renderWithProviders(<ProfileSection />, { locale: 'uk' });
+
+    await user.clear(screen.getByRole('textbox', { name: "Ім'я" }));
+    await user.type(screen.getByRole('textbox', { name: "Ім'я" }), 'Ада');
+    await user.click(screen.getByRole('button', { name: 'Зберегти' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Щось пішло не так.',
+    );
   });
 });

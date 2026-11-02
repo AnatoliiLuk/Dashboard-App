@@ -15,10 +15,6 @@ import {
 import { useChangePassword } from '@/lib/hooks/useAccount';
 import { useTranslation } from '@/lib/i18n';
 
-// The API's message for a wrong password. It is a 400 so the client stays
-// signed in, which means the status alone cannot tell it apart (see #15).
-const WRONG_PASSWORD = 'Current password is incorrect';
-
 const EMPTY: SecurityFormValues = {
   currentPassword: '',
   newPassword: '',
@@ -53,14 +49,17 @@ export function SecuritySection() {
       reset(EMPTY);
       setChanged(true);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 429) {
-        setError('root', { message: t('account.security.tooManyAttempts') });
-      } else if (err instanceof ApiError && err.message === WRONG_PASSWORD) {
+      // Map on the API's error code, never on its English message (#15, #16).
+      const code = err instanceof ApiError ? err.code : undefined;
+      if (code === 'CURRENT_PASSWORD_INCORRECT') {
         setError('currentPassword', {
           message: t('account.security.passwordIncorrect'),
         });
+      } else if (code === 'PASSWORD_UNCHANGED') {
+        setError('newPassword', { message: t('validation.passwordSame') });
+      } else if (code === 'RATE_LIMITED') {
+        setError('root', { message: t('account.security.tooManyAttempts') });
       } else {
-        // Never show the server's text: it is English only (#16).
         setError('root', { message: t('common.error') });
       }
     }
