@@ -20,12 +20,15 @@ export const barStartStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
   flexWrap: 'wrap',
+  minWidth: 0,
+  maxWidth: '100%',
   gap: spacingPx[16],
 });
 
 export const barEndStyle = ({ spacingPx }: Theme) => ({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
   gap: spacingPx[12],
 });
 
@@ -38,6 +41,30 @@ export const signOutStyle = ({ pxToRem }: Theme) => ({
   minHeight: pxToRem(50),
 });
 
+export const accountButtonStyle = ({
+  vars,
+  pxToRem,
+  border,
+  borderRadius,
+}: Theme) => ({
+  width: pxToRem(50),
+  height: pxToRem(50),
+  border: border[1],
+  borderColor: vars.palette.divider,
+  borderRadius: borderRadius.pill,
+  backgroundColor: vars.palette.background.paper,
+  color: vars.palette.text.primary,
+});
+
+export const accountButtonActiveStyle = ({ vars }: Theme) => ({
+  borderColor: vars.palette.text.primary,
+  backgroundColor: vars.palette.text.primary,
+  color: vars.palette.background.paper,
+  '&:hover': {
+    backgroundColor: vars.palette.text.primary,
+  },
+});
+
 export const menuStyle = ({
   vars,
   spacingPx,
@@ -47,6 +74,10 @@ export const menuStyle = ({
   display: 'flex' as const,
   alignItems: 'stretch' as const,
   boxSizing: 'border-box' as const,
+  // On a phone the links scroll inside the pill instead of off the page.
+  maxWidth: '100%',
+  overflowX: 'auto' as const,
+  scrollbarWidth: 'none' as const,
   gap: spacingPx[2],
   p: spacingPx[2],
   border: border[1],
@@ -65,6 +96,8 @@ export const menuItemStyle = ({
   display: 'inline-flex' as const,
   alignItems: 'center' as const,
   boxSizing: 'border-box' as const,
+  flexShrink: 0,
+  whiteSpace: 'nowrap' as const,
   minWidth: spacingPx[44],
   minHeight: spacingPx[44],
   height: '100%',

@@ -1,11 +1,11 @@
 'use client';
 
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Button, IconButton, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
-import { SignOutIcon } from '@/components/icons';
+import { SignOutIcon, UserIcon } from '@/components/icons';
 import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -15,6 +15,8 @@ import { mainStyle, pageStyle } from '@/app/page.style';
 
 import { menu } from './AppShell.constants';
 import {
+  accountButtonActiveStyle,
+  accountButtonStyle,
   barEndStyle,
   barStartStyle,
   barStyle,
@@ -35,6 +37,22 @@ export function AppShell({ children }: AppShellProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const { isAuthReady, isAuthenticated, logout } = useAuth();
+  const navRef = useRef<HTMLElement>(null);
+
+  // On a phone the menu scrolls sideways; keep the current page's link in view.
+  useEffect(() => {
+    const nav = navRef.current;
+    const link = nav?.querySelector('[aria-current="page"]');
+    if (!nav || !link) return;
+
+    const navBox = nav.getBoundingClientRect();
+    const linkBox = link.getBoundingClientRect();
+    if (linkBox.right > navBox.right) {
+      nav.scrollLeft += linkBox.right - navBox.right;
+    } else if (linkBox.left < navBox.left) {
+      nav.scrollLeft -= navBox.left - linkBox.left;
+    }
+  }, [pathname]);
 
   let authAction: ReactNode;
   if (!isAuthReady) {
@@ -51,18 +69,30 @@ export function AppShell({ children }: AppShellProps) {
       </Button>
     );
   } else if (isAuthenticated) {
+    const onAccount = pathname === '/account';
     authAction = (
-      <Button
-        variant="outlined"
-        startIcon={<SignOutIcon width={16} height={16} />}
-        sx={signOutStyle}
-        onClick={() => {
-          logout();
-          router.replace('/login');
-        }}
-      >
-        {t('shell.signOut')}
-      </Button>
+      <>
+        <IconButton
+          component={NextLink}
+          href="/account"
+          aria-label={t('shell.account')}
+          aria-current={onAccount ? 'page' : undefined}
+          sx={[accountButtonStyle, onAccount ? accountButtonActiveStyle : null]}
+        >
+          <UserIcon width={16} height={16} />
+        </IconButton>
+        <Button
+          variant="outlined"
+          startIcon={<SignOutIcon width={16} height={16} />}
+          sx={signOutStyle}
+          onClick={() => {
+            logout();
+            router.replace('/login');
+          }}
+        >
+          {t('shell.signOut')}
+        </Button>
+      </>
     );
   } else {
     authAction = (
@@ -81,7 +111,12 @@ export function AppShell({ children }: AppShellProps) {
               <Typography variant="h1" component="h1" sx={brandStyle}>
                 {t('shell.brand')}
               </Typography>
-              <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
+              <Box
+                component="nav"
+                ref={navRef}
+                sx={menuStyle}
+                aria-label={t('shell.menu')}
+              >
                 {menu.map(({ href, label }) => {
                   const current = pathname === href;
                   return (
