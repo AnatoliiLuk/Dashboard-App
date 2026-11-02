@@ -75,6 +75,11 @@ API integration tests use the `habit_tracker_test` database. End-to-end tests us
 
 `.github/workflows/eval.yml` runs the live AI coach evals only when started by hand (Actions → AI coach evals → Run workflow). It needs the `ANTHROPIC_API_KEY` repository secret. It never runs on a schedule or on pull requests, because each run costs money.
 
+Claude runs on GitHub only when the repo owner asks, for the same reason. Both workflows use the `ANTHROPIC_API_KEY` secret and need the [Claude GitHub App](https://github.com/apps/claude) installed on the repository.
+
+- `.github/workflows/claude-review.yml`: add the `claude-review` label to a PR to get one review with inline comments. The label is removed when the run ends, so adding it again runs another review.
+- `.github/workflows/claude.yml`: write `@claude` in an issue or PR comment to ask for an answer or a change. Mentions from anyone other than the owner are ignored.
+
 ## Docs
 
 - Web app: `apps/web/README.md`
