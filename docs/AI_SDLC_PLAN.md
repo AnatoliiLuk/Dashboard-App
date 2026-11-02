@@ -123,9 +123,10 @@ until it is right.
 
 ### 11. PR automation
 
-- [ ] Install the Claude GitHub Action (`/install-github-app`)
-- [ ] Automatic review on every PR
-- [ ] Practice `@claude` comments to fix review feedback
+- [ ] Install the Claude GitHub App on the repository (secret `ANTHROPIC_API_KEY` already exists)
+- [x] On-demand review, not on every PR: `claude-review` label -> `.github/workflows/claude-review.yml` (cost control)
+- [x] `@claude` comments, owner only -> `.github/workflows/claude.yml`
+- [ ] Try the review on the next PR, then practice `@claude` comments to fix its feedback
 
 **Status:** [ ]
 
