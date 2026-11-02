@@ -1,31 +1,28 @@
 'use client';
 
-import { Box, Button, IconButton, Link, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import NextLink from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
+import type { ReactNode } from 'react';
 
-import { SignOutIcon, UserIcon } from '@/components/icons';
-import { LocaleSwitch } from '@/components/LocaleSwitch';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { AccountMenu } from '@/components/AccountMenu';
+import { MobileNav } from '@/components/MobileNav';
 import { useTranslation } from '@/lib/i18n';
 
-import { mainStyle, pageStyle } from '@/app/page.style';
-
-import { menu } from './AppShell.constants';
+import { isCurrentRoute, MAIN_ID, menu, pageTitle } from './AppShell.constants';
 import {
-  accountButtonActiveStyle,
-  accountButtonStyle,
-  barEndStyle,
-  barStartStyle,
-  barStyle,
   brandStyle,
+  contentStyle,
+  headerEndStyle,
+  headerInnerStyle,
   headerStyle,
+  mainStyle,
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
-  signOutStyle,
+  pageTitleStyle,
+  shellStyle,
+  skipLinkStyle,
 } from './AppShell.style';
 
 type AppShellProps = {
@@ -34,115 +31,52 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { t } = useTranslation();
-  const { isAuthReady, isAuthenticated, logout } = useAuth();
-  const navRef = useRef<HTMLElement>(null);
-
-  // On a phone the menu scrolls sideways; keep the current page's link in view.
-  useEffect(() => {
-    const nav = navRef.current;
-    const link = nav?.querySelector('[aria-current="page"]');
-    if (!nav || !link) return;
-
-    const navBox = nav.getBoundingClientRect();
-    const linkBox = link.getBoundingClientRect();
-    if (linkBox.right > navBox.right) {
-      nav.scrollLeft += linkBox.right - navBox.right;
-    } else if (linkBox.left < navBox.left) {
-      nav.scrollLeft -= navBox.left - linkBox.left;
-    }
-  }, [pathname]);
-
-  let authAction: ReactNode;
-  if (!isAuthReady) {
-    authAction = (
-      <Button
-        variant="outlined"
-        disabled
-        tabIndex={-1}
-        aria-hidden
-        startIcon={<SignOutIcon width={16} height={16} />}
-        sx={[signOutStyle, { visibility: 'hidden' }]}
-      >
-        {t('shell.signOut')}
-      </Button>
-    );
-  } else if (isAuthenticated) {
-    const onAccount = pathname === '/account';
-    authAction = (
-      <>
-        <IconButton
-          component={NextLink}
-          href="/account"
-          aria-label={t('shell.account')}
-          aria-current={onAccount ? 'page' : undefined}
-          sx={[accountButtonStyle, onAccount ? accountButtonActiveStyle : null]}
-        >
-          <UserIcon width={16} height={16} />
-        </IconButton>
-        <Button
-          variant="outlined"
-          startIcon={<SignOutIcon width={16} height={16} />}
-          sx={signOutStyle}
-          onClick={() => {
-            logout();
-            router.replace('/login');
-          }}
-        >
-          {t('shell.signOut')}
-        </Button>
-      </>
-    );
-  } else {
-    authAction = (
-      <Button variant="outlined" component={NextLink} href="/login">
-        {t('shell.signIn')}
-      </Button>
-    );
-  }
+  const titleKey = pageTitle[pathname as keyof typeof pageTitle];
 
   return (
-    <Box sx={pageStyle}>
-      <Box component="main" sx={mainStyle}>
-        <Box component="header" sx={headerStyle}>
-          <Box sx={barStyle}>
-            <Box sx={barStartStyle}>
-              <Typography variant="h1" component="h1" sx={brandStyle}>
-                {t('shell.brand')}
-              </Typography>
-              <Box
-                component="nav"
-                ref={navRef}
-                sx={menuStyle}
-                aria-label={t('shell.menu')}
-              >
-                {menu.map(({ href, label }) => {
-                  const current = pathname === href;
-                  return (
-                    <Link
-                      key={href}
-                      component={NextLink}
-                      href={href}
-                      aria-current={current ? 'page' : undefined}
-                      underline="none"
-                      sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
-                    >
-                      {t(label)}
-                    </Link>
-                  );
-                })}
-              </Box>
-            </Box>
-            <Box sx={barEndStyle}>
-              <LocaleSwitch />
-              <ThemeToggle />
-              {authAction}
-            </Box>
+    <Box sx={shellStyle}>
+      <Link href={`#${MAIN_ID}`} sx={skipLinkStyle}>
+        {t('shell.skipToContent')}
+      </Link>
+      <Box component="header" sx={headerStyle}>
+        <Box sx={headerInnerStyle}>
+          <Link component={NextLink} href="/" underline="none" sx={brandStyle}>
+            {t('shell.brand')}
+          </Link>
+          <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
+            {menu.map(({ href, label }) => {
+              const current = isCurrentRoute(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  component={NextLink}
+                  href={href}
+                  aria-current={current ? 'page' : undefined}
+                  underline="none"
+                  sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
+                >
+                  {t(label)}
+                </Link>
+              );
+            })}
+          </Box>
+          <Box sx={headerEndStyle}>
+            <AccountMenu />
           </Box>
         </Box>
-        {children}
       </Box>
+      <Box component="main" id={MAIN_ID} tabIndex={-1} sx={mainStyle}>
+        <Box sx={contentStyle}>
+          {titleKey ? (
+            <Typography component="h1" sx={pageTitleStyle}>
+              {t(titleKey)}
+            </Typography>
+          ) : null}
+          {children}
+        </Box>
+      </Box>
+      <MobileNav />
     </Box>
   );
 }
