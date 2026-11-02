@@ -87,6 +87,19 @@ export const en = {
       cleared: 'Conversation deleted.',
       clearFailed: "Couldn't delete the conversation. Try again.",
     },
+    danger: {
+      title: 'Danger zone',
+      description: 'Delete your account and everything in it.',
+      delete: 'Delete account',
+      dialogTitle: 'Delete your account?',
+      dialogBody:
+        'Your habits, check-ins, goals, AI coach chat and usage are deleted for good, and you are signed out on every device. This cannot be undone.',
+      password: 'Password',
+      passwordHint: 'Enter your password to confirm.',
+      deleting: 'Deleting…',
+      passwordIncorrect: 'The password is incorrect.',
+      tooManyAttempts: 'Too many attempts. Wait a minute and try again.',
+    },
   },
   validation: {
     email: 'Enter a valid email.',

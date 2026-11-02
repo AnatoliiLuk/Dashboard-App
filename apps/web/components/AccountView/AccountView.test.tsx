@@ -22,6 +22,9 @@ jest.mock('@/components/SecuritySection', () => ({
 jest.mock('@/components/CoachSection', () => ({
   CoachSection: () => <h2>AI Coach</h2>,
 }));
+jest.mock('@/components/DangerZoneSection', () => ({
+  DangerZoneSection: () => <h2>Danger zone</h2>,
+}));
 
 describe('AccountView', () => {
   it('shows the sections in the order of the spec', () => {
@@ -29,7 +32,7 @@ describe('AccountView', () => {
 
     expect(
       screen.getAllByRole('heading').map((heading) => heading.textContent),
-    ).toEqual(['Profile', 'Security', 'AI Coach']);
+    ).toEqual(['Profile', 'Security', 'AI Coach', 'Danger zone']);
   });
 
   it('introduces the page in the UI language', () => {

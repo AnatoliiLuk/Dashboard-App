@@ -123,8 +123,17 @@ export function securityFormSchema(t: TFunction) {
     });
 }
 
+export function deleteAccountFormSchema(t: TFunction) {
+  return z.object({
+    password: z.string().min(1, t('validation.password')),
+  });
+}
+
 export type ProfileFormValues = z.infer<ReturnType<typeof profileFormSchema>>;
 export type SecurityFormValues = z.infer<ReturnType<typeof securityFormSchema>>;
+export type DeleteAccountFormValues = z.infer<
+  ReturnType<typeof deleteAccountFormSchema>
+>;
 export type HabitFormValues = z.infer<ReturnType<typeof habitFormSchema>>;
 export type GoalFormValues = z.infer<ReturnType<typeof goalFormSchema>>;
 
