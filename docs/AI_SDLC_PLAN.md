@@ -94,7 +94,8 @@ until it is right.
 ### 7. Shared contract first
 
 - [ ] Update `packages/types` (account DTOs) and `packages/api-client` before splitting work
-- [ ] Check Prisma `onDelete` rules for every relation on `User` - add a migration if deletion would fail or leave orphans (reviewed by hand)
+- [x] Check Prisma `onDelete` rules for every relation on `User` - all cascade, no migration needed (ADR 0001 confirmed)
+- [ ] #2 auth hardening: `tokenVersion` + email normalization - code and tests done, data migration SQL hand-written
 
 ### 8. Tests first
 
