@@ -130,6 +130,33 @@ describe('PATCH /api/users/me', () => {
     expect(login.body.user).toEqual(other.body.user);
   });
 
+  it('returns 429 after 5 failed password attempts, but not for name edits', async () => {
+    const { token, password } = await registerUser();
+
+    for (let i = 0; i < 5; i += 1) {
+      const wrong = await updateMe(token, {
+        email: 'countess@example.com',
+        currentPassword: 'wrong-password',
+      });
+      expect(wrong.status).toBe(400);
+    }
+
+    const blocked = await updateMe(token, {
+      email: 'countess@example.com',
+      currentPassword: password,
+    });
+    expect(blocked.status).toBe(429);
+  });
+
+  it('does not count successful name edits towards the limit', async () => {
+    const { token } = await registerUser();
+
+    for (let i = 0; i < 8; i += 1) {
+      const updated = await updateMe(token, { name: `Ada ${i}` });
+      expect(updated.status).toBe(200);
+    }
+  });
+
   it('rejects a body with neither name nor email', async () => {
     const { token } = await registerUser();
 

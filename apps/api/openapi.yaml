@@ -158,6 +158,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '429':
+          description: >-
+            More than 5 failed attempts in a minute for this user. Successful
+            updates are not counted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags: [Users]
       summary: Delete the signed-in person's account

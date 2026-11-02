@@ -35,6 +35,32 @@ describe('userRateLimit', () => {
     });
   });
 
+  it('with onlyFailures, ignores successes and uses the custom message', async () => {
+    const app = express();
+    app.use((req, _res, next) => {
+      req.user = { id: 'a' } as typeof req.user;
+      next();
+    });
+    app.use(userRateLimit(2, { onlyFailures: true, message: 'Slow down' }));
+    app.post('/ok', (_req, res) => {
+      res.json({ ok: true });
+    });
+    app.post('/bad', (_req, res) => {
+      res.status(400).json({ status: 'error', message: 'nope' });
+    });
+    app.use(errorMiddleware);
+
+    for (let i = 0; i < 5; i += 1) {
+      await request(app).post('/ok').expect(200);
+    }
+    await request(app).post('/bad').expect(400);
+    await request(app).post('/bad').expect(400);
+    const blocked = await request(app).post('/bad');
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.message).toBe('Slow down');
+  });
+
   it('counts each user separately', async () => {
     const app = appWithLimit(1);
 
