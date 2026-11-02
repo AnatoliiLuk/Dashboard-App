@@ -8,6 +8,7 @@ servers:
 tags:
   - name: Health
   - name: Auth
+  - name: Users
   - name: Habits
   - name: Completions
   - name: Coach
@@ -114,6 +115,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
         '401':
+          $ref: '#/components/responses/Error'
+  /api/users/me:
+    patch:
+      tags: [Users]
+      summary: Update the signed-in person's name or email
+      description: >-
+        Changing the email requires currentPassword; changing only the name
+        does not. The email is trimmed and lowercased. Sending the current
+        values is a no-op that returns 200. Other sessions stay signed in
+        (ADR 0002).
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateBody'
+      responses:
+        '200':
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: >-
+            Invalid body, neither name nor email given, currentPassword
+            missing for an email change, or `Current password is incorrect`.
+            Never 401, because clients sign out on any 401.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '409':
+          description: '`Email already in use` by another account, in any case'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags: [Users]
+      summary: Delete the signed-in person's account
+      description: >-
+        Deletes the user and everything that cascades from it in one
+        transaction (ADR 0001), then clears the session cookie. Every token
+        for the user stops working. There is no undo. Rate limited to 5
+        requests per minute per user.
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountDeleteBody'
+      responses:
+        '204':
+          description: Deleted; the session cookie is cleared
+        '400':
+          description: Invalid body or incorrect password; the account is kept
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+  /api/users/me/password:
+    post:
+      tags: [Users]
+      summary: Change the signed-in person's password
+      description: >-
+        Signs out every other session (ADR 0002). This session gets a new
+        token, set as the habits_plus_token cookie and returned in the body
+        for Bearer clients. Rate limited to 5 requests per minute per user.
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeBody'
+      responses:
+        '200':
+          description: Password changed; new session token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: >-
+            Invalid body, `Current password is incorrect`, or the new password
+            equals the current one. Never 401.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '429':
           $ref: '#/components/responses/Error'
   /api/habits:
     get:
@@ -399,6 +508,27 @@ paths:
           description: Deleted
         '401':
           $ref: '#/components/responses/Error'
+  /api/coach/usage:
+    get:
+      tags: [Coach]
+      summary: Get today's AI coach token usage
+      description: >-
+        Billable tokens used today against AI_DAILY_TOKEN_BUDGET, counted
+        the same way as the budget check (cache reads left out). The day is
+        UTC. Works when the coach is disabled, with enabled false. Not rate
+        limited.
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Usage for the current UTC day
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoachUsage'
+        '401':
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -487,6 +617,68 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/User'
+    ProfileUpdateBody:
+      type: object
+      description: At least one of name or email.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Trimmed; a name of only spaces is rejected.
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: Trimmed and lowercased before it is stored.
+        currentPassword:
+          type: string
+          description: Required when email changes.
+    PasswordChangeBody:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          minLength: 1
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+          description: Must differ from the current password.
+    AccountDeleteBody:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+          minLength: 1
+    TokenResponse:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          description: The new session token, also set as the cookie.
+    CoachUsage:
+      type: object
+      required: [enabled, usedTokens, dailyLimit, resetsAt]
+      properties:
+        enabled:
+          type: boolean
+          description: False when AI_ENABLED is false.
+        usedTokens:
+          type: integer
+          minimum: 0
+          description: Billable tokens used today; cache reads left out.
+        dailyLimit:
+          type: integer
+          minimum: 0
+          description: AI_DAILY_TOKEN_BUDGET.
+        resetsAt:
+          type: string
+          format: date-time
+          description: Next midnight UTC.
     HabitColor:
       type: string
       enum: [sky, green, amber, rose, violet, teal]
