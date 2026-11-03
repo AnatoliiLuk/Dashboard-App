@@ -121,6 +121,8 @@
     "loggable",
     "modelcontextprotocol",
     "PKCE",
-    "unlog"
+    "unlog",
+    "hpat",
+    "hprt"
   ]
 }
