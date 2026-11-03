@@ -12,6 +12,7 @@
     "mcp:token": "tsx src/scripts/mcp-token.ts",
     "usage:report": "tsx src/scripts/usage-report.ts",
     "coach:purge": "tsx src/scripts/purge-conversations.ts",
+    "oauth:purge": "tsx src/scripts/purge-oauth.ts",
     "eval": "tsx evals/run.ts"
   },
   "dependencies": {

@@ -56,6 +56,12 @@ claude mcp add --transport http habits-plus http://localhost:4000/api/mcp
 
 In Claude Code run `/mcp`, choose `habits-plus` and authenticate. Scopes are `habits:read` and `habits:write`; access tokens last 1 hour and refresh tokens 30 days (rotated on use). A password change ends every grant. `API_PUBLIC_URL` and `WEB_URL` set the issuer, resource and consent URLs.
 
+People see and disconnect their apps under Account → Connected apps (`GET /api/oauth/grants`, `DELETE /api/oauth/grants/:clientId`). Expired codes and tokens are refused but stay in the tables; delete them daily from a scheduler:
+
+```bash
+npm run oauth:purge -w @habit-tracker/api
+```
+
 ### Personal token
 
 Without OAuth (stdio, or a client that only takes headers) use a personal token. It has every scope, expires after `JWT_EXPIRES_IN`, and stops working after a password change:
