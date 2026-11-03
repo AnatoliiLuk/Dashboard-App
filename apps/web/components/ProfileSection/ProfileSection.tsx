@@ -16,7 +16,11 @@ import {
 import { AccountSection } from '@/components/AccountSection';
 import { dayjs } from '@/lib/dates/dayjs';
 import { registerField } from '@/lib/forms/registerField';
-import { profileFormSchema, type ProfileFormValues } from '@/lib/forms/schemas';
+import {
+  normalizeEmail,
+  profileFormSchema,
+  type ProfileFormValues,
+} from '@/lib/forms/schemas';
 import { formatDisplay } from '@/lib/habits/dates';
 import { useUpdateProfile } from '@/lib/hooks/useAccount';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -47,7 +51,7 @@ function ProfileForm({ user }: ProfileFormProps) {
   });
 
   const email = useWatch({ control, name: 'email' });
-  const emailChanged = email.trim().toLowerCase() !== user.email;
+  const emailChanged = normalizeEmail(email) !== user.email;
 
   async function submit(values: ProfileFormValues) {
     clearErrors('root');
