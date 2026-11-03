@@ -45,13 +45,26 @@ A live run saves `evals/reports/latest.json` (gitignored) and compares it with t
 
 `src/mcp/` exposes Habits+ to AI assistants over the [Model Context Protocol](https://modelcontextprotocol.io): tools `list_habits`, `get_habit_history`, `list_goals`, `log_habit`, `unlog_habit`, `create_habit`, the resource `habits://today` and the prompt `weekly_review`. Design: [ADR 0003](../../docs/adr/0003-mcp-server.md), roadmap: [MCP plan](../../docs/MCP_PLAN.md).
 
-Stage 1 runs locally over stdio as one user. Get a personal token (expires after `JWT_EXPIRES_IN`, and after a password change):
+Both transports need a personal token (expires after `JWT_EXPIRES_IN`, and after a password change):
 
 ```bash
 npm run mcp:token -w @habit-tracker/api      # prompts for email and password, prints the token
 ```
 
-Then register the server in a client. Use absolute paths: clients start it from another directory.
+### Over HTTP (the running API)
+
+`POST /api/mcp` speaks Streamable HTTP in stateless mode, with a Bearer token only (the session cookie is refused). Start the API with `npm run dev:api`, then:
+
+```bash
+claude mcp add --transport http habits-plus http://localhost:4000/api/mcp \
+  --header "Authorization: Bearer <token>"
+```
+
+MCP Inspector: `npx @modelcontextprotocol/inspector`, choose Streamable HTTP, URL `http://localhost:4000/api/mcp`, and add the `Authorization` header. Requests are limited by `MCP_RATE_LIMIT_PER_MINUTE` per user.
+
+### Over stdio (no API process)
+
+The server runs as a child process of the client and reads `.env` like the API, so the database must be reachable. Use absolute paths: clients start it from another directory.
 
 ```json
 {
@@ -73,4 +86,6 @@ Then register the server in a client. Use absolute paths: clients start it from 
 - Claude Code: `claude mcp add habits-plus -e HABITS_PLUS_TOKEN=<token> -- <command> <args...>`.
 - MCP Inspector: `npx @modelcontextprotocol/inspector <command> <args...>` with `HABITS_PLUS_TOKEN` set.
 
-The server reads `.env` like the API, so the database must be reachable. It writes logs to stderr only; stdout is the protocol.
+stdout is the protocol in this mode; logs go to stderr.
+
+Claude.ai custom connectors need a public HTTPS URL and OAuth, which come in Stage 3.

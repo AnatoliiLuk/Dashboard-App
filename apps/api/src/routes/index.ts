@@ -5,6 +5,7 @@ import coachRoutes from './coach.routes';
 import completionsRoutes from './completions.routes';
 import goalsRoutes from './goals.routes';
 import habitsRoutes from './habits.routes';
+import mcpRoutes from './mcp.routes';
 import usersRoutes from './users.routes';
 
 const router = Router();
@@ -22,5 +23,6 @@ router.use('/habits', habitsRoutes);
 router.use('/completions', completionsRoutes);
 router.use('/goals', goalsRoutes);
 router.use('/coach', coachRoutes);
+router.use('/mcp', mcpRoutes);
 
 export default router;
