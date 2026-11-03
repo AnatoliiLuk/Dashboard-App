@@ -22,4 +22,5 @@ export const coachKeys = {
 
 export const oauthKeys = {
   consent: (request: string) => ['oauth', 'consent', request] as const,
+  grants: ['oauth', 'grants'] as const,
 };

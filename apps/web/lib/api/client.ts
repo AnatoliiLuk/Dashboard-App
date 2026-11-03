@@ -13,3 +13,6 @@ export const api = new ApiClient({
     setSignedIn(false);
   },
 });
+
+/** What MCP clients such as Claude Code connect to (ADR 0004). */
+export const mcpUrl = process.env.NEXT_PUBLIC_MCP_URL ?? `${baseURL}/mcp`;
