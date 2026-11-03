@@ -1,13 +1,17 @@
 import { describe, expect, it } from '@jest/globals';
+import { MAX_GOAL_HABITS } from '@repo/core';
 
 import { createGoalSchema, updateGoalSchema } from './goals.validator';
+
+const habitIds = (count: number) =>
+  Array.from({ length: count }, (_, index) => `habit-${index + 1}`);
 
 const goal = {
   name: 'October focus',
   color: 'indigo',
   startDate: '2026-10-01',
   endDate: '2026-10-10',
-  habitIds: ['habit-1', 'habit-2', 'habit-3', 'habit-4'],
+  habitIds: habitIds(4),
 };
 
 describe('createGoalSchema', () => {
@@ -23,10 +27,19 @@ describe('createGoalSchema', () => {
     ).toBe(true);
   });
 
-  it('rejects a fifth habit', () => {
+  it('accepts more than four habits up to the limit', () => {
+    expect(
+      createGoalSchema.safeParse({
+        ...goal,
+        habitIds: habitIds(MAX_GOAL_HABITS),
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects habits beyond the limit', () => {
     const result = createGoalSchema.safeParse({
       ...goal,
-      habitIds: ['habit-1', 'habit-2', 'habit-3', 'habit-4', 'habit-5'],
+      habitIds: habitIds(MAX_GOAL_HABITS + 1),
     });
 
     expect(result.success).toBe(false);

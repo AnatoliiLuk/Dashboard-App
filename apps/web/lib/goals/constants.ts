@@ -1,1 +1,1 @@
-export const MAX_GOAL_HABITS = 4;
+export { MAX_GOAL_HABITS } from '@repo/core';
