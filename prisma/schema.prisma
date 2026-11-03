@@ -33,6 +33,11 @@ enum CoachRole {
   assistant
 }
 
+enum OAuthTokenType {
+  access
+  refresh
+}
+
 enum GoalColor {
   indigo
   orange
@@ -59,6 +64,8 @@ model User {
   goals       Goal[]
   aiUsage     AiUsage[]
   coachChat   CoachConversation?
+  oauthCodes  OAuthAuthorizationCode[]
+  oauthTokens OAuthToken[]
 
   @@map("users")
 }
@@ -180,4 +187,60 @@ model CoachMessage {
 
   @@index([conversationId, createdAt])
   @@map("coach_messages")
+}
+
+// MCP clients registered through OAuth dynamic client registration (ADR 0004).
+model OAuthClient {
+  /// The OAuth client_id.
+  id        String   @id
+  name      String?
+  /// RFC 7591 client information as issued, returned to the OAuth router.
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  codes  OAuthAuthorizationCode[]
+  tokens OAuthToken[]
+
+  @@map("oauth_clients")
+}
+
+// Single use, 10 minutes. Only the SHA-256 hash of the code is stored.
+model OAuthAuthorizationCode {
+  codeHash      String   @id
+  clientId      String
+  userId        String
+  redirectUri   String
+  codeChallenge String
+  scopes        String[]
+  /// The MCP resource URL the code is bound to (RFC 8707).
+  resource      String
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  client OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("oauth_authorization_codes")
+}
+
+// Access and refresh tokens. Only the SHA-256 hash of the token is stored.
+model OAuthToken {
+  tokenHash    String         @id
+  type         OAuthTokenType
+  clientId     String
+  userId       String
+  scopes       String[]
+  resource     String
+  /// `User.tokenVersion` at issue time; a password change ends the grant (ADR 0002).
+  tokenVersion Int
+  expiresAt    DateTime
+  createdAt    DateTime       @default(now())
+
+  client OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, clientId])
+  @@index([expiresAt])
+  @@map("oauth_tokens")
 }

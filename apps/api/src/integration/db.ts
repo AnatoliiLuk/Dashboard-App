@@ -14,7 +14,7 @@ function assertTestDatabase() {
 export async function resetDatabase() {
   assertTestDatabase();
   await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "completions", "habits", "users" RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE "completions", "habits", "users", "oauth_clients" RESTART IDENTITY CASCADE',
   );
 }
 

@@ -82,13 +82,18 @@ explicitly. Fix with a stored user time zone if it matters.
 
 ## Stage 3: OAuth 2.1 (MCP authorization spec)
 
-- [ ] ADR: build an authorization server in the API vs use an external provider
-- [ ] Protected resource metadata (`/.well-known/oauth-protected-resource`) and `WWW-Authenticate` on 401
-- [ ] Authorization server: authorization code + PKCE, client registration, short-lived access tokens, refresh tokens
-- [ ] Consent screen in the web app ("Claude wants to access your habits"), en + uk
-- [ ] Scopes: `habits:read`, `habits:write`; revoke access from the account page
+- [x] ADR `docs/adr/0004-mcp-oauth.md`: authorization server in the API (SDK `mcpAuthRouter` + Prisma) vs an external provider
+- [x] Protected resource metadata (`/.well-known/oauth-protected-resource/api/mcp`) and `WWW-Authenticate: Bearer resource_metadata=...` on 401
+- [x] Authorization server: dynamic client registration, authorization code + PKCE, 1 h access / 30 d rotating refresh tokens (hashed, prefixed), revoke, RFC 8707 audience
+- [x] Consent screen in the web app (`/oauth/consent`), en + uk; sign-in keeps the pending request
+- [x] Scopes `habits:read`, `habits:write`: tools outside the grant are not registered
+- [x] Password change ends OAuth grants (`tokenVersion`, ADR 0002)
+- [x] Integration tests for the whole flow (discovery, register, authorize, consent, token, refresh, revoke)
+- [ ] Sign in from Claude Code (`claude mcp add --transport http` without a header)
 - [ ] Security review (`/security-review`) before merge
-- [ ] Add as a custom connector in Claude.ai
+- [x] "Connected apps" on the account page: list grants and revoke them, with the `claude mcp add` command
+- [x] Purge script for expired codes and tokens (`npm run oauth:purge`)
+- [ ] Add as a custom connector in Claude.ai (needs public HTTPS: tunnel or deployment)
 
 **Status:** [ ]
 

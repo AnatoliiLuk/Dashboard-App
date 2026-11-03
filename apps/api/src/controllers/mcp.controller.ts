@@ -18,7 +18,10 @@ export class McpController {
   // scoped to the token's user. No session state, so any API instance can
   // answer and nothing leaks between users.
   handle = async (req: Request, res: Response, next: NextFunction) => {
-    const server = createMcpServer({ userId: req.user!.id, today }, services);
+    const server = createMcpServer(
+      { userId: req.user!.id, today, scopes: res.locals.mcpScopes },
+      services,
+    );
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
       // Plain JSON replies: no tool streams progress, so SSE adds nothing.

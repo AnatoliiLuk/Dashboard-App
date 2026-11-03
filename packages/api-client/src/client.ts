@@ -3,6 +3,7 @@ import { CoachApi } from './endpoints/coach';
 import { CompletionsApi } from './endpoints/completions';
 import { GoalsApi } from './endpoints/goals';
 import { HabitsApi } from './endpoints/habits';
+import { OAuthApi } from './endpoints/oauth';
 import { UsersApi } from './endpoints/users';
 import type { ApiClientConfig } from './utils/request';
 
@@ -15,6 +16,7 @@ export class ApiClient {
   public goals: GoalsApi;
   public coach: CoachApi;
   public users: UsersApi;
+  public oauth: OAuthApi;
 
   constructor(config: ApiClientConfig) {
     this.auth = new AuthApi(config);
@@ -23,5 +25,6 @@ export class ApiClient {
     this.goals = new GoalsApi(config);
     this.coach = new CoachApi(config);
     this.users = new UsersApi(config);
+    this.oauth = new OAuthApi(config);
   }
 }

@@ -43,7 +43,8 @@ only finds out when a request is refused.
 ### Page
 
 - `/account` is behind `AuthGuard` and linked from the `AppShell` menu.
-- Four sections in this order: Profile, Security, AI Coach, Danger zone.
+- Five sections in this order: Profile, Security, AI Coach, Connected apps,
+  Danger zone.
 - Every string is in `en.ts` and `uk.ts`.
 - A section's form shows field errors inline and keeps the other sections
   usable while it saves.
@@ -82,6 +83,18 @@ only finds out when a request is refused.
   `DELETE /coach/conversation`. The coach chat query is invalidated.
 - Not rate limited (same rule as reading the conversation).
 
+### Connected apps
+
+- Lists MCP clients the person allowed through OAuth (ADR 0004), one row per
+  client: self-declared name (or "Unnamed app"), granted scopes, last use.
+  Grants that are expired or ended by a password change are left out.
+- "Disconnect" asks for confirmation inline, then calls
+  `DELETE /api/oauth/grants/:clientId`; the app's tokens and pending codes are
+  deleted and the row disappears. Another person's client is **404**.
+- Shows the `claude mcp add --transport http habits-plus <MCP URL>` command
+  with a Copy button, so people find out Habits+ works from Claude Code.
+  The URL is `NEXT_PUBLIC_MCP_URL`, else `NEXT_PUBLIC_API_URL` + `/mcp`.
+
 ### Danger zone
 
 - "Delete account" opens a dialog that explains what is deleted and asks for
@@ -102,6 +115,8 @@ only finds out when a request is refused.
 | `DELETE` | `/api/users/me`           | `{ password }`                        | 204, cookie cleared      |
 | `GET`    | `/api/coach/usage`        | -                                     | 200 `CoachUsage`         |
 | `DELETE` | `/api/coach/conversation` | -                                     | 204 (exists)             |
+| `GET`    | `/api/oauth/grants`       | -                                     | 200 `OAuthGrant[]`       |
+| `DELETE` | `/api/oauth/grants/:id`   | -                                     | 204                      |
 
 `UserProfile`: `{ id, email, name, createdAt }` (same shape as `GET /auth/me`).
 `CoachUsage`: `{ enabled, usedTokens, dailyLimit, resetsAt }`.

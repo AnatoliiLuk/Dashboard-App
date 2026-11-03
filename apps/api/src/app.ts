@@ -10,10 +10,14 @@ import {
 import { loggerMiddleware } from './middleware/logger.middleware';
 import { originMiddleware } from './middleware/origin.middleware';
 import routes from './routes';
+import { oauthServerRouter } from './routes/oauth.routes';
 
 export const app = express();
 
 app.use(helmet());
+// Before CORS and the origin check: MCP clients call these from other
+// origins (or none), and they never use the session cookie.
+app.use(oauthServerRouter);
 app.use(
   cors({
     origin: env.CORS_ORIGINS,

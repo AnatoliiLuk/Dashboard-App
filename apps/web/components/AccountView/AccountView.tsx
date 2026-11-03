@@ -6,6 +6,7 @@ import { sectionsStyle } from './AccountView.style';
 import { AppShell } from '@/components/AppShell';
 import { AuthGuard } from '@/components/AuthGuard';
 import { CoachSection } from '@/components/CoachSection';
+import { ConnectedAppsSection } from '@/components/ConnectedAppsSection';
 import { DangerZoneSection } from '@/components/DangerZoneSection';
 import { PageHeader } from '@/components/PageHeader';
 import { ProfileSection } from '@/components/ProfileSection';
@@ -33,6 +34,7 @@ function AccountContent() {
         <ProfileSection />
         <SecuritySection />
         <CoachSection />
+        <ConnectedAppsSection />
         <DangerZoneSection />
       </Box>
     </>

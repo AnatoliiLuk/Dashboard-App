@@ -49,6 +49,10 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/ConnectedAppsSection/ConnectedAppsSection.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "apps/web/components/MobileNav/MobileNav.test.tsx",
       "language": "en,uk"
     },
@@ -121,6 +125,8 @@
     "loggable",
     "modelcontextprotocol",
     "PKCE",
-    "unlog"
+    "unlog",
+    "hpat",
+    "hprt"
   ]
 }

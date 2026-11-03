@@ -1,5 +1,6 @@
 import type { HabitColor } from '@prisma/client';
 import { compareDates, streakFor } from '@repo/core';
+import type { OAuthScope } from '@repo/types';
 
 import {
   summarizeGoals,
@@ -27,6 +28,8 @@ export interface McpContext {
   userId: string;
   // A function: a stdio server can run past midnight.
   today: () => string;
+  // Granted OAuth scopes; every scope when omitted (personal token).
+  scopes?: readonly OAuthScope[];
 }
 
 export class McpTools {

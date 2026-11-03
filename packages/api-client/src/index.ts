@@ -6,6 +6,7 @@ export { CompletionsApi } from './endpoints/completions';
 export { GoalsApi } from './endpoints/goals';
 export { CoachApi } from './endpoints/coach';
 export { UsersApi } from './endpoints/users';
+export { OAuthApi } from './endpoints/oauth';
 export type {
   ApiUser,
   AuthResponse,

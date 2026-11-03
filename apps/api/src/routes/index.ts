@@ -6,6 +6,7 @@ import completionsRoutes from './completions.routes';
 import goalsRoutes from './goals.routes';
 import habitsRoutes from './habits.routes';
 import mcpRoutes from './mcp.routes';
+import oauthRoutes from './oauth.routes';
 import usersRoutes from './users.routes';
 
 const router = Router();
@@ -24,5 +25,6 @@ router.use('/completions', completionsRoutes);
 router.use('/goals', goalsRoutes);
 router.use('/coach', coachRoutes);
 router.use('/mcp', mcpRoutes);
+router.use('/oauth', oauthRoutes);
 
 export default router;

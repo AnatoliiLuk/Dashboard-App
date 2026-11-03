@@ -149,8 +149,8 @@ describe('MCP over Streamable HTTP', () => {
       .send({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
 
     expect(response.status).toBe(401);
-    expect(response.headers['www-authenticate']).toBe(
-      'Bearer realm="habits-plus"',
+    expect(response.headers['www-authenticate']).toMatch(
+      /^Bearer resource_metadata="http.+\/\.well-known\/oauth-protected-resource\/api\/mcp"$/,
     );
   });
 
