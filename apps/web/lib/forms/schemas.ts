@@ -90,7 +90,10 @@ export function goalFormSchema(t: TFunction) {
       habitIds: z
         .array(z.string().min(1))
         .min(1, t('validation.habits'))
-        .max(MAX_GOAL_HABITS, t('validation.habitsMax'))
+        .max(
+          MAX_GOAL_HABITS,
+          t('validation.habitsMax', { max: MAX_GOAL_HABITS }),
+        )
         .refine((ids) => new Set(ids).size === ids.length, {
           message: t('validation.habits'),
         }),

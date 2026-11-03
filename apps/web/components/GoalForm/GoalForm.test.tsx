@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Goal, Habit } from '@repo/types';
 
+import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
 import { today } from '@/lib/habits/dates';
 
 import { renderWithProviders } from '../../test/render';
@@ -56,24 +57,24 @@ describe('GoalForm', () => {
     expect(digits).toContain(`${day}${month}${year}`);
   });
 
-  it('does not let a fifth habit be selected', async () => {
+  it('lets more than four habits be selected up to the limit', async () => {
     const user = userEvent.setup();
-    const habits = [1, 2, 3, 4, 5].map((number) =>
-      habit(`habit-${number}`, `Habit ${number}`),
+    const habits = Array.from({ length: MAX_GOAL_HABITS + 1 }, (_, index) =>
+      habit(`habit-${index + 1}`, `Habit ${index + 1}`),
     );
 
     renderWithProviders(<GoalForm habits={habits} onAdd={jest.fn()} />);
 
     await user.click(screen.getByRole('combobox', { name: 'Habits' }));
 
-    for (const number of [1, 2, 3, 4]) {
+    for (let number = 1; number <= MAX_GOAL_HABITS; number += 1) {
       await user.click(screen.getByRole('option', { name: `Habit ${number}` }));
     }
 
-    expect(screen.getByRole('option', { name: 'Habit 5' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(
+      screen.getByRole('option', { name: `Habit ${MAX_GOAL_HABITS + 1}` }),
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText(`+${MAX_GOAL_HABITS - 2}`)).toBeInTheDocument();
   });
 
   it('saves changes to the goal already in the form', async () => {

@@ -183,7 +183,7 @@ export const uk: Copy<typeof en> = {
     endDate: 'Оберіть дату завершення.',
     dateOrder: 'Дата початку має бути не пізніше за дату завершення.',
     habits: 'Оберіть принаймні одну звичку.',
-    habitsMax: 'Можна обрати не більше 4 звичок.',
+    habitsMax: 'Можна обрати не більше {{max}} звичок.',
   },
   calendar: {
     label: 'Календар звичок',
@@ -229,7 +229,8 @@ export const uk: Copy<typeof en> = {
     startDate: 'Дата початку',
     endDate: 'Дата завершення',
     habits: 'Звички',
-    habitsHint: 'Оберіть від 1 до 4 звичок.',
+    habitsHint: 'Оберіть від 1 до {{max}} звичок.',
+    moreHabits: '+{{count}}',
     noHabits: 'Спершу створіть звичку, щоб додати ціль.',
     linkedHabits: "Пов'язані звички",
     sort: 'Сортування цілей',

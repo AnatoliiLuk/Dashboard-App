@@ -1,4 +1,5 @@
 import { GoalColor } from '@prisma/client';
+import { MAX_GOAL_HABITS } from '@repo/core';
 import { z } from 'zod';
 
 const isoDateSchema = z
@@ -9,7 +10,7 @@ const isoDateSchema = z
 const habitIdsSchema = z
   .array(z.string().min(1, 'Habit id is required'))
   .min(1, 'At least one habit is required')
-  .max(4, 'A goal can include at most 4 habits')
+  .max(MAX_GOAL_HABITS, `A goal can include at most ${MAX_GOAL_HABITS} habits`)
   .refine((ids) => new Set(ids).size === ids.length, {
     message: 'Habit ids must be unique',
   });

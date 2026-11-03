@@ -11,6 +11,7 @@ import { GoalHabitSelect } from '@/components/GoalHabitSelect';
 import { registerField } from '@/lib/forms/registerField';
 import { goalFormSchema, type GoalFormValues } from '@/lib/forms/schemas';
 import { GOAL_COLORS } from '@/lib/goals/colors';
+import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
 import { today } from '@/lib/habits/dates';
 import { useTranslation } from '@/lib/i18n';
 
@@ -89,7 +90,9 @@ function GoalForm({
     });
   }
 
-  let habitHelper: string | undefined = t('goals.habitsHint');
+  let habitHelper: string | undefined = t('goals.habitsHint', {
+    max: MAX_GOAL_HABITS,
+  });
   if (disabled) {
     habitHelper = undefined;
   }

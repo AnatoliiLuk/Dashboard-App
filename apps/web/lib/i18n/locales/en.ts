@@ -175,7 +175,7 @@ export const en = {
     endDate: 'Choose an end date.',
     dateOrder: 'Start must be on or before the end date.',
     habits: 'Choose at least one habit.',
-    habitsMax: 'Choose 4 habits or fewer.',
+    habitsMax: 'Choose {{max}} habits or fewer.',
   },
   calendar: {
     label: 'Habit calendar',
@@ -221,7 +221,8 @@ export const en = {
     startDate: 'Start date',
     endDate: 'End date',
     habits: 'Habits',
-    habitsHint: 'Choose 1 to 4 habits.',
+    habitsHint: 'Choose 1 to {{max}} habits.',
+    moreHabits: '+{{count}}',
     noHabits: 'Create a habit before you can add a goal.',
     linkedHabits: 'Linked habits',
     sort: 'Sort goals',

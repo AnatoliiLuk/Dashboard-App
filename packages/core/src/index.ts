@@ -4,6 +4,7 @@ export {
   goalColor,
   habitColor,
 } from './constants/colors';
+export { MAX_GOAL_HABITS } from './constants/goals';
 
 export {
   addDays,

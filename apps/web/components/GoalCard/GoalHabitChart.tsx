@@ -6,7 +6,7 @@ import { formatDisplay } from '@/lib/habits/dates';
 import { goalColor, type GoalColor } from '@/lib/goals/colors';
 import { displayLocale, useTranslation } from '@/lib/i18n';
 
-import { chartValue } from './GoalCard.helpers';
+import { chartTicks, chartValue } from './GoalCard.helpers';
 import { chartLabelStyle, chartStyle } from './GoalCard.style';
 
 type GoalHabitChartProps = {
@@ -56,10 +56,7 @@ function GoalHabitChart({
             {
               min: 0,
               max,
-              tickInterval: Array.from(
-                { length: max + 1 },
-                (_, index) => index,
-              ),
+              tickInterval: chartTicks(max),
               valueFormatter: (value: number) => String(value),
               width: 36,
             },
