@@ -43,6 +43,11 @@ const envSchema = z.object({
   // Per user per minute on /api/mcp. Tool calls are cheap reads and writes,
   // but an agent loop can fire many of them.
   MCP_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(60),
+  // Where clients reach this API: the OAuth issuer and the MCP resource URL
+  // are built from it (ADR 0004). Must be public HTTPS for Claude.ai.
+  API_PUBLIC_URL: z.string().url().default('http://localhost:4000'),
+  // The web app, for the OAuth consent page.
+  WEB_URL: z.string().url().default('http://localhost:3001'),
   // z.coerce.boolean() would turn the string "false" into true.
   AI_ENABLED: z
     .enum(['true', 'false'])

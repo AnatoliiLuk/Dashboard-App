@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { OAuthScope } from '@repo/types';
 
 import { AppError } from '../middleware/error.middleware';
 import { createMcpServer, TODAY_RESOURCE_URI } from './server';
@@ -74,9 +75,13 @@ function services() {
 
 let client: Client | undefined;
 
-async function connect(deps = services(), userId = 'user-a') {
+async function connect(
+  deps = services(),
+  userId = 'user-a',
+  scopes?: OAuthScope[],
+) {
   const server = createMcpServer(
-    { userId, today: () => TODAY },
+    { userId, today: () => TODAY, scopes },
     deps as unknown as McpServices,
   );
   const [clientTransport, serverTransport] =
@@ -129,6 +134,25 @@ describe('Habits+ MCP server', () => {
     expect(byName.list_habits.annotations?.readOnlyHint).toBe(true);
     expect(byName.unlog_habit.annotations?.destructiveHint).toBe(true);
     expect(byName.log_habit.inputSchema.required).toEqual(['habitId']);
+  });
+
+  it('registers only the tools the OAuth scopes allow', async () => {
+    const readOnly = await connect(services(), 'user-a', ['habits:read']);
+    const { tools: readTools } = await readOnly.client.listTools();
+    expect(readTools.map((tool) => tool.name).sort()).toEqual([
+      'get_habit_history',
+      'list_goals',
+      'list_habits',
+    ]);
+
+    const writeOnly = await connect(services(), 'user-a', ['habits:write']);
+    const { tools: writeTools } = await writeOnly.client.listTools();
+    expect(writeTools.map((tool) => tool.name).sort()).toEqual([
+      'create_habit',
+      'log_habit',
+      'unlog_habit',
+    ]);
+    await readOnly.client.close();
   });
 
   it('list_habits returns active habits with streaks', async () => {

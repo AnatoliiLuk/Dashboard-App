@@ -45,7 +45,20 @@ A live run saves `evals/reports/latest.json` (gitignored) and compares it with t
 
 `src/mcp/` exposes Habits+ to AI assistants over the [Model Context Protocol](https://modelcontextprotocol.io): tools `list_habits`, `get_habit_history`, `list_goals`, `log_habit`, `unlog_habit`, `create_habit`, the resource `habits://today` and the prompt `weekly_review`. Design: [ADR 0003](../../docs/adr/0003-mcp-server.md), roadmap: [MCP plan](../../docs/MCP_PLAN.md).
 
-Both transports need a personal token (expires after `JWT_EXPIRES_IN`, and after a password change):
+### Sign in with OAuth (recommended over HTTP)
+
+`/api/mcp` is an OAuth 2.1 protected resource ([ADR 0004](../../docs/adr/0004-mcp-oauth.md)). A client that supports MCP authorization finds the server on its own: register without a header, and the client opens the browser at the web app's consent page.
+
+```bash
+npm run dev            # API on :4000 and web on :3001
+claude mcp add --transport http habits-plus http://localhost:4000/api/mcp
+```
+
+In Claude Code run `/mcp`, choose `habits-plus` and authenticate. Scopes are `habits:read` and `habits:write`; access tokens last 1 hour and refresh tokens 30 days (rotated on use). A password change ends every grant. `API_PUBLIC_URL` and `WEB_URL` set the issuer, resource and consent URLs.
+
+### Personal token
+
+Without OAuth (stdio, or a client that only takes headers) use a personal token. It has every scope, expires after `JWT_EXPIRES_IN`, and stops working after a password change:
 
 ```bash
 npm run mcp:token -w @habit-tracker/api      # prompts for email and password, prints the token
@@ -88,4 +101,4 @@ The server runs as a child process of the client and reads `.env` like the API, 
 
 stdout is the protocol in this mode; logs go to stderr.
 
-Claude.ai custom connectors need a public HTTPS URL and OAuth, which come in Stage 3.
+Claude.ai custom connectors use the OAuth flow but connect from Anthropic's servers, so `API_PUBLIC_URL` must be a public HTTPS URL (a deployment, or a tunnel while testing).
