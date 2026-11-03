@@ -109,6 +109,23 @@ export const en = {
       tooManyAttempts: 'Too many attempts. Wait a minute and try again.',
     },
   },
+  oauth: {
+    title: 'Connect an app',
+    heading: 'Allow {{client}} to use your Habits+ account?',
+    unknownClient: 'an unnamed app',
+    signedInAs: 'Signed in as {{email}}.',
+    scopesLabel: 'It will be able to:',
+    scopeRead: 'See your habits, check-ins and goals',
+    scopeWrite: 'Log or undo check-ins and create habits',
+    returnTo: 'After you choose, you go back to {{host}}.',
+    trust:
+      'Only allow apps you trust. The app chose its own name, so check where you will be sent.',
+    allow: 'Allow',
+    deny: 'Deny',
+    working: 'One moment…',
+    invalid:
+      'This link is invalid or has expired. Start again from the app you were connecting.',
+  },
   validation: {
     email: 'Enter a valid email.',
     password: 'Password is required.',

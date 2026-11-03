@@ -19,3 +19,7 @@ export const coachKeys = {
   conversation: ['coach', 'conversation'] as const,
   usage: ['coach', 'usage'] as const,
 };
+
+export const oauthKeys = {
+  consent: (request: string) => ['oauth', 'consent', request] as const,
+};

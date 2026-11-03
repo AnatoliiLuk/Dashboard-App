@@ -24,7 +24,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
       return;
     }
 
-    const next = encodeURIComponent(pathname || '/');
+    // Keep the query string: the OAuth consent page carries its request there.
+    const next = encodeURIComponent(
+      `${pathname || '/'}${window.location.search}`,
+    );
     router.replace(`/login?next=${next}`);
   }, [isAuthReady, isAuthenticated, pathname, router]);
 
