@@ -1,27 +1,38 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import type { ApiUser, ChangePasswordResponse } from '@repo/api-client';
-import type { ChangePasswordDto, UpdateProfileDto } from '@repo/types';
+import type {
+  ChangePasswordDto,
+  DeleteAccountDto,
+  UpdateProfileDto,
+} from '@repo/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import { authKeys } from '@/lib/api/query-keys';
+import { getSignedIn, setSignedIn } from '@/lib/api/session';
 
 const updateMe = jest.fn<(dto: UpdateProfileDto) => Promise<ApiUser>>();
 const changePassword =
   jest.fn<(dto: ChangePasswordDto) => Promise<ChangePasswordResponse>>();
+const deleteMe = jest.fn<(dto: DeleteAccountDto) => Promise<void>>();
 
 jest.mock('@/lib/api/client', () => ({
   api: {
     users: {
       updateMe: (dto: UpdateProfileDto) => updateMe(dto),
       changePassword: (dto: ChangePasswordDto) => changePassword(dto),
+      deleteMe: (dto: DeleteAccountDto) => deleteMe(dto),
     },
   },
 }));
 
 // Imported after the mocks so the hooks use the fakes.
-import { useChangePassword, useUpdateProfile } from './useAccount';
+import {
+  useChangePassword,
+  useDeleteAccount,
+  useUpdateProfile,
+} from './useAccount';
 
 function setup() {
   const queryClient = new QueryClient({
@@ -69,5 +80,34 @@ describe('useChangePassword', () => {
     expect(cancel.mock.invocationCallOrder[0]).toBeLessThan(
       changePassword.mock.invocationCallOrder[0],
     );
+  });
+});
+
+describe('useDeleteAccount', () => {
+  it('cancels in-flight queries, then signs out once the account is gone', async () => {
+    setSignedIn(true);
+    deleteMe.mockResolvedValue(undefined);
+    const { queryClient, wrapper } = setup();
+    const cancel = jest.spyOn(queryClient, 'cancelQueries');
+    const { result } = renderHook(() => useDeleteAccount(), { wrapper });
+
+    await act(() => result.current.mutateAsync({ password: 'long-enough' }));
+
+    expect(cancel).toHaveBeenCalled();
+    expect(deleteMe).toHaveBeenCalledWith({ password: 'long-enough' });
+    expect(getSignedIn()).toBe(false);
+  });
+
+  it('keeps the session when the password is wrong', async () => {
+    setSignedIn(true);
+    deleteMe.mockRejectedValue(new Error('wrong password'));
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useDeleteAccount(), { wrapper });
+
+    await act(() =>
+      result.current.mutateAsync({ password: 'wrong' }).catch(() => undefined),
+    );
+
+    expect(getSignedIn()).toBe(true);
   });
 });

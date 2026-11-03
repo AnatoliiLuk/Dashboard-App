@@ -29,6 +29,13 @@ export const en = {
     logHabits: 'Log habits',
     myGoals: 'My goals',
     coach: 'AI Coach',
+    calendarShort: 'Calendar',
+    logShort: 'Log',
+    goalsShort: 'Goals',
+    coachShort: 'Coach',
+    account: 'Account',
+    accountMenu: 'Account menu',
+    skipToContent: 'Skip to content',
     signIn: 'Sign in',
     signOut: 'Sign out',
   },
@@ -50,6 +57,7 @@ export const en = {
   account: {
     profile: {
       title: 'Profile',
+      description: 'Your name and the email you sign in with.',
       memberSince: 'Member since {{date}}',
       currentPassword: 'Current password',
       currentPasswordHint: 'Needed to change your email.',
@@ -61,6 +69,7 @@ export const en = {
     },
     security: {
       title: 'Password',
+      description: 'Changing it signs you out on your other devices.',
       currentPassword: 'Current password',
       newPassword: 'New password',
       confirmPassword: 'Confirm new password',
@@ -69,6 +78,34 @@ export const en = {
       submitting: 'Changing…',
       changed: 'Password changed. Your other devices were signed out.',
       passwordIncorrect: 'The current password is incorrect.',
+      tooManyAttempts: 'Too many attempts. Wait a minute and try again.',
+    },
+    coach: {
+      title: 'AI Coach',
+      description: "Today's usage and your saved conversation.",
+      loading: 'Loading your usage…',
+      loadFailed: "Couldn't load your AI coach usage.",
+      disabled: 'The AI coach is turned off right now.',
+      usage: '{{used}} of {{limit}} tokens used today',
+      usageLabel: "Today's AI coach usage",
+      resetsAt: 'Resets {{time}}',
+      clear: 'Clear conversation',
+      clearConfirm: 'Delete your conversation with the coach for good?',
+      clearing: 'Deleting…',
+      cleared: 'Conversation deleted.',
+      clearFailed: "Couldn't delete the conversation. Try again.",
+    },
+    danger: {
+      title: 'Danger zone',
+      description: 'Delete your account and everything in it.',
+      delete: 'Delete account',
+      dialogTitle: 'Delete your account?',
+      dialogBody:
+        'Your habits, check-ins, goals, AI coach chat and usage are deleted for good, and you are signed out on every device. This cannot be undone.',
+      password: 'Password',
+      passwordHint: 'Enter your password to confirm.',
+      deleting: 'Deleting…',
+      passwordIncorrect: 'The password is incorrect.',
       tooManyAttempts: 'Too many attempts. Wait a minute and try again.',
     },
   },
@@ -95,7 +132,6 @@ export const en = {
   calendar: {
     label: 'Habit calendar',
     view: 'Calendar view',
-    description: 'Each day lists the habits you marked done.',
     month: 'Month',
     week: 'Week',
     today: 'Today: {{date}}',
@@ -115,7 +151,6 @@ export const en = {
     },
   },
   log: {
-    description: 'Add a habit and mark what you did today.',
     empty: 'Add a habit to start a streak.',
     addHabit: 'Add habit',
     editing: 'Editing {{name}}',
@@ -131,8 +166,6 @@ export const en = {
     archiveEmpty: 'No archived habits.',
   },
   goals: {
-    description:
-      'Name a stretch of days. The bar shows how much time has passed, and the chart shows how many linked habits you logged each day.',
     empty: 'Add a goal to track a stretch of days.',
     addGoal: 'Add goal',
     name: 'Goal',
@@ -184,8 +217,6 @@ export const en = {
     loading: 'Loading goals…',
   },
   coach: {
-    description:
-      'Ask about your habits, streaks and goals, or get a tip for building a routine.',
     aiNotice:
       'Answers are written by AI and can be wrong. Check numbers against your log.',
     examplesTitle: 'Try asking',

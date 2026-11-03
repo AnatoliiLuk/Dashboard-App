@@ -26,6 +26,7 @@ async function storeWith(overrides: Partial<UsersStore> = {}) {
     updatePassword: jest
       .fn<UsersStore['updatePassword']>()
       .mockResolvedValue(1),
+    deleteUser: jest.fn<UsersStore['deleteUser']>().mockResolvedValue(),
     ...overrides,
   };
   return store;
@@ -138,5 +139,43 @@ describe('UsersService.changePassword', () => {
       new AppError(400, 'New password must differ from the current one'),
     );
     expect(store.updatePassword).not.toHaveBeenCalled();
+  });
+});
+
+describe('UsersService.deleteAccount', () => {
+  it('deletes the user after checking the password', async () => {
+    const store = await storeWith();
+    const service = new UsersService(store);
+
+    await service.deleteAccount('user-a', { password: 'long-enough' });
+
+    expect(store.deleteUser).toHaveBeenCalledWith('user-a');
+  });
+
+  it('rejects a wrong password with 400 and keeps the account', async () => {
+    const store = await storeWith();
+    const service = new UsersService(store);
+
+    const result = service.deleteAccount('user-a', {
+      password: 'wrong-password',
+    });
+
+    await expect(result).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'CURRENT_PASSWORD_INCORRECT',
+    });
+    expect(store.deleteUser).not.toHaveBeenCalled();
+  });
+
+  it('rejects a user who no longer exists with 401', async () => {
+    const store = await storeWith({
+      findAccount: jest.fn<UsersStore['findAccount']>().mockResolvedValue(null),
+    });
+    const service = new UsersService(store);
+
+    const result = service.deleteAccount('user-a', { password: 'long-enough' });
+
+    await expect(result).rejects.toMatchObject({ statusCode: 401 });
+    expect(store.deleteUser).not.toHaveBeenCalled();
   });
 });

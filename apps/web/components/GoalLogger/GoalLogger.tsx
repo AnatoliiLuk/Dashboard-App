@@ -5,7 +5,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GoalCard } from '@/components/GoalCard';
 import { GoalForm } from '@/components/GoalForm';
-import { PageIntro } from '@/components/PageIntro';
+import { PlusIcon, SortIcon } from '@/components/icons';
+import { PageHeader } from '@/components/PageHeader';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import type { GoalFormValues } from '@/lib/forms/schemas';
 import { useTranslation } from '@/lib/i18n';
@@ -92,9 +93,10 @@ export function GoalLogger({
 
   return (
     <section>
-      <PageIntro
-        description={t('goals.description')}
+      <PageHeader
+        title={t('shell.myGoals')}
         actionLabel={formOpen ? undefined : t('goals.addGoal')}
+        actionIcon={<PlusIcon width={16} height={16} />}
         onAction={formOpen ? undefined : openNew}
       />
       {formOpen ? (
@@ -112,6 +114,7 @@ export function GoalLogger({
       {showToolbar ? (
         <SegmentedControl
           label={t('common.sortBy')}
+          icon={<SortIcon width={16} height={16} />}
           value={sort}
           options={GOAL_SORTS.map((option) => ({
             id: option,

@@ -2,6 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
 
 import { app } from '../app';
+import { prisma } from '../config/database';
 import { tokenFromSetCookie } from '../utils/session-cookie';
 import { disconnectDatabase, resetDatabase } from './db';
 import { registerUser } from './register';
@@ -289,5 +290,179 @@ describe('POST /api/users/me/password', () => {
       .send({ currentPassword: 'x', newPassword: 'brand-new-secret' });
 
     expect(changed.status).toBe(401);
+  });
+});
+
+function deleteMe(token: string, body: object) {
+  return request(app)
+    .delete('/api/users/me')
+    .set('Authorization', `Bearer ${token}`)
+    .send(body);
+}
+
+async function registerOther() {
+  const response = await request(app).post('/api/auth/register').send({
+    email: 'grace@example.com',
+    password: 'long-enough',
+    name: 'Grace',
+  });
+  return tokenFromSetCookie(response.headers['set-cookie']);
+}
+
+// One row in every table that hangs off a user.
+async function seedEverything(email: string) {
+  const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+  const habit = await prisma.habit.create({
+    data: { userId: user.id, name: 'Read', color: 'sky' },
+  });
+  await prisma.completion.create({
+    data: {
+      userId: user.id,
+      habitId: habit.id,
+      completedAt: new Date('2026-10-01'),
+    },
+  });
+  await prisma.goal.create({
+    data: {
+      userId: user.id,
+      name: 'October',
+      color: 'indigo',
+      startDate: new Date('2026-10-01'),
+      endDate: new Date('2026-10-31'),
+      habits: { create: { habitId: habit.id } },
+    },
+  });
+  await prisma.aiUsage.create({
+    data: {
+      userId: user.id,
+      model: 'test-model',
+      promptVersion: 'test',
+      latencyMs: 1,
+      status: 'ok',
+    },
+  });
+  await prisma.coachConversation.create({
+    data: {
+      userId: user.id,
+      messages: { create: { role: 'user', content: 'Hi' } },
+    },
+  });
+}
+
+async function rowCounts() {
+  const [
+    users,
+    habits,
+    completions,
+    goals,
+    goalHabits,
+    aiUsage,
+    conversations,
+    messages,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.habit.count(),
+    prisma.completion.count(),
+    prisma.goal.count(),
+    prisma.goalHabit.count(),
+    prisma.aiUsage.count(),
+    prisma.coachConversation.count(),
+    prisma.coachMessage.count(),
+  ]);
+  return {
+    users,
+    habits,
+    completions,
+    goals,
+    goalHabits,
+    aiUsage,
+    conversations,
+    messages,
+  };
+}
+
+describe('DELETE /api/users/me', () => {
+  it('deletes the user and all their data, and nobody else’s', async () => {
+    const { token, password, email } = await registerUser();
+    await registerOther();
+    await seedEverything(email);
+    await seedEverything('grace@example.com');
+
+    const deleted = await deleteMe(token, { password });
+
+    expect(deleted.status).toBe(204);
+    expect(await rowCounts()).toEqual({
+      users: 1,
+      habits: 1,
+      completions: 1,
+      goals: 1,
+      goalHabits: 1,
+      aiUsage: 1,
+      conversations: 1,
+      messages: 1,
+    });
+    expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
+  });
+
+  it('clears the session cookie and stops every token for the user', async () => {
+    const { token, password, email } = await registerUser();
+    const otherSession = await request(app)
+      .post('/api/auth/login')
+      .send({ email, password });
+    const otherToken = tokenFromSetCookie(otherSession.headers['set-cookie']);
+
+    const deleted = await deleteMe(token, { password });
+
+    const cookie = String(deleted.headers['set-cookie']);
+    expect(cookie).toMatch(/habits_plus_token=;/);
+    expect(cookie).toMatch(/Expires=Thu, 01 Jan 1970/);
+    expect((await listHabits(token)).status).toBe(401);
+    expect((await listHabits(otherToken)).status).toBe(401);
+    expect(
+      (await request(app).post('/api/auth/login').send({ email, password }))
+        .status,
+    ).toBe(401);
+  });
+
+  it('rejects a wrong password with 400, not 401, and keeps the account', async () => {
+    const { token, email } = await registerUser();
+
+    const deleted = await deleteMe(token, { password: 'wrong-password' });
+
+    expect(deleted.status).toBe(400);
+    expect(deleted.body.code).toBe('CURRENT_PASSWORD_INCORRECT');
+    expect(await prisma.user.findUnique({ where: { email } })).not.toBeNull();
+    expect((await listHabits(token)).status).toBe(200);
+  });
+
+  it('rejects a body without a password', async () => {
+    const { token } = await registerUser();
+
+    expect((await deleteMe(token, {})).status).toBe(400);
+    expect(await prisma.user.count()).toBe(1);
+  });
+
+  it('returns 429 after 5 attempts in a minute', async () => {
+    const { token } = await registerUser();
+    const attempt = () => deleteMe(token, { password: 'wrong-password' });
+
+    for (let i = 0; i < 5; i += 1) {
+      expect((await attempt()).status).toBe(400);
+    }
+
+    const blocked = await attempt();
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.code).toBe('RATE_LIMITED');
+  });
+
+  it('rejects a request without a token', async () => {
+    await registerUser();
+
+    const deleted = await request(app)
+      .delete('/api/users/me')
+      .send({ password: 'long-enough' });
+
+    expect(deleted.status).toBe(401);
+    expect(await prisma.user.count()).toBe(1);
   });
 });

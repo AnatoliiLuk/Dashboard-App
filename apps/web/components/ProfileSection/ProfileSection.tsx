@@ -10,9 +10,10 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { ProfileFormProps } from './ProfileSection.interface';
 import {
   actionsStyle,
+  contentStyle,
   memberSinceStyle,
-  sectionStyle,
 } from './ProfileSection.style';
+import { AccountSection } from '@/components/AccountSection';
 import { dayjs } from '@/lib/dates/dayjs';
 import { registerField } from '@/lib/forms/registerField';
 import { profileFormSchema, type ProfileFormValues } from '@/lib/forms/schemas';
@@ -89,74 +90,76 @@ function ProfileForm({ user }: ProfileFormProps) {
   }
 
   return (
-    <Box
-      component="form"
-      noValidate
-      sx={sectionStyle}
-      onSubmit={handleSubmit(submit)}
+    <AccountSection
+      title={t('account.profile.title')}
+      description={t('account.profile.description')}
     >
-      <Typography variant="h6" component="h2">
-        {t('account.profile.title')}
-      </Typography>
-      <Typography variant="body2" sx={memberSinceStyle}>
-        {t('account.profile.memberSince', {
-          date: formatDisplay(
-            dayjs(user.createdAt).format('YYYY-MM-DD'),
-            locale,
-          ),
-        })}
-      </Typography>
-      <TextField
-        label={t('auth.name')}
-        autoComplete="name"
-        error={Boolean(errors.name)}
-        helperText={errors.name?.message}
-        fullWidth
-        size="small"
-        {...registerField(register('name'))}
-      />
-      <TextField
-        label={t('auth.email')}
-        type="email"
-        autoComplete="email"
-        error={Boolean(errors.email)}
-        helperText={errors.email?.message}
-        fullWidth
-        size="small"
-        {...registerField(register('email'))}
-      />
-      {emailChanged ? (
+      <Box
+        component="form"
+        noValidate
+        sx={contentStyle}
+        onSubmit={handleSubmit(submit)}
+      >
+        <Typography variant="body2" sx={memberSinceStyle}>
+          {t('account.profile.memberSince', {
+            date: formatDisplay(
+              dayjs(user.createdAt).format('YYYY-MM-DD'),
+              locale,
+            ),
+          })}
+        </Typography>
         <TextField
-          label={t('account.profile.currentPassword')}
-          type="password"
-          autoComplete="current-password"
-          error={Boolean(errors.currentPassword)}
-          helperText={
-            errors.currentPassword?.message ??
-            t('account.profile.currentPasswordHint')
-          }
+          label={t('auth.name')}
+          autoComplete="name"
+          error={Boolean(errors.name)}
+          helperText={errors.name?.message}
           fullWidth
           size="small"
-          {...registerField(register('currentPassword'))}
+          {...registerField(register('name'))}
         />
-      ) : null}
-      {errors.root ? (
-        <Alert severity="error">{errors.root.message}</Alert>
-      ) : null}
-      <Box sx={actionsStyle}>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={update.isPending || !isDirty}
-        >
-          {update.isPending ? t('account.profile.saving') : t('common.save')}
-        </Button>
-        {saved && !isDirty ? (
-          <Typography role="status" variant="body2">
-            {t('account.profile.saved')}
-          </Typography>
+        <TextField
+          label={t('auth.email')}
+          type="email"
+          autoComplete="email"
+          error={Boolean(errors.email)}
+          helperText={errors.email?.message}
+          fullWidth
+          size="small"
+          {...registerField(register('email'))}
+        />
+        {emailChanged ? (
+          <TextField
+            label={t('account.profile.currentPassword')}
+            type="password"
+            autoComplete="current-password"
+            error={Boolean(errors.currentPassword)}
+            helperText={
+              errors.currentPassword?.message ??
+              t('account.profile.currentPasswordHint')
+            }
+            fullWidth
+            size="small"
+            {...registerField(register('currentPassword'))}
+          />
         ) : null}
+        {errors.root ? (
+          <Alert severity="error">{errors.root.message}</Alert>
+        ) : null}
+        <Box sx={actionsStyle}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={update.isPending || !isDirty}
+          >
+            {update.isPending ? t('account.profile.saving') : t('common.save')}
+          </Button>
+          {saved && !isDirty ? (
+            <Typography role="status" variant="body2">
+              {t('account.profile.saved')}
+            </Typography>
+          ) : null}
+        </Box>
       </Box>
-    </Box>
+    </AccountSection>
   );
 }

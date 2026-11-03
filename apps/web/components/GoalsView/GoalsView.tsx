@@ -8,7 +8,7 @@ import { loadingStyle } from '@/app/page.style';
 import { AppShell } from '@/components/AppShell';
 import { AuthGuard } from '@/components/AuthGuard';
 import { GoalLogger } from '@/components/GoalLogger';
-import { PageIntro } from '@/components/PageIntro';
+import { PageHeader } from '@/components/PageHeader';
 import { useCompletions } from '@/lib/hooks/useCompletions';
 import { useGoals } from '@/lib/hooks/useGoals';
 import { useHabits } from '@/lib/hooks/useHabits';
@@ -85,7 +85,7 @@ function GoalsContent() {
   if (isError) {
     return (
       <>
-        <PageIntro description={t('goals.description')} />
+        <PageHeader title={t('shell.myGoals')} />
         <Stack spacing={2} alignItems="flex-start">
           <Typography sx={loadingStyle}>{t('common.error')}</Typography>
           <Button variant="outlined" onClick={() => void refetch()}>
@@ -99,7 +99,7 @@ function GoalsContent() {
   if (!ready) {
     return (
       <>
-        <PageIntro description={t('goals.description')} />
+        <PageHeader title={t('shell.myGoals')} />
         <Typography sx={loadingStyle}>{t('goals.loading')}</Typography>
       </>
     );

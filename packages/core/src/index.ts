@@ -10,6 +10,7 @@ export {
   addMonths,
   compareDates,
   formatDateRange,
+  formatDateTime,
   formatDisplay,
   monthTitle,
   startOfMonth,

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import { AppShell } from '@/components/AppShell';
-import { PageIntro } from '@/components/PageIntro';
+import { PageHeader } from '@/components/PageHeader';
 import { useTranslation } from '@/lib/i18n';
 
 export default function Error({
@@ -21,8 +21,8 @@ export default function Error({
 
   return (
     <AppShell>
-      <PageIntro
-        description={t('common.error')}
+      <PageHeader
+        title={t('common.error')}
         actionLabel={t('common.tryAgain')}
         onAction={() => retry()}
       />

@@ -1,29 +1,27 @@
 'use client';
 
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import NextLink from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { SignOutIcon } from '@/components/icons';
-import { LocaleSwitch } from '@/components/LocaleSwitch';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { AccountMenu } from '@/components/AccountMenu';
+import { MobileNav } from '@/components/MobileNav';
 import { useTranslation } from '@/lib/i18n';
 
-import { mainStyle, pageStyle } from '@/app/page.style';
-
-import { menu } from './AppShell.constants';
+import { isCurrentRoute, MAIN_ID, menu } from './AppShell.constants';
 import {
-  barEndStyle,
-  barStartStyle,
-  barStyle,
   brandStyle,
+  contentStyle,
+  headerEndStyle,
+  headerInnerStyle,
   headerStyle,
+  mainStyle,
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
-  signOutStyle,
+  shellStyle,
+  skipLinkStyle,
 } from './AppShell.style';
 
 type AppShellProps = {
@@ -32,82 +30,44 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { t } = useTranslation();
-  const { isAuthReady, isAuthenticated, logout } = useAuth();
-
-  let authAction: ReactNode;
-  if (!isAuthReady) {
-    authAction = (
-      <Button
-        variant="outlined"
-        disabled
-        tabIndex={-1}
-        aria-hidden
-        startIcon={<SignOutIcon width={16} height={16} />}
-        sx={[signOutStyle, { visibility: 'hidden' }]}
-      >
-        {t('shell.signOut')}
-      </Button>
-    );
-  } else if (isAuthenticated) {
-    authAction = (
-      <Button
-        variant="outlined"
-        startIcon={<SignOutIcon width={16} height={16} />}
-        sx={signOutStyle}
-        onClick={() => {
-          logout();
-          router.replace('/login');
-        }}
-      >
-        {t('shell.signOut')}
-      </Button>
-    );
-  } else {
-    authAction = (
-      <Button variant="outlined" component={NextLink} href="/login">
-        {t('shell.signIn')}
-      </Button>
-    );
-  }
 
   return (
-    <Box sx={pageStyle}>
-      <Box component="main" sx={mainStyle}>
-        <Box component="header" sx={headerStyle}>
-          <Box sx={barStyle}>
-            <Box sx={barStartStyle}>
-              <Typography variant="h1" component="h1" sx={brandStyle}>
-                {t('shell.brand')}
-              </Typography>
-              <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
-                {menu.map(({ href, label }) => {
-                  const current = pathname === href;
-                  return (
-                    <Link
-                      key={href}
-                      component={NextLink}
-                      href={href}
-                      aria-current={current ? 'page' : undefined}
-                      underline="none"
-                      sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
-                    >
-                      {t(label)}
-                    </Link>
-                  );
-                })}
-              </Box>
-            </Box>
-            <Box sx={barEndStyle}>
-              <LocaleSwitch />
-              <ThemeToggle />
-              {authAction}
-            </Box>
+    <Box sx={shellStyle}>
+      <Link href={`#${MAIN_ID}`} sx={skipLinkStyle}>
+        {t('shell.skipToContent')}
+      </Link>
+      <Box component="header" sx={headerStyle}>
+        <Box sx={headerInnerStyle}>
+          <Link component={NextLink} href="/" underline="none" sx={brandStyle}>
+            {t('shell.brand')}
+          </Link>
+          <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
+            {menu.map(({ href, label }) => {
+              const current = isCurrentRoute(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  component={NextLink}
+                  href={href}
+                  aria-current={current ? 'page' : undefined}
+                  underline="none"
+                  sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
+                >
+                  {t(label)}
+                </Link>
+              );
+            })}
+          </Box>
+          <Box sx={headerEndStyle}>
+            <AccountMenu />
           </Box>
         </Box>
-        {children}
       </Box>
+      <Box component="main" id={MAIN_ID} tabIndex={-1} sx={mainStyle}>
+        <Box sx={contentStyle}>{children}</Box>
+      </Box>
+      <MobileNav />
     </Box>
   );
 }

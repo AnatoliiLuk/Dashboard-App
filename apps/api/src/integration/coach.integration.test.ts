@@ -88,6 +88,12 @@ function getConversation(token: string) {
     .set('Authorization', `Bearer ${token}`);
 }
 
+function getUsage(token: string) {
+  return request(app)
+    .get('/api/coach/usage')
+    .set('Authorization', `Bearer ${token}`);
+}
+
 async function createHabit(token: string, name: string) {
   const response = await request(app)
     .post('/api/habits')
@@ -343,6 +349,74 @@ describe('coach chat', () => {
     await expect(
       new AiUsageRepository().billableTokensSince(user.id, startOfToday),
     ).resolves.toBe(355);
+  });
+
+  it('reports today’s billable usage, the limit and the reset time', async () => {
+    const { token } = await registerUser();
+    const user = await prisma.user.findFirstOrThrow();
+    const otherToken = await registerSecondUser();
+    const other = await prisma.user.findFirstOrThrow({
+      where: { email: 'grace@example.com' },
+    });
+    const row = {
+      model: 'test-model',
+      promptVersion: 'test',
+      latencyMs: 1,
+      status: 'ok' as const,
+    };
+    await prisma.aiUsage.createMany({
+      data: [
+        {
+          ...row,
+          userId: user.id,
+          inputTokens: 5,
+          outputTokens: 50,
+          cacheWriteTokens: 300,
+          cacheReadTokens: 9000,
+        },
+        { ...row, userId: other.id, outputTokens: 700 },
+      ],
+    });
+
+    const response = await getUsage(token);
+
+    const tomorrow = addDays(utcToday(), 1);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      enabled: true,
+      usedTokens: 355,
+      dailyLimit: env.AI_DAILY_TOKEN_BUDGET,
+      resetsAt: `${tomorrow}T00:00:00.000Z`,
+    });
+    expect((await getUsage(otherToken)).body.usedTokens).toBe(700);
+  });
+
+  it('reports usage with enabled false when the coach is off', async () => {
+    const { token } = await registerUser();
+    env.AI_ENABLED = false;
+
+    try {
+      const response = await getUsage(token);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toMatchObject({ enabled: false, usedTokens: 0 });
+    } finally {
+      env.AI_ENABLED = true;
+    }
+  });
+
+  it('requires a session for usage', async () => {
+    expect((await request(app).get('/api/coach/usage')).status).toBe(401);
+  });
+
+  it('reports usage past the chat rate limit', async () => {
+    const { token } = await registerUser();
+    mockCreateMessage.mockResolvedValue(textReply('Ok'));
+    for (let i = 0; i <= env.AI_RATE_LIMIT_PER_MINUTE; i++) {
+      await chat(token, 'Hi');
+    }
+
+    expect((await getUsage(token)).status).toBe(200);
   });
 
   it('rejects a client-sent history with a clear error', async () => {
