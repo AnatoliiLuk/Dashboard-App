@@ -3,7 +3,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 
 import { AppError } from './error.middleware';
 import { UsersRepository } from '../repositories/users.repository';
-import { verifyToken } from '../utils/jwt.util';
+import { verifyToken, type TokenPayload } from '../utils/jwt.util';
 import { readSessionToken } from '../utils/session-cookie';
 
 const users = new UsersRepository();
@@ -31,23 +31,31 @@ export async function authMiddleware(
       throw new AppError(401, 'No token provided');
     }
 
-    const payload = verifyToken(token);
-
-    // A deleted user, or a token issued before a password change, is no
-    // longer a valid session (ADR 0002).
-    const tokenVersion = await users.findTokenVersion(payload.id);
-    if (tokenVersion === null || tokenVersion !== payload.ver) {
-      throw new AppError(401, 'Invalid token');
-    }
-
-    req.user = payload;
+    req.user = await authenticateToken(token);
     next();
   } catch (error) {
-    if (error instanceof JsonWebTokenError) {
-      next(new AppError(401, 'Invalid token'));
-      return;
-    }
-
     next(error);
   }
+}
+
+// Shared with the MCP stdio entry, so both accept exactly the same tokens.
+export async function authenticateToken(token: string): Promise<TokenPayload> {
+  let payload: TokenPayload;
+  try {
+    payload = verifyToken(token);
+  } catch (error) {
+    if (error instanceof JsonWebTokenError) {
+      throw new AppError(401, 'Invalid token');
+    }
+    throw error;
+  }
+
+  // A deleted user, or a token issued before a password change, is no
+  // longer a valid session (ADR 0002).
+  const tokenVersion = await users.findTokenVersion(payload.id);
+  if (tokenVersion === null || tokenVersion !== payload.ver) {
+    throw new AppError(401, 'Invalid token');
+  }
+
+  return payload;
 }
