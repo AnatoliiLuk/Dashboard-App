@@ -93,7 +93,7 @@ export const headerEndStyle = () => ({
 export const mainStyle = ({ spacingPx }: Theme) => ({
   flex: 1,
   px: { xs: spacingPx[16], sm: spacingPx[24] },
-  pt: { xs: spacingPx[24], md: spacingPx[48] },
+  pt: { xs: spacingPx[24], md: spacingPx[32] },
   pb: {
     xs: `calc(${MOBILE_NAV_HEIGHT}px + env(safe-area-inset-bottom) + ${spacingPx[24]})`,
     md: spacingPx[48],

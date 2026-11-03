@@ -9,9 +9,9 @@ export const headerStyle = ({ spacingPx, breakpoints }: Theme) => ({
   flexWrap: 'wrap',
   gap: spacingPx[12],
   minHeight: spacingPx[44],
-  mb: spacingPx[24],
+  mb: spacingPx[32],
   [breakpoints.down('sm')]: {
-    mb: spacingPx[16],
+    mb: spacingPx[24],
   },
 });
 
