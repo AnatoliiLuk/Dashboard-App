@@ -14,9 +14,11 @@ import {
   rowStyle,
   secondaryTextStyle,
   setupStyle,
+  setupTitleRowStyle,
   setupTitleStyle,
 } from './ConnectedAppsSection.style';
 import { AccountSection } from '@/components/AccountSection';
+import { AiBadge } from '@/components/AiBadge';
 import { mcpUrl } from '@/lib/api/client';
 import { formatDateTime } from '@/lib/habits/dates';
 import {
@@ -39,6 +41,7 @@ export function ConnectedAppsSection() {
     <AccountSection
       title={t('account.apps.title')}
       description={t('account.apps.description')}
+      badge={<AiBadge />}
     >
       <Box sx={contentStyle}>
         <ConnectedAppsList />
@@ -194,9 +197,12 @@ function ClaudeCodeSetup() {
 
   return (
     <Box sx={setupStyle}>
-      <Typography variant="subtitle2" component="h3" sx={setupTitleStyle}>
-        {t('account.apps.claudeCodeTitle')}
-      </Typography>
+      <Box sx={setupTitleRowStyle}>
+        <Typography variant="subtitle2" component="h3" sx={setupTitleStyle}>
+          {t('account.apps.claudeCodeTitle')}
+        </Typography>
+        <AiBadge />
+      </Box>
       <Typography variant="body2" sx={secondaryTextStyle}>
         {t('account.apps.claudeCodeSteps')}
       </Typography>

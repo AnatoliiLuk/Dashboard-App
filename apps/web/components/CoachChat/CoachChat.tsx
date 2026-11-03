@@ -11,6 +11,7 @@ import {
 
 import { CoachMessage } from '@/components/CoachMessage';
 import { CircleInfoIcon, PlusIcon } from '@/components/icons';
+import { AiBadge } from '@/components/AiBadge';
 import { PageHeader } from '@/components/PageHeader';
 import { useTranslation } from '@/lib/i18n';
 
@@ -88,6 +89,7 @@ function CoachChat({
     <>
       <PageHeader
         title={t('shell.coach')}
+        badge={<AiBadge />}
         actionLabel={startOverLabel}
         actionIcon={<PlusIcon width={16} height={16} />}
         actionDisabled={busy}

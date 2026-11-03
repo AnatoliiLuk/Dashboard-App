@@ -20,6 +20,7 @@ export const en = {
     sortBy: 'Sort by',
     error: 'Something went wrong.',
     tryAgain: 'Try again',
+    aiBadge: 'AI',
     signInRequired: 'Sign in to sync habits with the server.',
   },
   shell: {
@@ -55,6 +56,12 @@ export const en = {
     hasAccount: 'Already have an account?',
   },
   account: {
+    nav: {
+      label: 'Account settings',
+      profile: 'Profile',
+      security: 'Security',
+      ai: 'AI & apps',
+    },
     profile: {
       title: 'Profile',
       description: 'Your name and the email you sign in with.',
@@ -69,7 +76,8 @@ export const en = {
     },
     security: {
       title: 'Password',
-      description: 'Changing it signs you out on your other devices.',
+      description:
+        'Changing it signs you out on your other devices and disconnects your connected apps.',
       currentPassword: 'Current password',
       newPassword: 'New password',
       confirmPassword: 'Confirm new password',

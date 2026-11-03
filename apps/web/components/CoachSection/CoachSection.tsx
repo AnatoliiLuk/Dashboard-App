@@ -10,6 +10,7 @@ import {
   usageStyle,
 } from './CoachSection.style';
 import { AccountSection } from '@/components/AccountSection';
+import { AiBadge } from '@/components/AiBadge';
 import { formatDateTime } from '@/lib/habits/dates';
 import { useClearConversation, useCoachUsage } from '@/lib/hooks/useCoach';
 import { displayLocale, useTranslation } from '@/lib/i18n';
@@ -28,6 +29,7 @@ export function CoachSection() {
     <AccountSection
       title={t('account.coach.title')}
       description={t('account.coach.description')}
+      badge={<AiBadge />}
     >
       <Box sx={contentStyle}>
         <CoachUsageSummary />

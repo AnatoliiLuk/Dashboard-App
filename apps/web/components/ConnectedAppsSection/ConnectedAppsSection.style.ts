@@ -38,9 +38,26 @@ export const actionsStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[8],
 });
 
-export const setupStyle = ({ spacingPx }: Theme) => ({
+// A callout, so people notice they can use Habits+ from Claude Code.
+export const setupStyle = ({
+  vars,
+  spacingPx,
+  border,
+  borderRadius,
+}: Theme) => ({
   display: 'flex',
   flexDirection: 'column',
+  gap: spacingPx[8],
+  p: spacingPx[16],
+  border: border[1],
+  borderColor: vars.palette.divider,
+  borderRadius: borderRadius.sm,
+  backgroundColor: vars.palette.background.default,
+});
+
+export const setupTitleRowStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
   gap: spacingPx[8],
 });
 

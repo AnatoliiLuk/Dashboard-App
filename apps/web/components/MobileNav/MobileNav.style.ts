@@ -50,6 +50,7 @@ export const itemActiveStyle = ({ vars }: Theme) => ({
 
 // A pill behind the icon marks the current tab, not just a colour change.
 export const iconStyle = ({ spacingPx, borderRadius }: Theme) => ({
+  position: 'relative' as const,
   display: 'inline-flex' as const,
   alignItems: 'center' as const,
   justifyContent: 'center' as const,
@@ -68,4 +69,11 @@ export const labelStyle = () => ({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap' as const,
+});
+
+// Sits on the icon pill's top-right corner, so the label keeps its width.
+export const badgeStyle = ({ spacingPx }: Theme) => ({
+  position: 'absolute' as const,
+  top: `-${spacingPx[6]}`,
+  right: `-${spacingPx[8]}`,
 });

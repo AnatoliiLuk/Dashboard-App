@@ -10,6 +10,7 @@ import {
   dangerCardStyle,
   descriptionStyle,
   introStyle,
+  titleRowStyle,
   titleStyle,
 } from './AccountSection.style';
 
@@ -17,6 +18,7 @@ import {
 export function AccountSection({
   title,
   description,
+  badge,
   tone = 'default',
   children,
 }: AccountSectionProps) {
@@ -29,9 +31,12 @@ export function AccountSection({
       sx={[cardStyle, tone === 'danger' ? dangerCardStyle : null]}
     >
       <Box sx={introStyle}>
-        <Typography id={titleId} variant="h6" component="h2" sx={titleStyle}>
-          {title}
-        </Typography>
+        <Box sx={titleRowStyle}>
+          <Typography id={titleId} variant="h6" component="h2" sx={titleStyle}>
+            {title}
+          </Typography>
+          {badge}
+        </Box>
         <Typography variant="body2" sx={descriptionStyle}>
           {description}
         </Typography>
