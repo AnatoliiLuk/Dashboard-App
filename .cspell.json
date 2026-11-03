@@ -117,6 +117,10 @@
     "worktrees",
     "SDLC",
     "osascript",
-    "anthropics"
+    "anthropics",
+    "loggable",
+    "modelcontextprotocol",
+    "PKCE",
+    "unlog"
   ]
 }
