@@ -40,6 +40,9 @@ const envSchema = z.object({
     .int()
     .positive()
     .default(30),
+  // Per user per minute on /api/mcp. Tool calls are cheap reads and writes,
+  // but an agent loop can fire many of them.
+  MCP_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(60),
   // z.coerce.boolean() would turn the string "false" into true.
   AI_ENABLED: z
     .enum(['true', 'false'])

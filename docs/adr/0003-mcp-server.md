@@ -51,6 +51,13 @@ Option C.
   by the same `authenticateToken` as `authMiddleware`. The token is checked once
   at start-up; after a password change the server must be restarted.
 - SDK: `@modelcontextprotocol/sdk` 1.x. The v2 packages need zod 4.
+- Stage 2 transport is Streamable HTTP at `POST /api/mcp`, stateless (no
+  `Mcp-Session-Id`, JSON responses, a new server per request). No tool streams
+  progress or needs server-initiated messages, and stateless requests work on
+  any API instance without sticky sessions. `GET` and `DELETE` answer 405.
+- `/api/mcp` accepts only a Bearer token. The session cookie is refused, so a
+  web page cannot drive the endpoint with a signed-in person's cookie, and the
+  existing origin check rejects foreign browser origins (DNS rebinding).
 
 ## Consequences
 

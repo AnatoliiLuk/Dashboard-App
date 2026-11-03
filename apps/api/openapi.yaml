@@ -12,6 +12,7 @@ tags:
   - name: Habits
   - name: Completions
   - name: Coach
+  - name: MCP
 paths:
   /health:
     get:
@@ -537,6 +538,71 @@ paths:
                 $ref: '#/components/schemas/CoachUsage'
         '401':
           $ref: '#/components/responses/Error'
+  /api/mcp:
+    post:
+      tags: [MCP]
+      summary: Model Context Protocol endpoint (Streamable HTTP)
+      description: >-
+        JSON-RPC 2.0 messages from an MCP client (initialize, tools/list,
+        tools/call, resources/read, prompts/get). Stateless: no
+        Mcp-Session-Id, every request is answered with application/json.
+        Clients must send Accept: application/json, text/event-stream. Bearer
+        token only; the session cookie is refused. Tools, resources and the
+        prompt are described in docs/MCP_PLAN.md. Rate limited per user by
+        MCP_RATE_LIMIT_PER_MINUTE.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: A JSON-RPC 2.0 request or notification.
+      responses:
+        '200':
+          description: JSON-RPC response. Tool failures come back as results with isError true.
+          content:
+            application/json:
+              schema:
+                type: object
+        '202':
+          description: Notification accepted (no response body)
+        '401':
+          description: Missing or invalid Bearer token. Sends WWW-Authenticate.
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+                example: Bearer realm="habits-plus"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '406':
+          description: Accept header does not allow application/json and text/event-stream
+        '429':
+          $ref: '#/components/responses/Error'
+    get:
+      tags: [MCP]
+      summary: Server-to-client stream (not supported)
+      description: Stateless mode has no server-initiated stream. Always 405.
+      security:
+        - bearerAuth: []
+      responses:
+        '405':
+          description: Method not allowed. Allow is POST.
+    delete:
+      tags: [MCP]
+      summary: End a session (not supported)
+      description: Stateless mode has no session to end. Always 405.
+      security:
+        - bearerAuth: []
+      responses:
+        '405':
+          description: Method not allowed. Allow is POST.
 components:
   securitySchemes:
     bearerAuth:

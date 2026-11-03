@@ -22,7 +22,8 @@ apps/api/src/mcp/
   server.ts       createMcpServer(userId, services) -> McpServer (tools, resources, prompts)
   tools.ts        tool handlers (one per tool, plain functions, unit-tested)
   stdio.ts        Stage 1 entry: personal token -> userId -> StdioServerTransport
-  (Stage 2)       routes/mcp.routes.ts: Streamable HTTP at /mcp behind authMiddleware
+apps/api/src/routes/mcp.routes.ts + controllers/mcp.controller.ts
+                  Stage 2 entry: POST /api/mcp, Bearer -> authMiddleware -> one server per request
 ```
 
 | Primitive | Name                | What it does                                                        |
@@ -65,11 +66,17 @@ Rules:
 
 ## Stage 2: Remote server over Streamable HTTP
 
-- [ ] `POST/GET/DELETE /mcp` route using `StreamableHTTPServerTransport` (stateless mode first)
-- [ ] Bearer auth through the existing `authMiddleware`; one server instance per request user
-- [ ] Rate limit and origin checks (DNS rebinding protection) on `/mcp`
-- [ ] Integration tests with the SDK client over HTTP (`registerUser()` + `resetDatabase()`)
-- [ ] `openapi.yaml` note and README update
+- [x] `POST /api/mcp` using `StreamableHTTPServerTransport`, stateless with JSON responses; `GET`/`DELETE` answer 405
+- [x] Bearer auth through the existing `authMiddleware`; one server instance per request user
+- [x] Session cookie refused on `/api/mcp` (no CSRF path); `WWW-Authenticate: Bearer` on 401
+- [x] Per-user rate limit (`MCP_RATE_LIMIT_PER_MINUTE`) and the existing origin check (DNS rebinding protection)
+- [x] Integration tests with the SDK client over HTTP (`registerUser()` + `resetDatabase()`)
+- [x] `openapi.yaml` and README update
+- [ ] Try it from Claude Code (`claude mcp add --transport http`) and MCP Inspector
+
+Known limit: "today" is the server's date. Over stdio that is the person's own
+machine; over HTTP a person far from the server's time zone should pass `date`
+explicitly. Fix with a stored user time zone if it matters.
 
 **Status:** [ ]
 
