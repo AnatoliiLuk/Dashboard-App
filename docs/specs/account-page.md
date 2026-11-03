@@ -43,8 +43,18 @@ only finds out when a request is refused.
 ### Page
 
 - `/account` is behind `AuthGuard` and linked from the `AppShell` menu.
-- Five sections in this order: Profile, Security, AI Coach, Connected apps,
-  Danger zone.
+- Three tabs, each its own route under one layout (header and tabs stay
+  mounted while switching), shown as a left menu from `md` up and a
+  scrolling row above the content below that:
+
+  | Route               | Tab       | Sections                 |
+  | ------------------- | --------- | ------------------------ |
+  | `/account`          | Profile   | Profile, Danger zone     |
+  | `/account/security` | Security  | Security (password)      |
+  | `/account/ai`       | AI & apps | AI Coach, Connected apps |
+
+- The current tab has `aria-current="page"`; the account menu counts every
+  `/account/*` route as the account page.
 - Every string is in `en.ts` and `uk.ts`.
 - A section's form shows field errors inline and keeps the other sections
   usable while it saves.

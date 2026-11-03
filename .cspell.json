@@ -37,6 +37,14 @@
       "language": "en,uk"
     },
     {
+      "filename": "apps/web/components/AccountLayout/AccountLayout.test.tsx",
+      "language": "en,uk"
+    },
+    {
+      "filename": "apps/web/components/AccountMenu/AccountMenu.test.tsx",
+      "language": "en,uk"
+    },
+    {
       "filename": "apps/web/components/AccountView/AccountView.test.tsx",
       "language": "en,uk"
     },
