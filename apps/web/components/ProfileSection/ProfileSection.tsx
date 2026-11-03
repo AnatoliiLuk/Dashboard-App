@@ -40,7 +40,7 @@ function ProfileForm({ user }: ProfileFormProps) {
     clearErrors,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema(t, user.email)),
     defaultValues: { name: user.name, email: user.email, currentPassword: '' },
@@ -146,10 +146,14 @@ function ProfileForm({ user }: ProfileFormProps) {
           <Alert severity="error">{errors.root.message}</Alert>
         ) : null}
         <Box sx={actionsStyle}>
-          <Button type="submit" variant="contained" disabled={update.isPending}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={update.isPending || !isDirty}
+          >
             {update.isPending ? t('account.profile.saving') : t('common.save')}
           </Button>
-          {saved ? (
+          {saved && !isDirty ? (
             <Typography role="status" variant="body2">
               {t('account.profile.saved')}
             </Typography>
