@@ -117,8 +117,8 @@ until it is right.
 
 ### 10. Local review
 
-- [ ] `/code-review` on every branch before opening a PR
-- [ ] `/security-review` on password change, email change and account deletion
+- [x] `/code-review` on every branch before opening a PR
+- [x] `/security-review` on password change, email change and account deletion
 - [ ] Log each finding as accepted / rejected / false positive
 
 ### 11. PR automation
@@ -129,30 +129,3 @@ until it is right.
 - [ ] Try the review on the next PR, then practice `@claude` comments to fix its feedback
 
 **Status:** [ ]
-
----
-
-## Phase 4: Test and QA (Day 5)
-
-### 12. End-to-end tests
-
-- [ ] Generate Playwright flows from the spec into `e2e/` (edit profile, change password then log in, clear coach conversation, delete account then fail to log in)
-- [ ] Add them to CI
-
-### 13. AI coach evals
-
-- [ ] Add a case where the coach is asked about account settings - it should point to `/account`, not invent features
-- [ ] Change the coach prompt on purpose and confirm `eval.yml` catches the regression
-
-**Status:** [ ]
-
----
-
-## Phase 5: Operate and Maintain (Ongoing)
-
-### 14. Scheduled agents
-
-- [ ] Issue triage (labels, duplicates, reproduction steps)
-- [ ] Release notes from conventional commits
-
----
