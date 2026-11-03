@@ -8,6 +8,7 @@ export type {
   OAuthConsentResult,
   OAuthScope,
 } from './entities/oauth-consent';
+export type { OAuthGrant } from './entities/oauth-grant';
 
 export type { CreateHabitDto, UpdateHabitDto } from './dto/habit.dto';
 export type { CreateGoalDto, UpdateGoalDto } from './dto/goal.dto';
