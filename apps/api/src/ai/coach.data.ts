@@ -22,6 +22,9 @@ export type HabitRow = Awaited<ReturnType<HabitsService['getAll']>>[number];
 export type CompletionRow = Awaited<
   ReturnType<CompletionsService['getAll']>
 >[number];
+export type HabitWithCompletionsRow = Awaited<
+  ReturnType<HabitsService['getOne']>
+>;
 
 export interface HabitSummary {
   id: string;
@@ -137,6 +140,34 @@ function goalSummary(
     completionsLogged: logged,
     completionsPossible: possible,
     completionRatePercent: possible ? Math.round((logged / possible) * 100) : 0,
+  };
+}
+
+export function summarizeHistory(
+  habit: HabitWithCompletionsRow,
+  days: number,
+  today: string,
+) {
+  const from = addDays(today, -(days - 1));
+  const completedDates = habit.completions
+    .map((row) => toCompletion(row).date)
+    .filter(
+      (date) => compareDates(date, from) >= 0 && compareDates(date, today) <= 0,
+    )
+    .sort(compareDates);
+
+  return {
+    habit: {
+      id: habit.id,
+      name: habit.name,
+      createdOn: toHabit(habit).createdOn,
+      archived: Boolean(habit.archivedAt),
+    },
+    from,
+    to: today,
+    days,
+    completedCount: completedDates.length,
+    completedDates,
   };
 }
 

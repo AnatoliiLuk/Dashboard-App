@@ -1,13 +1,11 @@
 import type Anthropic from '@anthropic-ai/sdk';
-import { addDays, compareDates } from '@repo/core';
 import { ZodError, type ZodTypeAny, type z } from 'zod';
 
 import { AppError } from '../../middleware/error.middleware';
 import {
   summarizeGoals,
   summarizeHabits,
-  toCompletion,
-  toHabit,
+  summarizeHistory,
   type CoachDataServices,
 } from '../coach.data';
 import { TOOL_NAMES } from './index';
@@ -115,30 +113,7 @@ export class CoachToolHandlers implements CoachToolRunner {
   ) {
     // getOne checks ownership: another user's habit is "not found".
     const habit = await this.services.habits.getOne(habitId, userId);
-    const from = addDays(today, -(days - 1));
-    const completedDates = habit.completions
-      .map((row) => toCompletion(row).date)
-      .filter(
-        (date) =>
-          compareDates(date, from) >= 0 && compareDates(date, today) <= 0,
-      )
-      .sort(compareDates);
-
-    return {
-      data: {
-        habit: {
-          id: habit.id,
-          name: habit.name,
-          createdOn: toHabit(habit).createdOn,
-          archived: Boolean(habit.archivedAt),
-        },
-        from,
-        to: today,
-        days,
-        completedCount: completedDates.length,
-        completedDates,
-      },
-    };
+    return { data: summarizeHistory(habit, days, today) };
   }
 
   private async getGoals({ userId, today }: CoachToolContext) {
