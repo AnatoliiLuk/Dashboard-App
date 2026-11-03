@@ -15,4 +15,8 @@ export const consentDecisionSchema = z.object({
   approve: z.boolean(),
 });
 
+export const grantParamsSchema = z.object({
+  clientId: z.string().min(1).max(200),
+});
+
 export type ConsentDecisionBody = z.infer<typeof consentDecisionSchema>;

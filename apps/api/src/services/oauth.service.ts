@@ -19,7 +19,7 @@ import type {
 } from '@modelcontextprotocol/sdk/shared/auth.js';
 import { checkResourceAllowed } from '@modelcontextprotocol/sdk/shared/auth-utils.js';
 import type { Prisma } from '@prisma/client';
-import type { OAuthConsentRequest, OAuthScope } from '@repo/types';
+import type { OAuthConsentRequest, OAuthGrant, OAuthScope } from '@repo/types';
 import type { Response } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -298,6 +298,49 @@ export class OAuthService implements OAuthServerProvider {
 
     // RFC 7009: unknown tokens are not an error.
     await this.repository.deleteToken(hash, client.client_id);
+  }
+
+  /** Apps that can still reach /api/mcp for the user, latest first. */
+  async listGrants(userId: string): Promise<OAuthGrant[]> {
+    const tokenVersion = await this.users.findTokenVersion(userId);
+    if (tokenVersion === null) {
+      return [];
+    }
+
+    const tokens = await this.repository.findLiveTokens(
+      userId,
+      tokenVersion,
+      new Date(),
+    );
+
+    // Tokens come newest first, so the first one per client is its last use.
+    const grants = new Map<string, OAuthGrant>();
+    for (const token of tokens) {
+      const grant = grants.get(token.clientId);
+      if (grant) {
+        grant.scopes = MCP_SCOPES.filter(
+          (scope) =>
+            grant.scopes.includes(scope) || token.scopes.includes(scope),
+        );
+        continue;
+      }
+      grants.set(token.clientId, {
+        clientId: token.clientId,
+        clientName: token.clientName,
+        clientUri: token.clientUri,
+        scopes: MCP_SCOPES.filter((scope) => token.scopes.includes(scope)),
+        lastUsedAt: token.createdAt.toISOString(),
+      });
+    }
+    return [...grants.values()];
+  }
+
+  /** Disconnects an app: its access and refresh tokens stop working at once. */
+  async revokeGrant(userId: string, clientId: string): Promise<void> {
+    const deleted = await this.repository.deleteGrant(userId, clientId);
+    if (deleted === 0) {
+      throw new AppError(404, 'Connected app not found');
+    }
   }
 
   /**

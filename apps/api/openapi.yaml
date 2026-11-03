@@ -689,6 +689,59 @@ paths:
           $ref: '#/components/responses/Error'
         '403':
           $ref: '#/components/responses/Error'
+  /api/oauth/grants:
+    get:
+      tags: [OAuth]
+      summary: List connected apps
+      description: >-
+        MCP clients that hold an unexpired access or refresh token for the
+        signed-in person, one row per client, most recently used first.
+        Grants ended by a password change are left out. Client name and URI
+        are self-declared by the client.
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Connected apps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OAuthGrant'
+        '401':
+          $ref: '#/components/responses/Error'
+  /api/oauth/grants/{clientId}:
+    delete:
+      tags: [OAuth]
+      summary: Disconnect an app
+      description: >-
+        Deletes every token and pending authorization code the client holds
+        for the signed-in person. The app's access stops at once; it has to
+        go through consent again to reconnect.
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Disconnected
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          description: No grant for this client and person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -733,6 +786,27 @@ components:
           items:
             type: string
             enum: [habits:read, habits:write]
+    OAuthGrant:
+      type: object
+      required: [clientId, clientName, clientUri, scopes, lastUsedAt]
+      properties:
+        clientId:
+          type: string
+        clientName:
+          type: string
+          nullable: true
+        clientUri:
+          type: string
+          nullable: true
+        scopes:
+          type: array
+          items:
+            type: string
+            enum: [habits:read, habits:write]
+        lastUsedAt:
+          type: string
+          format: date-time
+          description: When the app last signed in or refreshed its access (within an hour).
     Error:
       type: object
       required: [status, message]

@@ -15,9 +15,12 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import request from 'supertest';
 
 import { app } from '../app';
+import { prisma } from '../config/database';
 import { env } from '../config/env';
+import { OAuthRepository } from '../repositories/oauth.repository';
 import { disconnectDatabase, resetDatabase } from './db';
 import { registerUser } from './register';
+import { tokenFromSetCookie } from '../utils/session-cookie';
 
 // The whole flow an MCP client such as Claude.ai runs (ADR 0004):
 // discovery -> registration -> authorize -> consent -> token -> /api/mcp.
@@ -386,5 +389,115 @@ describe('MCP OAuth consent API', () => {
       .send({ request: `${header}.${edited}.${signature}`, approve: true });
 
     expect(response.status).toBe(400);
+  });
+});
+
+describe('Connected apps API', () => {
+  const listGrants = (sessionToken: string) =>
+    request(app)
+      .get('/api/oauth/grants')
+      .set('Authorization', `Bearer ${sessionToken}`);
+
+  const revokeGrant = (sessionToken: string, clientId: string) =>
+    request(app)
+      .delete(`/api/oauth/grants/${clientId}`)
+      .set('Authorization', `Bearer ${sessionToken}`);
+
+  it('lists each connected app once with its scopes', async () => {
+    const { sessionToken, clientId, tokens } = await tokensFor('habits:read');
+    // A refresh adds tokens but not a second row.
+    await request(app).post('/token').type('form').send({
+      grant_type: 'refresh_token',
+      client_id: clientId,
+      refresh_token: tokens.refresh_token,
+    });
+
+    const response = await listGrants(sessionToken);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      {
+        clientId,
+        clientName: 'Test client',
+        clientUri: null,
+        scopes: ['habits:read'],
+        lastUsedAt: expect.any(String),
+      },
+    ]);
+  });
+
+  it('needs a signed-in person', async () => {
+    expect((await request(app).get('/api/oauth/grants')).status).toBe(401);
+  });
+
+  it('disconnects an app: its tokens stop working at once', async () => {
+    const { sessionToken, clientId, tokens } = await tokensFor();
+
+    expect((await revokeGrant(sessionToken, clientId)).status).toBe(204);
+
+    expect((await mcpList(tokens.access_token)).status).toBe(401);
+    const refreshed = await request(app).post('/token').type('form').send({
+      grant_type: 'refresh_token',
+      client_id: clientId,
+      refresh_token: tokens.refresh_token,
+    });
+    expect(refreshed.body.error).toBe('invalid_grant');
+    expect((await listGrants(sessionToken)).body).toEqual([]);
+    expect((await revokeGrant(sessionToken, clientId)).status).toBe(404);
+  });
+
+  it("answers 404 for another person's app and leaves it connected", async () => {
+    const { clientId, tokens } = await tokensFor();
+    const other = await request(app).post('/api/auth/register').send({
+      email: 'grace@example.com',
+      password: 'long-enough',
+      name: 'Grace',
+    });
+    const otherToken = tokenFromSetCookie(other.headers['set-cookie']);
+
+    expect((await listGrants(otherToken)).body).toEqual([]);
+    expect((await revokeGrant(otherToken, clientId)).status).toBe(404);
+    expect((await mcpList(tokens.access_token)).status).toBe(200);
+  });
+
+  it('leaves out grants ended by a password change', async () => {
+    const { sessionToken } = await tokensFor();
+
+    const changed = await request(app)
+      .post('/api/users/me/password')
+      .set('Authorization', `Bearer ${sessionToken}`)
+      .send({ currentPassword: 'long-enough', newPassword: 'even-longer-1' });
+
+    expect((await listGrants(changed.body.token)).body).toEqual([]);
+  });
+});
+
+describe('OAuth purge', () => {
+  it('deletes expired codes and tokens and keeps live ones', async () => {
+    const flow = await startFlow();
+    const redirect = await approve(flow.cookie, flow.consentRequest);
+    // A second approval leaves a code that is never exchanged.
+    await approve(flow.cookie, flow.consentRequest);
+    const { body: tokens } = await exchangeCode(
+      flow.clientId,
+      redirect.searchParams.get('code')!,
+      flow.verifier,
+    );
+    const past = new Date(Date.now() - 1000);
+    await prisma.oAuthToken.updateMany({
+      where: { type: 'access' },
+      data: { expiresAt: past },
+    });
+    await prisma.oAuthAuthorizationCode.updateMany({
+      data: { expiresAt: past },
+    });
+
+    const deleted = await new OAuthRepository().deleteExpired(new Date());
+
+    expect(deleted).toEqual({ codes: 1, tokens: 1 });
+    expect(await prisma.oAuthToken.count({ where: { type: 'refresh' } })).toBe(
+      1,
+    );
+    expect((await mcpList(tokens.access_token)).status).toBe(401);
   });
 });

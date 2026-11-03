@@ -26,7 +26,10 @@ export const oauthServerRouter = mcpAuthRouter({
   resourceName: 'Habits+',
 });
 
-/** The consent step, called by the web app with the session cookie. */
+/**
+ * The consent step and the "Connected apps" list, called by the web app
+ * with the session cookie.
+ */
 const router = Router();
 const controller = new OAuthController();
 
@@ -37,5 +40,7 @@ router.post(
   validateRequest(consentDecisionSchema),
   controller.decideConsent,
 );
+router.get('/grants', controller.listGrants);
+router.delete('/grants/:clientId', controller.revokeGrant);
 
 export default router;

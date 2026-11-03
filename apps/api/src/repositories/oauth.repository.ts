@@ -30,6 +30,15 @@ export type CreateTokenInput = {
   expiresAt: Date;
 };
 
+/** One live token, joined with what its client registered. */
+export type OAuthGrantTokenRecord = {
+  clientId: string;
+  clientName: string | null;
+  clientUri: string | null;
+  scopes: string[];
+  createdAt: Date;
+};
+
 export class OAuthRepository {
   async findClient(id: string): Promise<OAuthClientRecord | null> {
     return prisma.oAuthClient.findUnique({
@@ -94,7 +103,56 @@ export class OAuthRepository {
     return prisma.oAuthToken.deleteMany({ where: { tokenHash, clientId } });
   }
 
-  async deleteGrant(userId: string, clientId: string) {
-    await prisma.oAuthToken.deleteMany({ where: { userId, clientId } });
+  /** Unexpired tokens issued under the user's current `tokenVersion`. */
+  async findLiveTokens(
+    userId: string,
+    tokenVersion: number,
+    now: Date,
+  ): Promise<OAuthGrantTokenRecord[]> {
+    const rows = await prisma.oAuthToken.findMany({
+      where: { userId, tokenVersion, expiresAt: { gt: now } },
+      select: {
+        clientId: true,
+        scopes: true,
+        createdAt: true,
+        client: { select: { name: true, metadata: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return rows.map((row) => ({
+      clientId: row.clientId,
+      clientName: row.client.name,
+      clientUri: clientUri(row.client.metadata),
+      scopes: row.scopes,
+      createdAt: row.createdAt,
+    }));
   }
+
+  /** Ends a grant: its tokens and any code not yet exchanged. Returns tokens deleted. */
+  async deleteGrant(userId: string, clientId: string): Promise<number> {
+    const [tokens] = await prisma.$transaction([
+      prisma.oAuthToken.deleteMany({ where: { userId, clientId } }),
+      prisma.oAuthAuthorizationCode.deleteMany({ where: { userId, clientId } }),
+    ]);
+    return tokens.count;
+  }
+
+  async deleteExpired(now: Date) {
+    const [codes, tokens] = await prisma.$transaction([
+      prisma.oAuthAuthorizationCode.deleteMany({
+        where: { expiresAt: { lte: now } },
+      }),
+      prisma.oAuthToken.deleteMany({ where: { expiresAt: { lte: now } } }),
+    ]);
+    return { codes: codes.count, tokens: tokens.count };
+  }
+}
+
+function clientUri(metadata: Prisma.JsonValue): string | null {
+  if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+    const uri = metadata.client_uri;
+    return typeof uri === 'string' ? uri : null;
+  }
+  return null;
 }

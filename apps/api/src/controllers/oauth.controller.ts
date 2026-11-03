@@ -4,6 +4,7 @@ import { AppError } from '../middleware/error.middleware';
 import { OAuthService } from '../services/oauth.service';
 import {
   consentQuerySchema,
+  grantParamsSchema,
   type ConsentDecisionBody,
 } from '../validators/oauth.validator';
 
@@ -33,6 +34,28 @@ export class OAuthController {
       );
 
       res.json({ redirectTo });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listGrants = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.json(await this.service.listGrants(req.user!.id));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revokeGrant = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const params = grantParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        throw new AppError(404, 'Connected app not found');
+      }
+
+      await this.service.revokeGrant(req.user!.id, params.data.clientId);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }
