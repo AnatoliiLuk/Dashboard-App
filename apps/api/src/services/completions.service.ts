@@ -46,6 +46,27 @@ export class CompletionsService {
     await this.repository.delete(id);
   }
 
+  // Idempotent undo for one day: false when there was nothing to remove.
+  async removeForDate(
+    habitId: string,
+    date: string,
+    userId: string,
+  ): Promise<boolean> {
+    await this.ensureHabitOwnership(habitId, userId);
+
+    const existing = await this.repository.findByHabitAndDate(
+      habitId,
+      userId,
+      toCompletedAt(date),
+    );
+    if (!existing) {
+      return false;
+    }
+
+    await this.repository.delete(existing.id);
+    return true;
+  }
+
   async toggle(habitId: string, date: string, userId: string) {
     await this.ensureHabitOwnership(habitId, userId);
 

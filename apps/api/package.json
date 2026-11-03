@@ -8,12 +8,15 @@
     "start": "tsx src/server.ts",
     "test": "jest && jest --config jest.integration.config.cjs",
     "typecheck": "tsc --noEmit",
+    "mcp": "tsx src/mcp/stdio.ts",
+    "mcp:token": "tsx src/scripts/mcp-token.ts",
     "usage:report": "tsx src/scripts/usage-report.ts",
     "coach:purge": "tsx src/scripts/purge-conversations.ts",
     "eval": "tsx evals/run.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@prisma/client": "6.16.3",
     "@repo/core": "*",
     "@repo/types": "*",

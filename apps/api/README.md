@@ -40,3 +40,37 @@ A live run saves `evals/reports/latest.json` (gitignored) and compares it with t
 ## Auth
 
 `POST /api/auth/register` and `POST /api/auth/login` return `{ user }` and set an httpOnly `habits_plus_token` cookie. `POST /api/auth/logout` clears it. Protected routes accept that cookie or `Authorization: Bearer <token>`.
+
+## MCP server
+
+`src/mcp/` exposes Habits+ to AI assistants over the [Model Context Protocol](https://modelcontextprotocol.io): tools `list_habits`, `get_habit_history`, `list_goals`, `log_habit`, `unlog_habit`, `create_habit`, the resource `habits://today` and the prompt `weekly_review`. Design: [ADR 0003](../../docs/adr/0003-mcp-server.md), roadmap: [MCP plan](../../docs/MCP_PLAN.md).
+
+Stage 1 runs locally over stdio as one user. Get a personal token (expires after `JWT_EXPIRES_IN`, and after a password change):
+
+```bash
+npm run mcp:token -w @habit-tracker/api      # prompts for email and password, prints the token
+```
+
+Then register the server in a client. Use absolute paths: clients start it from another directory.
+
+```json
+{
+  "mcpServers": {
+    "habits-plus": {
+      "command": "/path/to/dashboard-app/node_modules/.bin/tsx",
+      "args": [
+        "--tsconfig",
+        "/path/to/dashboard-app/apps/api/tsconfig.json",
+        "/path/to/dashboard-app/apps/api/src/mcp/stdio.ts"
+      ],
+      "env": { "HABITS_PLUS_TOKEN": "<token>" }
+    }
+  }
+}
+```
+
+- Claude Desktop: Settings → Developer → Edit Config (`claude_desktop_config.json`).
+- Claude Code: `claude mcp add habits-plus -e HABITS_PLUS_TOKEN=<token> -- <command> <args...>`.
+- MCP Inspector: `npx @modelcontextprotocol/inspector <command> <args...>` with `HABITS_PLUS_TOKEN` set.
+
+The server reads `.env` like the API, so the database must be reachable. It writes logs to stderr only; stdout is the protocol.
