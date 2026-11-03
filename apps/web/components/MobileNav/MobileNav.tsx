@@ -4,10 +4,12 @@ import { Box, Link } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { AiBadge } from '@/components/AiBadge';
 import { isCurrentRoute, menu } from '@/components/AppShell/AppShell.constants';
 import { useTranslation } from '@/lib/i18n';
 
 import {
+  badgeStyle,
   iconActiveStyle,
   iconStyle,
   itemActiveStyle,
@@ -23,7 +25,7 @@ export function MobileNav() {
 
   return (
     <Box component="nav" aria-label={t('shell.menu')} sx={navStyle}>
-      {menu.map(({ href, shortLabel, Icon }) => {
+      {menu.map(({ href, shortLabel, Icon, ai }) => {
         const current = isCurrentRoute(pathname, href);
         return (
           <Link
@@ -39,6 +41,7 @@ export function MobileNav() {
               sx={[iconStyle, current ? iconActiveStyle : null]}
             >
               <Icon width={18} height={18} />
+              {ai ? <AiBadge sx={badgeStyle} /> : null}
             </Box>
             <Box component="span" sx={labelStyle}>
               {t(shortLabel)}

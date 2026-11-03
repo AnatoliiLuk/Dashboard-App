@@ -35,6 +35,12 @@ export const introStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[4],
 });
 
+export const titleRowStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: spacingPx[8],
+});
+
 export const titleStyle = ({ spacingPx }: Theme) => ({
   m: spacingPx[0],
 });

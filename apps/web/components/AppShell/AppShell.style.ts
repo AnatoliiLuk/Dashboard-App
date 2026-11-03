@@ -184,3 +184,7 @@ export const menuItemActiveStyle = ({ vars }: Theme) => ({
     color: vars.palette.background.paper,
   },
 });
+
+export const menuBadgeStyle = ({ spacingPx }: Theme) => ({
+  ml: spacingPx[6],
+});

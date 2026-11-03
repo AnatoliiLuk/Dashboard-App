@@ -19,4 +19,21 @@ describe('AccountSection', () => {
     expect(section).toHaveTextContent('Your name and email.');
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
+
+  it('shows a badge next to the title without renaming the heading', () => {
+    renderWithProviders(
+      <AccountSection
+        title="AI Coach"
+        description="Usage."
+        badge={<span aria-hidden>AI</span>}
+      >
+        {null}
+      </AccountSection>,
+    );
+
+    expect(screen.getByText('AI')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'AI Coach' }),
+    ).toHaveTextContent(/^AI Coach$/);
+  });
 });

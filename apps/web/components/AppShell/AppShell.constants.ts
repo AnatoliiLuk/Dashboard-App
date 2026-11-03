@@ -11,24 +11,28 @@ export const menu = [
     label: 'shell.calendar',
     shortLabel: 'shell.calendarShort',
     Icon: CalendarIcon,
+    ai: false,
   },
   {
     href: '/log',
     label: 'shell.logHabits',
     shortLabel: 'shell.logShort',
     Icon: CircleCheckIcon,
+    ai: false,
   },
   {
     href: '/goals',
     label: 'shell.myGoals',
     shortLabel: 'shell.goalsShort',
     Icon: TargetIcon,
+    ai: false,
   },
   {
     href: '/coach',
     label: 'shell.coach',
     shortLabel: 'shell.coachShort',
     Icon: SparkleIcon,
+    ai: true,
   },
 ] as const;
 

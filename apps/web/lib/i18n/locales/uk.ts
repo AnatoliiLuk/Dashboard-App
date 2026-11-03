@@ -26,6 +26,7 @@ export const uk: Copy<typeof en> = {
     sortBy: 'Сортувати за',
     error: 'Щось пішло не так.',
     tryAgain: 'Спробувати ще раз',
+    aiBadge: 'ШІ',
     signInRequired: 'Увійдіть, щоб синхронізувати звички з сервером.',
   },
   shell: {
@@ -61,6 +62,12 @@ export const uk: Copy<typeof en> = {
     hasAccount: 'Уже маєте обліковий запис?',
   },
   account: {
+    nav: {
+      label: 'Налаштування облікового запису',
+      profile: 'Профіль',
+      security: 'Безпека',
+      ai: 'ШІ та застосунки',
+    },
     profile: {
       title: 'Профіль',
       description: "Ваше ім'я та електронна пошта для входу.",
@@ -76,7 +83,8 @@ export const uk: Copy<typeof en> = {
     },
     security: {
       title: 'Пароль',
-      description: 'Після зміни ви вийдете на інших пристроях.',
+      description:
+        'Після зміни ви вийдете на інших пристроях, а підключені застосунки буде відключено.',
       currentPassword: 'Поточний пароль',
       newPassword: 'Новий пароль',
       confirmPassword: 'Повторіть новий пароль',

@@ -14,7 +14,8 @@ import NextLink from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useId, useState } from 'react';
 
-import { SignOutIcon, UserIcon } from '@/components/icons';
+import { AiBadge } from '@/components/AiBadge';
+import { SignOutIcon, SparkleIcon, UserIcon } from '@/components/icons';
 import { LocaleSwitch } from '@/components/LocaleSwitch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -60,7 +61,10 @@ export function AccountMenu() {
   }
 
   const close = () => setAnchor(null);
-  const onAccount = pathname === '/account';
+  // The trigger lights up on every account tab; each row only on its own.
+  const inAccount = pathname === '/account' || pathname.startsWith('/account/');
+  const onAiApps = pathname === '/account/ai';
+  const onAccount = inAccount && !onAiApps;
   const initial = user?.name.trim().charAt(0).toUpperCase();
 
   return (
@@ -71,7 +75,7 @@ export function AccountMenu() {
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={(event) => setAnchor(event.currentTarget)}
-        sx={[triggerStyle, onAccount || open ? triggerActiveStyle : null]}
+        sx={[triggerStyle, inAccount || open ? triggerActiveStyle : null]}
       >
         {initial ? (
           <span aria-hidden>{initial}</span>
@@ -114,6 +118,19 @@ export function AccountMenu() {
         >
           <UserIcon width={16} height={16} />
           {t('shell.account')}
+        </Link>
+        {/* A shortcut, so people find the coach settings and Claude Code. */}
+        <Link
+          component={NextLink}
+          href="/account/ai"
+          underline="none"
+          aria-current={onAiApps ? 'page' : undefined}
+          onClick={close}
+          sx={[rowStyle, onAiApps ? rowActiveStyle : null]}
+        >
+          <SparkleIcon width={16} height={16} />
+          {t('account.nav.ai')}
+          <AiBadge />
         </Link>
         <Divider sx={dividerStyle} />
         <Box sx={settingStyle}>

@@ -61,17 +61,51 @@ describe('AccountMenu', () => {
     expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument();
   });
 
-  it('marks the account link on the account page', async () => {
-    mockPathname = '/account';
+  it('links straight to AI & apps', async () => {
     const user = userEvent.setup();
     renderWithProviders(<AccountMenu />);
 
     await user.click(trigger());
 
-    expect(screen.getByRole('link', { name: 'Account' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    const link = screen.getByRole('link', { name: 'AI & apps' });
+    expect(link).toHaveAttribute('href', '/account/ai');
+    expect(link).toHaveTextContent('AI');
+  });
+
+  it.each([
+    ['/account', 'Account'],
+    ['/account/security', 'Account'],
+    ['/account/ai', 'AI & apps'],
+  ])('marks only the matching row on %s', async (pathname, current) => {
+    mockPathname = pathname;
+    const user = userEvent.setup();
+    renderWithProviders(<AccountMenu />);
+
+    await user.click(trigger());
+
+    const marked = screen.getAllByRole('link', { current: 'page' });
+    expect(marked).toHaveLength(1);
+    expect(marked[0]).toHaveAccessibleName(current);
+  });
+
+  it('marks no row outside the account pages', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AccountMenu />);
+
+    await user.click(trigger());
+
+    expect(screen.queryAllByRole('link', { current: 'page' })).toHaveLength(0);
+  });
+
+  it('is translated into Ukrainian', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AccountMenu />, { locale: 'uk' });
+
+    await user.click(screen.getByRole('button', { name: /меню/i }));
+
+    expect(
+      screen.getByRole('link', { name: 'ШІ та застосунки' }),
+    ).toHaveAttribute('href', '/account/ai');
   });
 
   it('signs out and goes to the sign-in page', async () => {

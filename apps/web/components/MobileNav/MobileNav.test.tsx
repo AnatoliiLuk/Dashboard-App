@@ -14,11 +14,20 @@ describe('MobileNav', () => {
   it('shows a short label for every section', () => {
     renderWithProviders(<MobileNav />, { locale: 'uk' });
 
+    const links = screen.getAllByRole('link', { hidden: true });
+    expect(links).toHaveLength(4);
+    ['Календар', 'Журнал', 'Цілі', 'Коуч'].forEach((name, index) => {
+      expect(links[index]).toHaveAccessibleName(name);
+    });
+  });
+
+  it('marks only the coach as AI', () => {
+    renderWithProviders(<MobileNav />);
+
+    expect(screen.getAllByText('AI')).toHaveLength(1);
     expect(
-      screen
-        .getAllByRole('link', { hidden: true })
-        .map((link) => link.textContent),
-    ).toEqual(['Календар', 'Журнал', 'Цілі', 'Коуч']);
+      screen.getByRole('link', { name: 'Coach', hidden: true }),
+    ).toHaveTextContent('AI');
   });
 
   it('marks the current section', () => {

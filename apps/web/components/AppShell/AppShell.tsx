@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { AccountMenu } from '@/components/AccountMenu';
+import { AiBadge } from '@/components/AiBadge';
 import { MobileNav } from '@/components/MobileNav';
 import { useTranslation } from '@/lib/i18n';
 
@@ -17,6 +18,7 @@ import {
   headerInnerStyle,
   headerStyle,
   mainStyle,
+  menuBadgeStyle,
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
@@ -43,7 +45,7 @@ export function AppShell({ children }: AppShellProps) {
             {t('shell.brand')}
           </Link>
           <Box component="nav" sx={menuStyle} aria-label={t('shell.menu')}>
-            {menu.map(({ href, label }) => {
+            {menu.map(({ href, label, ai }) => {
               const current = isCurrentRoute(pathname, href);
               return (
                 <Link
@@ -55,6 +57,7 @@ export function AppShell({ children }: AppShellProps) {
                   sx={[menuItemStyle, current ? menuItemActiveStyle : null]}
                 >
                   {t(label)}
+                  {ai ? <AiBadge sx={menuBadgeStyle} /> : null}
                 </Link>
               );
             })}

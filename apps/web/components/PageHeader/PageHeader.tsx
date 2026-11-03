@@ -3,10 +3,17 @@
 import { Box, Button, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
-import { actionStyle, headerStyle, titleStyle } from './PageHeader.style';
+import {
+  actionStyle,
+  headerStyle,
+  titleRowStyle,
+  titleStyle,
+} from './PageHeader.style';
 
 type PageHeaderProps = {
   title: string;
+  /** Shown next to the title, outside the heading, such as `<AiBadge />`. */
+  badge?: ReactNode;
   actionLabel?: string;
   actionIcon?: ReactNode;
   actionDisabled?: boolean;
@@ -15,6 +22,7 @@ type PageHeaderProps = {
 
 export function PageHeader({
   title,
+  badge,
   actionLabel,
   actionIcon,
   actionDisabled,
@@ -22,9 +30,12 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <Box sx={headerStyle}>
-      <Typography component="h1" sx={titleStyle}>
-        {title}
-      </Typography>
+      <Box sx={titleRowStyle}>
+        <Typography component="h1" sx={titleStyle}>
+          {title}
+        </Typography>
+        {badge}
+      </Box>
       {actionLabel && onAction ? (
         <Button
           variant="contained"

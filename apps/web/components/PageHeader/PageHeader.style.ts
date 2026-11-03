@@ -15,6 +15,13 @@ export const headerStyle = ({ spacingPx, breakpoints }: Theme) => ({
   },
 });
 
+export const titleRowStyle = ({ spacingPx }: Theme) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: spacingPx[8],
+  minWidth: 0,
+});
+
 export const titleStyle = ({ spacingPx, typography, breakpoints }: Theme) => ({
   ...typography.h5,
   m: spacingPx[0],
