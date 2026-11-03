@@ -91,8 +91,8 @@ explicitly. Fix with a stored user time zone if it matters.
 - [x] Integration tests for the whole flow (discovery, register, authorize, consent, token, refresh, revoke)
 - [ ] Sign in from Claude Code (`claude mcp add --transport http` without a header)
 - [ ] Security review (`/security-review`) before merge
-- [ ] "Connected apps" on the account page: list grants and revoke them (next PR)
-- [ ] Purge script for expired codes and tokens
+- [x] "Connected apps" on the account page: list grants and revoke them, with the `claude mcp add` command
+- [x] Purge script for expired codes and tokens (`npm run oauth:purge`)
 - [ ] Add as a custom connector in Claude.ai (needs public HTTPS: tunnel or deployment)
 
 **Status:** [ ]
