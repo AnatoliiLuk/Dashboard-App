@@ -3,6 +3,11 @@ export type { Completion } from './entities/completion';
 export type { Goal } from './entities/goal';
 export type { DayMark, Streak } from './entities/streak';
 export type { CoachUsage } from './entities/coach-usage';
+export type {
+  OAuthConsentRequest,
+  OAuthConsentResult,
+  OAuthScope,
+} from './entities/oauth-consent';
 
 export type { CreateHabitDto, UpdateHabitDto } from './dto/habit.dto';
 export type { CreateGoalDto, UpdateGoalDto } from './dto/goal.dto';
@@ -14,6 +19,7 @@ export type {
   DeleteAccountDto,
   UpdateProfileDto,
 } from './dto/user.dto';
+export type { OAuthConsentDecisionDto } from './dto/oauth.dto';
 
 export type { HabitColor } from './enums/habit-color.enum';
 export type { GoalColor } from './enums/goal-color.enum';
