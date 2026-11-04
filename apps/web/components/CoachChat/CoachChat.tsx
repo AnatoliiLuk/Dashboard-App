@@ -18,6 +18,7 @@ import { useTranslation } from '@/lib/i18n';
 import { EXAMPLE_QUESTIONS, MAX_MESSAGE_LENGTH } from './CoachChat.constants';
 import type { CoachChatProps } from './CoachChat.interface';
 import {
+  bodyStyle,
   composerStyle,
   errorStyle,
   exampleButtonStyle,
@@ -25,6 +26,7 @@ import {
   examplesTitleStyle,
   logStyle,
   noticeStyle,
+  rootStyle,
   sendStyle,
   startOverStyle,
   thinkingStyle,
@@ -45,7 +47,7 @@ function CoachChat({
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
   const [confirmStartOver, setConfirmStartOver] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const disabled = error === 'disabled';
   const busy = isLoading || isSending || isDeleting;
   const canSend = !busy && !disabled && draft.trim().length > 0;
@@ -56,13 +58,12 @@ function CoachChat({
     startOverLabel = isDeleting ? t('coach.deleting') : t('coach.startOver');
   }
 
-  // Keep the newest message and the thinking line in view.
+  // Keep the newest message and the thinking line in view. Only the
+  // conversation scrolls; the page itself stays put.
   useEffect(() => {
-    if (entries.length) {
-      endRef.current?.scrollIntoView?.({
-        block: 'nearest',
-        behavior: 'smooth',
-      });
+    const body = bodyRef.current;
+    if (body && entries.length) {
+      body.scrollTo?.({ top: body.scrollHeight, behavior: 'smooth' });
     }
   }, [entries.length, isSending]);
 
@@ -86,7 +87,7 @@ function CoachChat({
   }
 
   return (
-    <>
+    <Box sx={rootStyle}>
       <PageHeader
         title={t('shell.coach')}
         badge={<AiBadge />}
@@ -120,54 +121,56 @@ function CoachChat({
         </Box>
       ) : null}
 
-      {isLoading ? (
-        <Typography variant="body2" sx={thinkingStyle}>
-          {t('coach.loading')}
-        </Typography>
-      ) : null}
-
-      {!isLoading && entries.length === 0 ? (
-        <Box sx={examplesStyle}>
-          <Typography variant="body2" sx={examplesTitleStyle}>
-            {t('coach.examplesTitle')}
+      <Box ref={bodyRef} sx={bodyStyle}>
+        {isLoading ? (
+          <Typography variant="body2" sx={thinkingStyle}>
+            {t('coach.loading')}
           </Typography>
-          {EXAMPLE_QUESTIONS.map((key) => (
-            <Button
-              key={key}
-              type="button"
-              variant="outlined"
-              disabled={busy || disabled}
-              sx={exampleButtonStyle}
-              onClick={() => onSend(t(`coach.examples.${key}`))}
-            >
-              {t(`coach.examples.${key}`)}
-            </Button>
-          ))}
-        </Box>
-      ) : null}
+        ) : null}
 
-      {entries.length > 0 ? (
-        <Box
-          component="ol"
-          role="log"
-          aria-live="polite"
-          aria-label={t('coach.conversation')}
-          sx={logStyle}
-        >
-          {entries.map((entry) => (
-            <CoachMessage
-              key={entry.id}
-              entry={entry}
-              onAcceptProposal={onAcceptProposal}
-            />
-          ))}
-          {isSending ? (
-            <Typography component="li" variant="body2" sx={thinkingStyle}>
-              {t('coach.thinking')}
+        {!isLoading && entries.length === 0 ? (
+          <Box sx={examplesStyle}>
+            <Typography variant="body2" sx={examplesTitleStyle}>
+              {t('coach.examplesTitle')}
             </Typography>
-          ) : null}
-        </Box>
-      ) : null}
+            {EXAMPLE_QUESTIONS.map((key) => (
+              <Button
+                key={key}
+                type="button"
+                variant="outlined"
+                disabled={busy || disabled}
+                sx={exampleButtonStyle}
+                onClick={() => onSend(t(`coach.examples.${key}`))}
+              >
+                {t(`coach.examples.${key}`)}
+              </Button>
+            ))}
+          </Box>
+        ) : null}
+
+        {entries.length > 0 ? (
+          <Box
+            component="ol"
+            role="log"
+            aria-live="polite"
+            aria-label={t('coach.conversation')}
+            sx={logStyle}
+          >
+            {entries.map((entry) => (
+              <CoachMessage
+                key={entry.id}
+                entry={entry}
+                onAcceptProposal={onAcceptProposal}
+              />
+            ))}
+            {isSending ? (
+              <Typography component="li" variant="body2" sx={thinkingStyle}>
+                {t('coach.thinking')}
+              </Typography>
+            ) : null}
+          </Box>
+        ) : null}
+      </Box>
 
       {error ? (
         <Box role="alert" sx={errorStyle}>
@@ -217,8 +220,7 @@ function CoachChat({
             : null}
         </span>
       </Typography>
-      <div ref={endRef} />
-    </>
+    </Box>
   );
 }
 

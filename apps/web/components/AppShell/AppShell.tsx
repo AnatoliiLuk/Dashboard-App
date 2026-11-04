@@ -14,6 +14,7 @@ import { isCurrentRoute, MAIN_ID, menu } from './AppShell.constants';
 import {
   brandStyle,
   contentStyle,
+  fillStyle,
   headerEndStyle,
   headerInnerStyle,
   headerStyle,
@@ -22,20 +23,23 @@ import {
   menuItemActiveStyle,
   menuItemStyle,
   menuStyle,
+  shellFillStyle,
   shellStyle,
   skipLinkStyle,
 } from './AppShell.style';
 
 type AppShellProps = {
   children: ReactNode;
+  /** Lock the page to the viewport so the content scrolls inside itself. */
+  fill?: boolean;
 };
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, fill = false }: AppShellProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
   return (
-    <Box sx={shellStyle}>
+    <Box sx={[shellStyle, fill ? shellFillStyle : null]}>
       <Link href={`#${MAIN_ID}`} sx={skipLinkStyle}>
         {t('shell.skipToContent')}
       </Link>
@@ -67,8 +71,13 @@ export function AppShell({ children }: AppShellProps) {
           </Box>
         </Box>
       </Box>
-      <Box component="main" id={MAIN_ID} tabIndex={-1} sx={mainStyle}>
-        <Box sx={contentStyle}>{children}</Box>
+      <Box
+        component="main"
+        id={MAIN_ID}
+        tabIndex={-1}
+        sx={[mainStyle, fill ? fillStyle : null]}
+      >
+        <Box sx={[contentStyle, fill ? fillStyle : null]}>{children}</Box>
       </Box>
       <MobileNav />
     </Box>
