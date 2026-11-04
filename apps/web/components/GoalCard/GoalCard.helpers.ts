@@ -78,9 +78,15 @@ const MAX_CHART_TICKS = 5;
 
 export function chartTicks(max: number): number[] {
   const step = Math.max(1, Math.ceil(max / MAX_CHART_TICKS));
-
-  return Array.from(
+  const ticks = Array.from(
     { length: Math.floor(max / step) + 1 },
     (_, index) => index * step,
   );
+
+  // The top of the axis means "every habit logged", so it always gets a label.
+  if (ticks[ticks.length - 1] !== max) {
+    ticks.push(max);
+  }
+
+  return ticks;
 }
