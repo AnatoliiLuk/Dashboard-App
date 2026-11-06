@@ -9,6 +9,8 @@ import { today } from '@/lib/habits/dates';
 import { renderWithProviders } from '../../test/render';
 import { GoalForm } from './GoalForm';
 
+import { VISIBLE_CHIPS } from '@/components/GoalHabitSelect';
+
 function habit(id: string, name: string): Habit {
   return {
     id,
@@ -74,7 +76,9 @@ describe('GoalForm', () => {
     expect(
       screen.getByRole('option', { name: `Habit ${MAX_GOAL_HABITS + 1}` }),
     ).toHaveAttribute('aria-disabled', 'true');
-    expect(screen.getByText(`+${MAX_GOAL_HABITS - 2}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`+${MAX_GOAL_HABITS - VISIBLE_CHIPS}`),
+    ).toBeInTheDocument();
   });
 
   it('saves changes to the goal already in the form', async () => {
