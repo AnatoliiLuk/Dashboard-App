@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Goal, Habit } from '@repo/types';
 
-import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
+import { MAX_GOAL_HABITS } from '@repo/core';
 import { today } from '@/lib/habits/dates';
 
 import { renderWithProviders } from '../../test/render';
