@@ -212,6 +212,8 @@ export const uk: Copy<typeof en> = {
     editing: 'Редагування: {{name}}',
     undo: 'Відмінити',
     doneToday: 'Зроблено сьогодні',
+    logDay: 'Позначити {{date}} як зроблене',
+    undoDay: 'Відмінити {{date}}',
     sort: 'Сортування звичок',
     doneSort: 'Зроблені',
     openSort: 'Не зроблені',

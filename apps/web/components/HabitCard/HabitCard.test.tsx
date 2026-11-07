@@ -18,7 +18,7 @@ function habitItem(overrides: Partial<HabitToday> = {}): HabitToday {
     },
     doneToday: false,
     currentStreak: 0,
-    days: [{ date: '2026-10-06', done: false }],
+    days: [{ date: '2026-10-06', done: false, loggable: true }],
     ...overrides,
   };
 }
@@ -28,8 +28,15 @@ function archivedItem(): HabitToday {
   return {
     ...item,
     habit: { ...item.habit, archivedAt: '2026-10-18T09:00:00.000Z' },
+    days: item.days.map((day) => ({ ...day, loggable: false })),
   };
 }
+
+const recentDays: HabitToday['days'] = [
+  { date: '2026-10-05', done: false, loggable: false },
+  { date: '2026-10-06', done: false, loggable: true },
+  { date: '2026-10-07', done: true, loggable: true },
+];
 
 describe('HabitCard', () => {
   it('marks today done', async () => {
@@ -55,6 +62,62 @@ describe('HabitCard', () => {
     await user.click(screen.getByRole('button', { name: 'Done today' }));
 
     expect(onToggle).toHaveBeenCalledWith('habit-1');
+  });
+
+  it('logs and undoes a past day from the strip', async () => {
+    const user = userEvent.setup();
+    const onToggle = jest.fn();
+
+    renderWithProviders(
+      <HabitCard
+        item={habitItem({ days: recentDays })}
+        onToggle={onToggle}
+        onEdit={jest.fn()}
+        onArchive={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    const past = screen.getByRole('button', { name: 'Mark 6 Oct 2026 done' });
+    expect(past).toHaveAttribute('aria-pressed', 'false');
+    await user.click(past);
+    expect(onToggle).toHaveBeenCalledWith('habit-1', '2026-10-06');
+
+    await user.click(screen.getByRole('button', { name: 'Undo 7 Oct 2026' }));
+    expect(onToggle).toHaveBeenCalledWith('habit-1', '2026-10-07');
+  });
+
+  it('does not offer days before the habit existed', () => {
+    renderWithProviders(
+      <HabitCard
+        item={habitItem({ days: recentDays })}
+        onToggle={jest.fn()}
+        onEdit={jest.fn()}
+        onArchive={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTitle('5 Oct 2026').tagName).toBe('SPAN');
+    expect(
+      screen.queryByRole('button', { name: /5 Oct 2026/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps the strip read-only for an archived habit', () => {
+    renderWithProviders(
+      <HabitCard
+        item={archivedItem()}
+        onToggle={jest.fn()}
+        onEdit={jest.fn()}
+        onArchive={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: /6 Oct 2026/ }),
+    ).not.toBeInTheDocument();
   });
 
   it('offers undo when today is already done', () => {

@@ -367,6 +367,10 @@ paths:
     post:
       tags: [Completions]
       summary: Mark a habit done on a date
+      description: >-
+        Past days can be logged back to the habit's creation date (UTC).
+        Returns 400 for a date after tomorrow (UTC) or before the habit was
+        created, 409 for an archived habit or a day that is already logged.
       security:
         - bearerAuth: []
         - cookieAuth: []
@@ -395,7 +399,11 @@ paths:
     post:
       tags: [Completions]
       summary: Toggle a habit on a date
-      description: Creates the completion when it is missing, and deletes it when it already exists.
+      description: >-
+        Creates the completion when it is missing, and deletes it when it
+        already exists. Creating follows the same date rules as
+        POST /api/completions (400 outside the loggable range, 409 for an
+        archived habit); deleting is always allowed.
       security:
         - bearerAuth: []
         - cookieAuth: []
@@ -417,6 +425,8 @@ paths:
         '401':
           $ref: '#/components/responses/Error'
         '404':
+          $ref: '#/components/responses/Error'
+        '409':
           $ref: '#/components/responses/Error'
   /api/completions/{id}:
     parameters:
