@@ -18,7 +18,7 @@ function habitItem(): HabitToday {
     },
     doneToday: false,
     currentStreak: 0,
-    days: [{ date: '2026-10-06', done: false }],
+    days: [{ date: '2026-10-06', done: false, loggable: true }],
   };
 }
 
