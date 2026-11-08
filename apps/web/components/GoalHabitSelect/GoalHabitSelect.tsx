@@ -3,7 +3,7 @@
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import type { Habit } from '@repo/types';
 
-import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
+import { MAX_GOAL_HABITS } from '@repo/core';
 import { useTranslation } from '@/lib/i18n';
 
 import { habitSelectStyle } from './GoalHabitSelect.style';

@@ -11,7 +11,7 @@ import { GoalHabitSelect } from '@/components/GoalHabitSelect';
 import { registerField } from '@/lib/forms/registerField';
 import { goalFormSchema, type GoalFormValues } from '@/lib/forms/schemas';
 import { GOAL_COLORS } from '@/lib/goals/colors';
-import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
+import { MAX_GOAL_HABITS } from '@repo/core';
 import { today } from '@/lib/habits/dates';
 import { useTranslation } from '@/lib/i18n';
 
