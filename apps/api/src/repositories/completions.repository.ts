@@ -38,6 +38,13 @@ export class CompletionsRepository {
     });
   }
 
+  async findHabitForUser(habitId: string, userId: string) {
+    return prisma.habit.findFirst({
+      where: { id: habitId, userId },
+      select: { createdAt: true, archivedAt: true },
+    });
+  }
+
   async habitExistsForUser(habitId: string, userId: string): Promise<boolean> {
     const count = await prisma.habit.count({
       where: { id: habitId, userId },

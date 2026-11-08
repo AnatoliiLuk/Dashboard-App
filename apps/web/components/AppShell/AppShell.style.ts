@@ -25,6 +25,18 @@ export const shellStyle = ({ vars }: Theme) => ({
   color: vars.palette.text.primary,
 });
 
+// Full-height pages (the coach chat) keep the page itself from scrolling.
+export const shellFillStyle = () => ({
+  height: '100dvh',
+});
+
+// Passes the remaining height down so a child can scroll inside it.
+export const fillStyle = () => ({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: 0,
+});
+
 export const skipLinkStyle = ({
   vars,
   spacingPx,
@@ -104,6 +116,7 @@ export const mainStyle = ({ spacingPx }: Theme) => ({
 });
 
 export const contentStyle = () => ({
+  flex: 1,
   width: '100%',
   maxWidth: '60rem',
   mx: 'auto',

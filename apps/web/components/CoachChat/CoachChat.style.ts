@@ -1,6 +1,22 @@
 import type {} from '@mui/material/themeCssVarsAugmentation';
 import type { Theme } from '@mui/material/styles';
 
+// Fills the height AppShell leaves; header and composer stay, the body scrolls.
+export const rootStyle = () => ({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  minHeight: 0,
+});
+
+export const bodyStyle = ({ spacingPx }: Theme) => ({
+  flex: 1,
+  minHeight: 0,
+  overflowY: 'auto',
+  overscrollBehavior: 'contain',
+  mb: spacingPx[16],
+});
+
 export const noticeStyle = ({ vars, spacingPx, typography }: Theme) => ({
   display: 'flex',
   alignItems: 'flex-start',
@@ -38,7 +54,6 @@ export const logStyle = ({ spacingPx }: Theme) => ({
   gap: spacingPx[16],
   listStyle: 'none',
   m: spacingPx[0],
-  mb: spacingPx[24],
   p: spacingPx[0],
 });
 

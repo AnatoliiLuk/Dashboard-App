@@ -204,6 +204,8 @@ export const en = {
     editing: 'Editing {{name}}',
     undo: 'Undo',
     doneToday: 'Done today',
+    logDay: 'Mark {{date}} done',
+    undoDay: 'Undo {{date}}',
     sort: 'Sort habits',
     doneSort: 'Done today',
     openSort: 'Not done',

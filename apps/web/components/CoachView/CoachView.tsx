@@ -10,7 +10,7 @@ import { useHabits } from '@/lib/hooks/useHabits';
 
 export function CoachView() {
   return (
-    <AppShell>
+    <AppShell fill>
       <AuthGuard>
         <CoachContent />
       </AuthGuard>

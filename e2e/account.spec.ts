@@ -58,9 +58,10 @@ test('moves between the account tabs, each with its own URL', async ({
   ).toContainText('claude mcp add --transport http habits-plus');
 
   await page.reload();
-  await expect(
-    tabs.getByRole('link', { name: 'AI & apps' }),
-  ).toHaveAttribute('aria-current', 'page');
+  await expect(tabs.getByRole('link', { name: 'AI & apps' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
 });
 
 test('sends a signed-out visitor to sign in', async ({ page }) => {
@@ -96,6 +97,9 @@ test('deletes the account after confirming the password', async ({ page }) => {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill('long-enough');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('alert')).toBeVisible();
+  // Not a bare getByRole('alert'): Next's route announcer is also an alert.
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Invalid credentials' }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/\/login/);
 });

@@ -30,7 +30,7 @@ function LogContent() {
     refetch,
     habits,
     addHabit,
-    toggleToday,
+    toggleDay,
     saveHabit,
     archiveHabit,
     deleteHabit,
@@ -55,7 +55,7 @@ function LogContent() {
         habits={habits}
         onAdd={addHabit}
         onUpdate={saveHabit}
-        onToggle={toggleToday}
+        onToggle={toggleDay}
         onArchive={archiveHabit}
         onDelete={deleteHabit}
       />

@@ -15,13 +15,27 @@ const goalColorIds = GOAL_COLORS.map((color) => color.id) as [
   ...GoalColor[],
 ];
 
+const EMAIL_MAX_LENGTH = 254;
+
+/** Same normalisation as the API's `emailSchema`: trim, then lowercase. */
+export function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+/** Email field rule shared by every form; matches the API. */
+export function emailField(t: TFunction) {
+  return z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, t('validation.email'))
+    .max(EMAIL_MAX_LENGTH, t('validation.email'))
+    .email(t('validation.email'));
+}
+
 export function loginFormSchema(t: TFunction) {
   return z.object({
-    email: z
-      .string()
-      .trim()
-      .min(1, t('validation.email'))
-      .email(t('validation.email')),
+    email: emailField(t),
     password: z.string().min(1, t('validation.password')),
   });
 }
@@ -29,11 +43,7 @@ export function loginFormSchema(t: TFunction) {
 export function registerFormSchema(t: TFunction) {
   return z.object({
     name: z.string().trim().min(1, t('validation.name')),
-    email: z
-      .string()
-      .trim()
-      .min(1, t('validation.email'))
-      .email(t('validation.email')),
+    email: emailField(t),
     password: z.string().min(8, t('validation.passwordLength')),
   });
 }
@@ -47,13 +57,7 @@ export function profileFormSchema(t: TFunction, currentEmail: string) {
         .trim()
         .min(1, t('validation.name'))
         .max(100, t('validation.nameLength')),
-      email: z
-        .string()
-        .trim()
-        .toLowerCase()
-        .min(1, t('validation.email'))
-        .max(254, t('validation.email'))
-        .email(t('validation.email')),
+      email: emailField(t),
       currentPassword: z.string(),
     })
     .refine(
