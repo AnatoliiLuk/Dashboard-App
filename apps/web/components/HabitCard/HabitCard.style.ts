@@ -91,6 +91,17 @@ export const dayStyle = (theme: Theme) => ({
   color: theme.vars.palette.text.secondary,
 });
 
+export const dayButtonStyle = ({ vars }: Theme) => ({
+  cursor: 'pointer',
+  '&:hover': {
+    boxShadow: `inset 0 0 0 2px ${vars.palette.primary.main}`,
+  },
+  '&.Mui-focusVisible, &:focus-visible': {
+    outline: `2px solid ${vars.palette.primary.main}`,
+    outlineOffset: 2,
+  },
+});
+
 export const dayDoneStyle = (theme: Theme) => ({
   ...dayMarkStyle(theme),
   backgroundColor: theme.vars.palette.text.primary,

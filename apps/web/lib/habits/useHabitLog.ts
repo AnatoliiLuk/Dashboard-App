@@ -86,8 +86,8 @@ export function useHabitLog() {
     async deleteHabit(habitId: string) {
       await removeHabit(habitId);
     },
-    async toggleToday(habitId: string) {
-      await toggleCompletion({ habitId, date });
+    async toggleDay(habitId: string, day: string = date) {
+      await toggleCompletion({ habitId, date: day });
     },
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, ButtonBase, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
@@ -14,6 +14,7 @@ import type { HabitCardProps } from './HabitCard.interface';
 import {
   actionsStyle,
   archivedMessageStyle,
+  dayButtonStyle,
   dayDoneStyle,
   dayStyle,
   daysStyle,
@@ -140,16 +141,30 @@ function HabitCard({
       )}
       <Box sx={footerStyle}>
         <Box sx={daysStyle}>
-          {days.map(({ date, done }) => (
-            <Box
-              key={date}
-              component="span"
-              sx={done ? dayDoneStyle : dayStyle}
-              title={formatDisplay(date, locale)}
-            >
-              {weekdayInitial(date, t)}
-            </Box>
-          ))}
+          {days.map(({ date, done, loggable }) => {
+            const label = formatDisplay(date, locale);
+            const markStyle = done ? dayDoneStyle : dayStyle;
+
+            return loggable ? (
+              <ButtonBase
+                key={date}
+                type="button"
+                sx={[markStyle, dayButtonStyle]}
+                title={label}
+                aria-label={t(done ? 'log.undoDay' : 'log.logDay', {
+                  date: label,
+                })}
+                aria-pressed={done}
+                onClick={() => onToggle(id, date)}
+              >
+                {weekdayInitial(date, t)}
+              </ButtonBase>
+            ) : (
+              <Box key={date} component="span" sx={markStyle} title={label}>
+                {weekdayInitial(date, t)}
+              </Box>
+            );
+          })}
         </Box>
         <Box sx={actionsStyle}>{actions}</Box>
       </Box>

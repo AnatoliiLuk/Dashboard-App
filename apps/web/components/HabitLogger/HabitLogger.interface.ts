@@ -6,7 +6,7 @@ export type HabitLoggerProps = {
   habits: HabitToday[];
   onAdd: (name: string, color: HabitColor) => void | Promise<void>;
   onUpdate: (habitId: string, values: HabitFormValues) => void | Promise<void>;
-  onToggle: (habitId: string) => void | Promise<void>;
+  onToggle: (habitId: string, date?: string) => void | Promise<void>;
   onArchive: (habitId: string, archived: boolean) => void | Promise<void>;
   onDelete: (habitId: string) => void | Promise<void>;
 };

@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { addDays, compareDates } from '@repo/core';
 
 import { AppError } from '../middleware/error.middleware';
 import { CompletionsRepository } from '../repositories/completions.repository';
@@ -7,15 +8,33 @@ function toCompletedAt(date: string): Date {
   return new Date(`${date}T00:00:00.000Z`);
 }
 
+function toIsoDate(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
+export type CompletionsStore = Pick<
+  CompletionsRepository,
+  | 'findAll'
+  | 'findById'
+  | 'findByHabitAndDate'
+  | 'create'
+  | 'delete'
+  | 'findHabitForUser'
+  | 'habitExistsForUser'
+>;
+
 export class CompletionsService {
-  private repository = new CompletionsRepository();
+  constructor(
+    private repository: CompletionsStore = new CompletionsRepository(),
+    private now: () => Date = () => new Date(),
+  ) {}
 
   async getAll(userId: string) {
     return this.repository.findAll(userId);
   }
 
   async create(habitId: string, date: string, userId: string) {
-    await this.ensureHabitOwnership(habitId, userId);
+    await this.ensureLoggable(habitId, date, userId);
 
     const completedAt = toCompletedAt(date);
 
@@ -67,6 +86,7 @@ export class CompletionsService {
     return true;
   }
 
+  // Undoing is always allowed; only adding a day is checked.
   async toggle(habitId: string, date: string, userId: string) {
     await this.ensureHabitOwnership(habitId, userId);
 
@@ -82,6 +102,7 @@ export class CompletionsService {
       return { completed: false as const, completion: null };
     }
 
+    await this.ensureLoggable(habitId, date, userId);
     const completion = await this.repository.create({
       habitId,
       userId,
@@ -89,6 +110,28 @@ export class CompletionsService {
     });
 
     return { completed: true as const, completion };
+  }
+
+  // The server has no user timezone: "today" may be one day ahead of UTC.
+  // Days before the habit's UTC creation date never count (same as web).
+  private async ensureLoggable(habitId: string, date: string, userId: string) {
+    const habit = await this.repository.findHabitForUser(habitId, userId);
+    if (!habit) {
+      throw new AppError(404, 'Habit not found');
+    }
+    if (habit.archivedAt) {
+      throw new AppError(409, 'Habit is archived');
+    }
+    if (compareDates(date, addDays(toIsoDate(this.now()), 1)) > 0) {
+      throw new AppError(400, 'Cannot log a future date');
+    }
+    const createdOn = toIsoDate(habit.createdAt);
+    if (compareDates(date, createdOn) < 0) {
+      throw new AppError(
+        400,
+        `Habit was created on ${createdOn}; earlier days cannot be logged`,
+      );
+    }
   }
 
   private async ensureHabitOwnership(habitId: string, userId: string) {
