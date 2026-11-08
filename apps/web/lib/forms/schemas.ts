@@ -1,7 +1,7 @@
 import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
-import { MAX_GOAL_HABITS } from '@/lib/goals/constants';
+import { MAX_GOAL_HABITS } from '@repo/core';
 import { GOAL_COLORS, type GoalColor } from '@/lib/goals/colors';
 import { HABIT_COLORS, type HabitColor } from '@/lib/habits/colors';
 
