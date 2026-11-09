@@ -97,7 +97,7 @@ export function HabitLogger({
   return (
     <section>
       <PageHeader
-        title={t('shell.logHabits')}
+        title={showArchived ? t('log.archiveTitle') : t('shell.logHabits')}
         actionLabel={formOpen ? undefined : t('log.addHabit')}
         actionIcon={<PlusIcon width={16} height={16} />}
         onAction={formOpen ? undefined : openNew}

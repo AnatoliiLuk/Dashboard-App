@@ -222,6 +222,7 @@ export const uk: Copy<typeof en> = {
     showArchived: 'Архів ({{count}})',
     showCurrent: 'Поточні звички',
     archiveEmpty: 'В архіві немає звичок.',
+    archiveTitle: 'Архівні звички',
   },
   goals: {
     empty: 'Додайте ціль, щоб стежити за відрізком днів.',
@@ -243,6 +244,7 @@ export const uk: Copy<typeof en> = {
     showArchived: 'Архів ({{count}})',
     showCurrent: 'Поточні цілі',
     archiveEmpty: 'В архіві немає цілей.',
+    archiveTitle: 'Архівні цілі',
     percent: '{{percent}}%',
     time: 'День {{day}} з {{total}} · {{left}}',
     daysLeft_one: '{{count}} день залишився',
