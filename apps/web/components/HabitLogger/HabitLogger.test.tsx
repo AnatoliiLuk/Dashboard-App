@@ -145,9 +145,15 @@ describe('HabitLogger', () => {
     expect(names()).toHaveLength(1);
     expect(names()[0]).toContain('Walk');
     expect(screen.getByRole('button', { name: 'Restore' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Archived habits' }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Current habits' }));
 
     expect(names()[0]).toContain('Read');
+    expect(
+      screen.queryByRole('heading', { level: 1, name: 'Archived habits' }),
+    ).not.toBeInTheDocument();
   });
 });

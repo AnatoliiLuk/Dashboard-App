@@ -214,6 +214,7 @@ export const en = {
     showArchived: 'Archive ({{count}})',
     showCurrent: 'Current habits',
     archiveEmpty: 'No archived habits.',
+    archiveTitle: 'Archived habits',
   },
   goals: {
     empty: 'Add a goal to track a stretch of days.',
@@ -235,6 +236,7 @@ export const en = {
     showArchived: 'Archive ({{count}})',
     showCurrent: 'Current goals',
     archiveEmpty: 'No archived goals.',
+    archiveTitle: 'Archived goals',
     percent: '{{percent}}%',
     time: 'Day {{day}} of {{total}} · {{left}}',
     daysLeft_one: '{{count}} day left',
