@@ -77,7 +77,8 @@ export function timelineLabel(
 const MAX_CHART_TICKS = 5;
 
 export function chartTicks(max: number): number[] {
-  const step = Math.max(1, Math.ceil(max / MAX_CHART_TICKS));
+  const step = Math.max(1, Math.ceil(max / (MAX_CHART_TICKS - 1)));
+
   const ticks = Array.from(
     { length: Math.floor(max / step) + 1 },
     (_, index) => index * step,
