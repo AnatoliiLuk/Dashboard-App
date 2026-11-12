@@ -94,7 +94,7 @@ export function GoalLogger({
   return (
     <section>
       <PageHeader
-        title={t('shell.myGoals')}
+        title={showArchived ? t('goals.archiveTitle') : t('shell.myGoals')}
         actionLabel={formOpen ? undefined : t('goals.addGoal')}
         actionIcon={<PlusIcon width={16} height={16} />}
         onAction={formOpen ? undefined : openNew}

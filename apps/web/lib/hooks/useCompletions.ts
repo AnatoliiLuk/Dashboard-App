@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateCompletionDto } from '@repo/types';
+import type { Completion, CreateCompletionDto } from '@repo/types';
 
 import { api } from '@/lib/api/client';
 import { toCompletion } from '@/lib/api/mappers';
@@ -27,9 +27,25 @@ export function useCompletions() {
     void queryClient.invalidateQueries({ queryKey: habitKeys.all });
   };
 
+  // Optimistic, so tapping several days in a row feels instant.
   const toggleMutation = useMutation({
     mutationFn: (dto: CreateCompletionDto) => api.completions.toggle(dto),
-    onSuccess: invalidateRelated,
+    onMutate: async ({ habitId, date }) => {
+      await queryClient.cancelQueries({ queryKey: completionKeys.all });
+      const previous = queryClient.getQueryData<Completion[]>(
+        completionKeys.all,
+      );
+      queryClient.setQueryData<Completion[]>(completionKeys.all, (current) =>
+        toggleLocal(current ?? [], habitId, date),
+      );
+      return { previous };
+    },
+    onError: (_error, _dto, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(completionKeys.all, context.previous);
+      }
+    },
+    onSettled: invalidateRelated,
   });
 
   return {
@@ -40,4 +56,20 @@ export function useCompletions() {
     refetch: completionsQuery.refetch,
     toggleCompletion: toggleMutation.mutateAsync,
   };
+}
+
+function toggleLocal(
+  completions: Completion[],
+  habitId: string,
+  date: string,
+): Completion[] {
+  const matches = (item: Completion) =>
+    item.habitId === habitId && item.date === date;
+  if (completions.some(matches)) {
+    return completions.filter((item) => !matches(item));
+  }
+  return [
+    ...completions,
+    { id: `pending-${habitId}-${date}`, habitId, ownerId: '', date },
+  ];
 }

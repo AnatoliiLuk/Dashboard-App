@@ -1,13 +1,18 @@
-import { addDays, startOfWeek } from './dates';
+import { addDays, compareDates } from './dates';
 import { streakFor } from './streaks';
 import type { Completion, DayMark, Habit, HabitStore } from './types';
+
+// A day in the card strip; loggable days can be toggled from the log.
+export type HabitDay = DayMark & { loggable: boolean };
 
 export type HabitToday = {
   habit: Habit;
   doneToday: boolean;
   currentStreak: number;
-  days: DayMark[];
+  days: HabitDay[];
 };
+
+export const RECENT_DAYS = 7;
 
 export function habitTodayList(
   { habits, completions }: HabitStore,
@@ -22,25 +27,28 @@ export function habitTodayList(
       habit,
       doneToday: mine.some(({ date }) => date === today),
       currentStreak: current,
-      days: weekMarks(habit, mine, today),
+      days: recentDays(habit, mine, today),
     };
   });
 }
 
-function weekMarks(
+// The last RECENT_DAYS days ending today, so yesterday is always reachable.
+function recentDays(
   habit: Habit,
   completions: Completion[],
   today: string,
-): DayMark[] {
-  const { createdOn } = habit;
+): HabitDay[] {
+  const { createdOn, archivedAt } = habit;
   const done = new Set(completions.map(({ date }) => date));
-  const weekStart = startOfWeek(today);
+  const first = addDays(today, 1 - RECENT_DAYS);
 
-  return Array.from({ length: 7 }, (_, offset) => {
-    const date = addDays(weekStart, offset);
+  return Array.from({ length: RECENT_DAYS }, (_, offset) => {
+    const date = addDays(first, offset);
+    const existed = compareDates(date, createdOn) >= 0;
     return {
       date,
-      done: date <= today && date >= createdOn && done.has(date),
+      done: existed && done.has(date),
+      loggable: existed && !archivedAt,
     };
   });
 }

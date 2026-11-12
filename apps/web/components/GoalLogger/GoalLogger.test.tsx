@@ -163,9 +163,15 @@ describe('GoalLogger', () => {
     await user.click(screen.getByRole('button', { name: 'Archive (1)' }));
 
     expect(names()).toEqual(['September focus']);
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Archived goals' }),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Current goals' }));
 
     expect(names()).toEqual(['October focus']);
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'My goals' }),
+    ).toBeInTheDocument();
   });
 });
