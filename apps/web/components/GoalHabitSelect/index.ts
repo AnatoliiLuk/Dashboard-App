@@ -1,1 +1,1 @@
-export { GoalHabitSelect } from './GoalHabitSelect';
+export { GoalHabitSelect, VISIBLE_CHIPS } from './GoalHabitSelect';

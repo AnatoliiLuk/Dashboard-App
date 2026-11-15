@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 
 import { habitSelectStyle } from './GoalHabitSelect.style';
 
-const VISIBLE_CHIPS = 2;
+export const VISIBLE_CHIPS = 2;
 
 type GoalHabitSelectProps = {
   habits: Habit[];
